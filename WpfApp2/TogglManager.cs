@@ -82,6 +82,7 @@ namespace WpfApp2
                 foreach (Tag t in tags)
                 {
                     Tags.Add(t.Name);
+
                 }
 
             }
