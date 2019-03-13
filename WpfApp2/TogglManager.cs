@@ -88,8 +88,6 @@ namespace WpfApp2
             catch (Exception e)
             {
                 throw e;
-                //Console.WriteLine(e);
-                //MessageBox.Show("認証に失敗しました");
             }
 
         }
