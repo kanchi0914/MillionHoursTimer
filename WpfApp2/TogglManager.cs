@@ -127,6 +127,7 @@ namespace WpfApp2
                 Duration = duration,
                 Start = appData.LaunchedTime.ToIsoDateStr(),
                 Stop = appData.LastTime.ToIsoDateStr(),
+
                 WorkspaceId = defaultWorkspaceID
             };
 
