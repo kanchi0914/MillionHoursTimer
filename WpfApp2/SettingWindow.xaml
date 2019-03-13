@@ -1,0 +1,137 @@
+﻿<Window x:Class="WpfApp2.SettingWindow"
+        
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp2"
+        mc:Ignorable="d"
+        Title="設定" Height="400" Width="600"
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <local:BoolVisibilityConverter x:Key="BoolVisibilityConverter"/>
+    </Window.Resources>
+    <Grid>
+        <StackPanel>
+            <TabControl Name="maintab">
+                <TabItem Header="基本設定" Height="30" Name="tab1" />
+                <TabItem Header="拡張設定" Height="30" Name="tab2" />
+                <TabItem Header="Toggl連携設定" Height="30" Name="tab3" />
+            </TabControl>
+            <Grid Margin="20" Height="300" Visibility="{Binding ElementName=tab1, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="2*" />
+                    <!--
+                                        <RowDefinition Height="20" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="50" />
+                    -->
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="2*" />
+                </Grid.RowDefinitions>
+                <CheckBox Name="NotCountMinimized" Grid.Row="0" Content="最小化しているアプリケーションをカウントしない" MinWidth="50" IsChecked="False"/>
+                <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="ウィンドウが最小化しているアプリケーションを時間計測の対象に含めません。"/>
+                <CheckBox Name="OnlyCountActive" Grid.Row="2" Content="アクティブウィンドウのみをカウントする" MinWidth="50"  IsChecked="False"/>
+                <TextBlock Grid.Row="3" TextWrapping="Wrap" Text="現在アクティブになっているアプリケーションのみ時間を計測します。"/>
+                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Label Content="カウント間隔" VerticalAlignment="Center"/>
+                    <TextBox Width="50" Text="1" TextAlignment="Right" VerticalAlignment="Center"/>
+                    <Label Content="分" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Grid.Row="5" TextWrapping="Wrap" Text="設定した時間(分)ごとにカウントします。"/>
+                <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Label Content="最小カウント開始時間" VerticalAlignment="Center"/>
+                    <TextBox Width="50" Text="5" TextAlignment="Right" VerticalAlignment="Center"/>
+                    <Label Content="分" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Grid.Row="7" TextWrapping="Wrap" Text="アプリケーションの起動を確認後、設定した時間が経過してからカウントを開始します。"/>
+            </Grid>
+            <Grid Margin="20" Visibility="{Binding ElementName=tab2, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+                <CheckBox Name="AdditionalCount" Grid.Row="0" Content="拡張ファイル名設定をオンにする(試験的)" MinWidth="50" IsChecked="False"/>
+                <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="オンにすると、タイトルバーにファイルの拡張子名が表示されない&#xa;アプリケーションでもファイル毎の作業時間を記録できる可能性があります。"/>
+            </Grid>
+            <Grid Margin="20" Height="300" Visibility="{Binding ElementName=tab3, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="10*" />
+
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Name="User" TextWrapping="Wrap" Text="ユーザー："/>
+                <StackPanel Name ="stackpaaa" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Label Name="tes" Content="API キー：" VerticalAlignment="Center"/>
+                    <TextBox x:Name="APIKeyInput" Width="200" Text="" TextAlignment="Right" VerticalAlignment="Center"/>
+                    <Button Name="OKButton" Width=" 50" Content="OK" Margin="20, 0, 0, 0"/>
+                </StackPanel>
+
+                <!--                <Grid Grid.Row="3" Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                </Grid>-->
+                <ListView Grid.Row="2" Margin="0,20,0,20" SelectionMode="Single" x:Name="ApplicationListInToggleSetting">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header ="連携オン" Width="60">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate DataType="wpf:Entry">
+                                        <CheckBox Name="IsOn" IsChecked="{Binding Path=IsLinkedToToggle}" HorizontalAlignment = "Center"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header ="アプリケーション名" Width="150">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image x:Name="_icon0" Width="16" Height="16" Source="{Binding ImageSource}"/>
+                                            <TextBlock Text="{Binding Path=DisplayedName}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header ="プロジェクト" Width="150">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate DataType="wpf:Entry">
+                                        <ComboBox
+                                            x:Name="ProjectList"
+                                            ItemsSource="{Binding  Path=ProjectNames}"
+                                            SelectedIndex="{Binding GetIndexOfProject, Mode=TwoWay}"
+                                            Width="120"
+                                        />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header ="タグ" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate DataType="wpf:Entry">
+                                        <ComboBox
+                                            x:Name="ProjectList"
+                                            ItemsSource="{Binding  Path=TagNames}"
+                                            SelectedIndex="{Binding GetIndexOfTag, Mode=TwoWay}"
+                                            Width="60"
+                                        />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+            </Grid>
+        </StackPanel>
+
+    </Grid>
+</Window>
