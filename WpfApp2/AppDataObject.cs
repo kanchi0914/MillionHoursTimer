@@ -27,11 +27,11 @@ namespace WpfApp2
         //ウィンドウに表示される名前
         public string DisplayedName { get; set; } = "";
 
-        //最後に起動した日
-        public string LastDate { get; private set; } = "";
-
         //起動した時間
         public DateTime LaunchedTime { get; set; }
+
+        //最後に起動した日
+        public string LastDate { get; private set; } = "";
 
         //最後に起動を確認した時刻
         public DateTime LastTime { get; private set; }
@@ -87,18 +87,15 @@ namespace WpfApp2
             }
         }
 
-        //public int GetIndexOfProject
-        //{
-        //    get
-        //    {
-        //        int index = mainWindow.togglManager.ProjectIDs.FindIndex(s => s.name == LinkedProjectName);
-        //        return index;
-        //    }
-        //    set
-        //    {
-        //        LinkedProjectName = mainWindow.togglManager.ProjectIDs[value].name;
-        //    }
-        //}
+        public void SetLastLaunchedTime(string data)
+        {
+            if (!string.IsNullOrEmpty(data) && data != "-")
+            {
+                string[] dateAndTime = data.Split(' ');
+                LastDate = dateAndTime[0];
+                LastTime = DateTime.Parse(dateAndTime[1]);
+            }
+        }
 
         public int GetIndexOfTag
         {
@@ -149,7 +146,14 @@ namespace WpfApp2
         {
             get
             {
-                return LastDate + " " + LastTime;
+                if (!string.IsNullOrEmpty(LastDate))
+                {
+                    return LastDate + " " + LastTime;
+                }
+                else
+                {
+                    return "-";
+                }
             }
         }
 

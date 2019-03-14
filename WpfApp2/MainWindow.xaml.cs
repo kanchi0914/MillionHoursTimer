@@ -242,10 +242,14 @@ namespace WpfApp2
             {
                 data.LoadIconImage();
                 listView.Items.Add(data);
-                FileViewWindow fileListWindow = new FileViewWindow(data);
-                FileListWindows.Add(fileListWindow);
-                Console.WriteLine(data.ProcessName);
+                AddFileListWindow(data);
             }
+        }
+
+        private void AddFileListWindow(AppDataObject data)
+        {
+            FileViewWindow fileListWindow = new FileViewWindow(data);
+            FileListWindows.Add(fileListWindow);
         }
 
         private void CreateContextMenu()
@@ -285,6 +289,8 @@ namespace WpfApp2
 
         private void OnClickedConfirmTimeOfFiles(object sender, RoutedEventArgs e)
         {
+
+            Console.WriteLine(FileListWindows);
             FileListWindows[listView.SelectedIndex].Show();
         }
 
@@ -328,24 +334,6 @@ namespace WpfApp2
             {
                 filePath = dialog.FileName;
                 AddListFromPath(filePath);
-                //string[] parsed = filePath.Split('\\');
-                //String name = parsed.Last().Replace(".exe", "");
-
-                ////重複を確認し、なければ登録
-                //if (AppDatas.Any(a => a.ProcessName == name))
-                //{
-                //    MessageBox.Show("既に登録されています");
-                //}
-                //else
-                //{
-                //    AppDataObject appData = new AppDataObject(this, name)
-                //    {
-                //        DisplayedName = name
-                //    };
-                //    appData.SetIcon(filePath);
-                //    AppDatas.Add(appData);
-                //    listView.Items.Add(appData);
-                //}
             }
         }
 
@@ -368,6 +356,7 @@ namespace WpfApp2
                 appData.SetIcon(filePath);
                 AppDatas.Add(appData);
                 listView.Items.Add(appData);
+                AddFileListWindow(appData);
             }
 
             return name;
@@ -382,10 +371,11 @@ namespace WpfApp2
 
                 using (var sw = new System.IO.StreamWriter(csvData, false, Encoding.UTF8))
                 {
-                    sw.WriteLine($"アプリケーション名,今日の起動時間,累積起動時間,toggleと連携するか,連携プロジェクト名");
+                    sw.WriteLine($"アプリケーション名,今日の起動時間,累積起動時間,最終起動日時,toggleと連携するか,連携プロジェクト名");
                     foreach (AppDataObject appData in AppDatas)
                     {
-                        sw.WriteLine($"{appData.ProcessName},{appData.TodaysMinutes},{appData.TotalMinutes}");
+                        sw.WriteLine($"{appData.ProcessName},{appData.TodaysMinutes},{appData.TotalMinutes}," +
+                            $"{appData.GetLastLaunchedTime}, {appData.IsLinkedToToggle.ToString()}, {appData.LinkedProjectName}");
                     }
                 }
             }
@@ -420,8 +410,12 @@ namespace WpfApp2
                         {
                             DisplayedName = parsedLine[0],
                             TodaysMinutes = int.Parse(parsedLine[1]),
-                            TotalMinutes = int.Parse(parsedLine[2])
+                            TotalMinutes = int.Parse(parsedLine[2]),
+                            //[3]
+                            IsLinkedToToggle = bool.Parse(parsedLine[4]),
+                            LinkedProjectName = parsedLine[5]
                         };
+                        data.SetLastLaunchedTime(parsedLine[3]);
                         AppDatas.Add(data);
                     }
                 }
@@ -476,15 +470,13 @@ namespace WpfApp2
                     // ショートカットのリンク先の取得
                     string targetPath = shortcut.TargetPath.ToString();
                     var s = AddListFromPath(targetPath);
-                    MessageBox.Show(".lnkです\n" + targetPath);
+                    //MessageBox.Show(".lnkです\n" + targetPath);
                 }
                 else if (extension == ".exe")
                 {
                     var s = AddListFromPath(file);
-                    MessageBox.Show(".exeです\n" + s);
+                    //MessageBox.Show(".exeです\n" + s);
                 }
-                //foreach (var s in files)
-                //    list.FileNames.Add(s);
             }
         }
         private void Window_PreviewDragOver(object sender, DragEventArgs e)

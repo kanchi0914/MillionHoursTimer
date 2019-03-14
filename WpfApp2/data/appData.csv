@@ -1,7 +1,9 @@
-﻿アプリケーション名,累積起動時間
-CLIPStudioPaint,0,8982
-devenv,1,5346
-Unity,0,4
-Photoshop,0,40
-sai,0,1
-chrome,64,0
+﻿アプリケーション名,今日の起動時間,累積起動時間,最終起動日時,toggleと連携するか,連携プロジェクト名
+CLIPStudioPaint,0,8982,-, True, 無し
+devenv,17,5364,2019/03/15 2019/03/15 4:16:18, True, 無し
+Unity,0,4,-, True, 無し
+Photoshop,0,40,-, True, 無し
+sai,0,1,-, True, 無し
+chrome,17,18,2019/03/15 2019/03/15 4:16:18, True, 無し
+Git-2.21.0-64-bit,0,0,-, True, 無し
+Dropbox,11,12,2019/03/15 2019/03/15 4:16:18, True, 無し

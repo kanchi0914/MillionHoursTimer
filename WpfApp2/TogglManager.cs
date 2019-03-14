@@ -26,8 +26,6 @@ namespace WpfApp2
 
         private int defaultWorkspaceID;
 
-        //public List<(string name, int id)> ProjectIDs { get; private set; } 
-        //    = new List<(string name, int id)>() { ("無し", 0) };
         public Dictionary<string, int> ProjectIDs { get; private set; } =
             new Dictionary<string, int>();
         public List<string> Tags { get; set; } = new List<string>() { "無し" };
@@ -116,7 +114,7 @@ namespace WpfApp2
         public void SetTimeEntry(AppDataObject appData)
         {
             int projectID = ProjectIDs[appData.LinkedProjectName];
-            int duration = (int)(appData.LaunchedTime - appData.LaunchedTime).TotalSeconds;
+            int duration = (int)(appData.LaunchedTime - appData.LastTime).TotalSeconds;
             TimeEntry te = new TimeEntry()
             {
                 IsBillable = true,
