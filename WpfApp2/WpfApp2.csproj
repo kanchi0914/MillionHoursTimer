@@ -71,6 +71,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BoolVisibilityConverter.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Components\NotifyIcon.cs">
       <SubType>Component</SubType>
     </Compile>

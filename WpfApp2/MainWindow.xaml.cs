@@ -30,10 +30,10 @@ namespace WpfApp2
         //private Components.NotifyIcon notifyIcon = new Components.NotifyIcon();
         private System.Windows.Forms.NotifyIcon _notifyIcon;
 
-        private List<AppDataObject> appDatas = new List<AppDataObject>();
+        //private List<AppDataObject> appDatas = new List<AppDataObject>();
 
-        private SettingWindow settingMenuWindow;
-        private List<FileViewWindow> fileListWindows = new List<FileViewWindow>();
+        //private SettingWindow settingMenuWindow;
+        //private List<FileViewWindow> fileListWindows = new List<FileViewWindow>();
 
         bool isClosingFromWindow = true;
         bool isFromTask = false;
@@ -56,9 +56,9 @@ namespace WpfApp2
         public bool IsCountingOnlyActive { get; set; }
         public int CountMinutes { get; set; }
         public string Date { get; set; }
-        public List<AppDataObject> AppDatas { get => appDatas; set => appDatas = value; }
-        public List<FileViewWindow> FileListWindows { get => fileListWindows; set => fileListWindows = value; }
-        public SettingWindow SettingMenuWindow { get => settingMenuWindow; set => settingMenuWindow = value; }
+        public List<AppDataObject> AppDatas { get; set; } = new List<AppDataObject>();
+        public List<FileViewWindow> FileListWindows { get; set; } = new List<FileViewWindow>();
+        public SettingWindow SettingMenuWindow { get; set; }
 
         public TimeCounter timeCounter;
         public TogglManager togglManager;
@@ -209,8 +209,8 @@ namespace WpfApp2
                 return;
             }
 
-            settingMenuWindow.Close();
-            foreach (Window w in fileListWindows)
+            SettingMenuWindow.Close();
+            foreach (Window w in FileListWindows)
             {
                 w.Close();
             }

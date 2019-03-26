@@ -17,7 +17,7 @@ namespace WpfApp2
     public class AppDataObject
     {
         //アイコン画像の保存先ディレクトリ
-        private readonly string iconFileDir = "data/icons/";
+        private readonly string iconFileDir = Settings.IconFileDir;
 
         private MainWindow mainWindow;
 
@@ -206,19 +206,31 @@ namespace WpfApp2
         /// <param name="path"></param>
         public void SetIcon(string path)
         {
-            System.Drawing.Icon icon = System.Drawing.Icon.ExtractAssociatedIcon(path);
+            System.Drawing.Icon icon;
+            try
+            {
+                icon = System.Drawing.Icon.ExtractAssociatedIcon(path);
+
+                //SaveIconImage(ImageSource);
+                IconImage = new Image();
+                using (MemoryStream s = new MemoryStream())
+                {
+                    icon.Save(s);
+                    ImageSource = BitmapFrame.Create(s);
+                }
+                SaveIconImage(ImageSource);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+ 
             //MemoryStream data = new MemoryStream(File.ReadAllBytes(path));
             //WriteableBitmap wbmp = new WriteableBitmap(BitmapFrame.Create(data));
             //data.Close();
             //ImageSource = wbmp;
-            //SaveIconImage(ImageSource);
-            IconImage = new Image();
-            using (MemoryStream s = new MemoryStream())
-            {
-                icon.Save(s);
-                ImageSource = BitmapFrame.Create(s);
-            }
-            SaveIconImage(ImageSource);
+
         }
 
         public void SaveIconImage(ImageSource source)
@@ -236,7 +248,8 @@ namespace WpfApp2
         public void LoadIconImage()
         {
             var bmpImage = new BitmapImage();
-            string uriPath = iconFileDir + $"testicon.png";
+            //string uriPath = iconFileDir + $"testicon.png";
+            string uriPath = iconFileDir + $"{ProcessName}.png";
             try
             {
                 bmpImage.BeginInit();

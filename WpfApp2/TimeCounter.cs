@@ -68,7 +68,7 @@ namespace WpfApp2
             TM.Timer timer = new TM.Timer();
             timer.Elapsed += new TM.ElapsedEventHandler(TimeDisp);
             //timer.Interval = (mainWindow.CountMinutes * 60) * (int)mainWindow.CountMinutes * 1000;
-            timer.Interval = (mainWindow.CountMinutes * 5) * (int)mainWindow.CountMinutes * 1000;
+            timer.Interval = (mainWindow.CountMinutes * 60) * (int)mainWindow.CountMinutes * 1000;
             timer.AutoReset = true;
             timer.Enabled = true;
         }
@@ -109,6 +109,8 @@ namespace WpfApp2
             mainWindow.listView.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Refresh()));
 
         }
+
+        #region 計測メソッド
 
         public void CountAllApps()
         {
@@ -192,6 +194,8 @@ namespace WpfApp2
                 Console.WriteLine(ex.Message);
             }
         }
+
+        #endregion
 
         public void CheckClosedApp()
         {

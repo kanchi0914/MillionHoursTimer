@@ -18,7 +18,7 @@ namespace WpfApp2
     {
         private MainWindow mainWindow;
 
-        public string ApiKey { get; set; } = "339dd60598d05c0c79608ba5adc562e4";
+        public string ApiKey { get; set; } = Settings.DefaultAPIKey;
         string PreApiKey { get; set; } = "";
         public string User{ get; set; } = "";
 
@@ -34,24 +34,6 @@ namespace WpfApp2
         {
             this.mainWindow = mainWindow;
             var t = new Toggl.Toggl(ApiKey);
-        }
-
-        public void Test()
-        {
-
-            TimeEntry te2 = new TimeEntry()
-            {
-                IsBillable = true,
-                CreatedWith = "TogglAPI.Net",
-                Description = "Test",
-                ProjectId = 150055033,
-                Duration = 1200,
-                Start = DateTime.Now.ToIsoDateStr(),
-                Stop = DateTime.Now.AddMinutes(10).ToIsoDateStr(),
-                WorkspaceId = defaultWorkspaceID
-            };
-
-            timeEntryService.Add(te2);
         }
 
         public void Init()
@@ -90,7 +72,26 @@ namespace WpfApp2
 
         }
 
+        /// <summary>
+        /// テスト用メソッド
+        /// </summary>
+        public void Test()
+        {
 
+            TimeEntry te2 = new TimeEntry()
+            {
+                IsBillable = true,
+                CreatedWith = "TogglAPI.Net",
+                Description = "Test",
+                ProjectId = 150055033,
+                Duration = 1200,
+                Start = DateTime.Now.ToIsoDateStr(),
+                Stop = DateTime.Now.AddMinutes(10).ToIsoDateStr(),
+                WorkspaceId = defaultWorkspaceID
+            };
+
+            timeEntryService.Add(te2);
+        }
 
         public void SetAPIKey(string key)
         {
@@ -114,6 +115,7 @@ namespace WpfApp2
         public void SetTimeEntry(AppDataObject appData)
         {
             int projectID = ProjectIDs[appData.LinkedProjectName];
+            //int projectID = ProjectIDs.Find;
             int duration = (int)(appData.LaunchedTime - appData.LastTime).TotalSeconds;
             TimeEntry te = new TimeEntry()
             {
