@@ -31,7 +31,7 @@ namespace WpfApp2
         public DateTime LaunchedTime { get; set; }
 
         //最後に起動した日
-        public string LastDate { get; private set; } = "";
+        //public string LastDate { get; private set; } = "";
 
         //最後に起動を確認した時刻
         public DateTime LastTime { get; private set; }
@@ -91,9 +91,10 @@ namespace WpfApp2
         {
             if (!string.IsNullOrEmpty(data) && data != "-")
             {
-                string[] dateAndTime = data.Split(' ');
-                LastDate = dateAndTime[0];
-                LastTime = DateTime.Parse(dateAndTime[1]);
+                //string[] dateAndTime = data.Split(' ');
+                //LastDate = dateAndTime[0];
+                //LastTime = DateTime.Parse(dateAndTime[]);
+                LastTime = DateTime.Parse(data);
             }
         }
 
@@ -121,7 +122,7 @@ namespace WpfApp2
                 }
                 else
                 {
-                    return ($"{ts.Hours.ToString()}時間　{ts.Minutes.ToString()}分");
+                    return ($"{ts.Hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
                 }
             }
         }
@@ -137,7 +138,7 @@ namespace WpfApp2
                 }
                 else
                 {
-                    return ($"{ts.Hours.ToString()}時間　{ts.Minutes.ToString()}分");
+                    return ($"{ts.Hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
                 }
             }
         }
@@ -146,9 +147,10 @@ namespace WpfApp2
         {
             get
             {
-                if (!string.IsNullOrEmpty(LastDate))
+                string lastDate = LastTime.ToString("yyyy");
+                if (lastDate != "0001")
                 {
-                    return LastDate + " " + LastTime;
+                    return LastTime.ToString("yyyy/MM/dd hh:mm");
                 }
                 else
                 {
@@ -283,9 +285,8 @@ namespace WpfApp2
 
             TotalMinutes += mainWindow.CountMinutes;
             string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
-            LastTime = DateTime.Now;
 
-            if (currentDate != LastDate)
+            if (currentDate != LastTime.ToString("yyyy/MM/dd"))
             {
                 TodaysMinutes = 0;
             }
@@ -294,7 +295,8 @@ namespace WpfApp2
                 TodaysMinutes += mainWindow.CountMinutes;
             }
 
-            LastDate = currentDate;
+            LastTime = DateTime.Now;
+            //LastDate = currentDate;
         }
 
         public void AddMinuteToFiles(Process p)

@@ -85,7 +85,7 @@ namespace WpfApp2
             }
             catch (Exception e)
             {
-                throw e;
+                //throw e;
             }
 
         }
@@ -114,7 +114,7 @@ namespace WpfApp2
         public void SetTimeEntry(AppDataObject appData)
         {
             int projectID = ProjectIDs[appData.LinkedProjectName];
-            int duration = (int)(appData.LaunchedTime - appData.LastTime).TotalSeconds;
+            int duration = (int)(appData.LastTime - appData.LaunchedTime).TotalSeconds;
             TimeEntry te = new TimeEntry()
             {
                 IsBillable = true,
