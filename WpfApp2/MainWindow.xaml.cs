@@ -246,6 +246,11 @@ namespace WpfApp2
             }
         }
 
+        public void UpdateListView()
+        {
+            listView.Dispatcher.BeginInvoke(new Action(() => listView.Items.Refresh()));
+        }
+
         private void AddFileListWindow(AppDataObject data)
         {
             FileViewWindow fileListWindow = new FileViewWindow(data);
@@ -284,12 +289,13 @@ namespace WpfApp2
 
         private void OnClickedChangeNameOfDesplayedName(object sender, RoutedEventArgs e)
         {
-
+            AppDataObject appData = (AppDataObject)listView.SelectedItem;
+            var appNameSettingWindow = new AppNameSettingWindow(this, appData);
+            appNameSettingWindow.Show();
         }
 
         private void OnClickedConfirmTimeOfFiles(object sender, RoutedEventArgs e)
         {
-
             Console.WriteLine(FileListWindows);
             FileListWindows[listView.SelectedIndex].Show();
         }

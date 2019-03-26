@@ -90,6 +90,9 @@
     <Compile Include="TimeCounter.cs" />
     <Compile Include="ToggleTest.cs" />
     <Compile Include="TogglManager.cs" />
+    <Compile Include=".xaml.cs">
+      <DependentUpon>AppNameSettingWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="FileExtensionSettingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -113,6 +116,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SettingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AppNameSettingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
