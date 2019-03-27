@@ -36,21 +36,21 @@ namespace WpfApp2
         //最後に起動を確認した時刻
         public DateTime LastTime { get; private set; }
 
-        public bool IsLaunched { get; set; } = false;
-
         public string FileExtension { get; private set; } = "";
         public List<string> FileExtensions { get; private set; } = new List<string>();
         public List<FileData> Files { get; private set; } = new List<FileData>();
 
         public ImageSource ImageSource { get; private set; }
-
         public Image IconImage { get; private set; }
 
         public int TodaysMinutes { get; set; }
         public int TotalMinutes { get; set; }
 
+        //Toggｌ記録用の終了確認フラグ
+        public bool IsRunning { get; set; } = false;
+
         //Toggl設定
-        public bool IsLinkedToToggle { get; set; } = true;
+        public bool IsLinkedToToggle { get; set; } = false;
         public string LinkedProjectName { get; set; } = "";
         public string LinkedTag { get; set; } = "";
 
@@ -102,12 +102,12 @@ namespace WpfApp2
         {
             get
             {
-                int index = mainWindow.togglManager.Tags.IndexOf(LinkedTag);
+                int index = mainWindow.TogglManager.Tags.IndexOf(LinkedTag);
                 return index;
             }
             set
             {
-                LinkedTag = mainWindow.togglManager.Tags[value];
+                LinkedTag = mainWindow.TogglManager.Tags[value];
             }
         }
 
@@ -290,10 +290,10 @@ namespace WpfApp2
 
         public void AddMinute()
         {
-            if (!IsLaunched)
+            if (!IsRunning)
             {
                 LaunchedTime = DateTime.Now;
-                IsLaunched = true;
+                IsRunning = true;
             }
 
             TotalMinutes += mainWindow.CountMinutes;

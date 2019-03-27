@@ -17,6 +17,9 @@ namespace WpfApp2
 
         public static string IconFileDir = "data/icons/";
 
+        public static string DataDir = "data";
+
+        public static string AppDataFile = "data/appData.csv";
 
     }
 }

@@ -33,12 +33,26 @@ namespace WpfApp2
         public TogglManager(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
-            var t = new Toggl.Toggl(ApiKey);
+
+            ApiKey = Properties.Settings.Default.APIKey.ToString();
+
+            try
+            {
+                Init();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
         }
 
+        /// <summary>
+        /// APIキーを認証
+        /// </summary>
         public void Init()
         {
+
             try
             {
                 if (!string.IsNullOrEmpty(ApiKey))
@@ -53,9 +67,6 @@ namespace WpfApp2
                 {
                     ProjectIDs.Add(p.Name, (int)p.Id);
                 }
-
-                Console.WriteLine(ProjectIDs);
-                Console.WriteLine(ProjectIDs);
 
                 timeEntryService = new TimeEntryService(ApiKey);
 
@@ -73,8 +84,6 @@ namespace WpfApp2
             {
                 throw e;
             }
-
-            //Test();
 
         }
 
@@ -99,6 +108,10 @@ namespace WpfApp2
             timeEntryService.Add(te2);
         }
 
+        /// <summary>
+        /// APIキーを設定し，アカウント情報を更新
+        /// </summary>
+        /// <param name="key"></param>
         public void SetAPIKey(string key)
         {
             try
@@ -113,15 +126,12 @@ namespace WpfApp2
 
         }
 
-        public void GetProjects()
-        {
-
-        }
-
+        /// <summary>
+        /// TimeEntryを追加
+        /// </summary>
+        /// <param name="appData"></param>
         public void SetTimeEntry(AppDataObject appData)
         {
-
-            //int projectID = ProjectIDs.Find;
 
             DateTime d = DateTime.Now.AddHours(-3);
 

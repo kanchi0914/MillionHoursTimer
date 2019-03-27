@@ -20,6 +20,8 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Path = System.IO.Path;
+using System.Windows.Interop;
 
 namespace WpfApp2
 {
@@ -61,13 +63,15 @@ namespace WpfApp2
         public SettingWindow SettingMenuWindow { get; set; }
 
         public TimeCounter timeCounter;
-        public TogglManager togglManager;
+        public TogglManager TogglManager;
 
         public MainWindow()
         {
 
             //タスクバーに表示されないように
             ShowInTaskbar = false;
+
+            Console.WriteLine(Properties.Settings.Default.APIKey);
 
             InitNotifyIcon();
 
@@ -78,7 +82,7 @@ namespace WpfApp2
 
             //設定画面
             timeCounter = new TimeCounter(this);
-            togglManager = new TogglManager(this);
+            TogglManager = new TogglManager(this);
 
             SettingMenuWindow = new SettingWindow(this);
 
@@ -106,8 +110,8 @@ namespace WpfApp2
             
 
             
-            togglManager.Init();
-            SettingMenuWindow.InitTogglList();
+            //TogglManager.Init();
+            //SettingMenuWindow.InitTogglList();
 
             //メニューの作成
             CreateMenu();
@@ -345,23 +349,12 @@ namespace WpfApp2
         //記録するアプリケーションの登録
         private void OnClickAddApp(object sender, RoutedEventArgs e)
         {
-            //var dialog = new OpenFileDialog();
-            //dialog.Title = "実行ファイル(.exe)を選択してください";
-            //dialog.Filter = "実行ファイル(*.exe)|*.exe";
-            //string filePath = "";
-            //if (dialog.ShowDialog() == true)
-            //{
-            //    filePath = dialog.FileName;
-            //    AddListFromPath(filePath);
-            //}
-
             string path = GetFilePathByFileDialog();
 
             if (!string.IsNullOrEmpty(path))
             {
                 AddListFromPath(path);
             }
-
         }
 
         private string GetFilePathByFileDialog()
@@ -379,16 +372,14 @@ namespace WpfApp2
             }
         }
 
-        private string GetFolderPathByFileDialog()
+        private string GetFolderPathByFileDialog(string title = "フォルダを選択してください")
         {
-            var dialog = new CommonOpenFileDialog("フォルダを選択してください");
+            var dialog = new CommonOpenFileDialog(title);
             dialog.IsFolderPicker = true;
             var ret = dialog.ShowDialog();
             if (ret == CommonFileDialogResult.Ok)
             {
-                //MessageBox.Show(dialog.FileName);
                 return dialog.FileName;
-                //TextBox1.Text = dialog.FileName;
             }
             else
             {
@@ -400,16 +391,34 @@ namespace WpfApp2
 
         public void OnClickImportData(object sender, RoutedEventArgs e)
         {
-            string s = GetFolderPathByFileDialog();
-            if (!string.IsNullOrEmpty(s))
+            string path = GetFolderPathByFileDialog();
+            if (!string.IsNullOrEmpty(path))
             {
-                MessageBox.Show(s);
+                var splitted = path.Split('\\');
+                if (splitted.Last() != "data")
+                {
+                    MessageBox.Show("dataフォルダを選択してください",
+                        "エラー",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                DirectoryProcessor.CopyAndReplace(@path, "data");
+
             }
         }
 
         public void OnClickExportData(object sender, RoutedEventArgs e)
         {
-            GetFolderPathByFileDialog();
+            string path = GetFolderPathByFileDialog();
+
+            path += "\\data";
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                DirectoryProcessor.CopyAndReplace("data", @path);
+            }
         }
 
         public string AddListFromPath(string filePath)
@@ -437,10 +446,11 @@ namespace WpfApp2
             return name;
         }
 
-        public void SaveCsvData()
+        public void SaveCsvData(string path = "")
         {
             try
             {
+
                 var uri = new Uri("data/appData.csv", UriKind.Relative);
                 string csvData = uri.ToString();
 
@@ -516,12 +526,12 @@ namespace WpfApp2
             }
         }
 
-
-
         private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
+
+        #region ドラッグ＆ドロップ処理
 
         private void Window_Drop(object sender, DragEventArgs e)
         {
@@ -563,20 +573,11 @@ namespace WpfApp2
             e.Handled = true;
         }
 
-        //public class MyFileList
-        //{
-        //    public MyFileList()
-        //    {
-        //        FileNames = new ObservableCollection<string>();
-        //    }
-        //    public ObservableCollection<string> FileNames
-        //    {
-        //        get;
-        //        private set;
-        //    }
-        //}
+        #endregion
 
 
     }
 
 }
+
+

@@ -202,11 +202,11 @@ namespace WpfApp2
             foreach (AppDataObject data in mainWindow.AppDatas)
             {
                 //記録していたアプリが終了した
-                if (data.IsLaunched && (DateTime.Now - data.LastTime).TotalMinutes > mainWindow.CountMinutes)
+                if (data.IsRunning && (DateTime.Now - data.LastTime).TotalMinutes > mainWindow.CountMinutes)
                 {
-                    data.IsLaunched = false;
+                    data.IsRunning = false;
                     Console.WriteLine($"exit {data.DisplayedName}");
-                    mainWindow.togglManager.SetTimeEntry(data);
+                    mainWindow.TogglManager.SetTimeEntry(data);
                 }
             }
         }
