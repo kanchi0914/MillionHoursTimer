@@ -28,12 +28,13 @@ namespace WpfApp2
 
         public Dictionary<string, int> ProjectIDs { get; private set; } =
             new Dictionary<string, int>();
-        public List<string> Tags { get; set; } = new List<string>() { "無し" };
+        public List<string> Tags { get; set; } = new List<string>() { "" };
 
         public TogglManager(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
             var t = new Toggl.Toggl(ApiKey);
+
         }
 
         public void Init()
@@ -53,6 +54,9 @@ namespace WpfApp2
                     ProjectIDs.Add(p.Name, (int)p.Id);
                 }
 
+                Console.WriteLine(ProjectIDs);
+                Console.WriteLine(ProjectIDs);
+
                 timeEntryService = new TimeEntryService(ApiKey);
 
                 var workspaceService = new WorkspaceService(ApiKey);
@@ -69,6 +73,8 @@ namespace WpfApp2
             {
                 throw e;
             }
+
+            //Test();
 
         }
 
@@ -114,21 +120,38 @@ namespace WpfApp2
 
         public void SetTimeEntry(AppDataObject appData)
         {
-            int projectID = ProjectIDs[appData.LinkedProjectName];
+
             //int projectID = ProjectIDs.Find;
-            int duration = (int)(appData.LaunchedTime - appData.LastTime).TotalSeconds;
+
+            DateTime d = DateTime.Now.AddHours(-3);
+
+            int duration = (int)(appData.LastTime - appData.LaunchedTime).TotalSeconds;
+            //int duration = (int)(appData.LastTime - d).TotalSeconds;
             TimeEntry te = new TimeEntry()
             {
                 IsBillable = true,
                 CreatedWith = "TogglAPI.Net",
                 Description = appData.DisplayedName,
-                ProjectId = projectID,
-                TagNames = new List<string>() { appData.LinkedTag },
+                //ProjectId = projectID,
+                //ProjectId = 150055033,
+                //TagNames = new List<string>() { appData.LinkedTag },
                 Duration = duration,
                 Start = appData.LaunchedTime.ToIsoDateStr(),
                 Stop = appData.LastTime.ToIsoDateStr(),
                 WorkspaceId = defaultWorkspaceID
             };
+
+            if (ProjectIDs.ContainsKey(appData.LinkedProjectName))
+            {
+                te.ProjectId = ProjectIDs[appData.LinkedProjectName];
+            }
+
+            if (!string.IsNullOrEmpty(appData.LinkedTag))
+            {
+                te.TagNames = new List<string>() { appData.LinkedTag };
+            }
+
+            Console.Write(te);
 
             timeEntryService.Add(te);
 

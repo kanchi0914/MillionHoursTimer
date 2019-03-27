@@ -68,7 +68,7 @@ namespace WpfApp2
             TM.Timer timer = new TM.Timer();
             timer.Elapsed += new TM.ElapsedEventHandler(TimeDisp);
             //timer.Interval = (mainWindow.CountMinutes * 60) * (int)mainWindow.CountMinutes * 1000;
-            timer.Interval = (mainWindow.CountMinutes * 60) * (int)mainWindow.CountMinutes * 1000;
+            timer.Interval = (mainWindow.CountMinutes * Settings.CountSeconds) * (int)mainWindow.CountMinutes * 1000;
             timer.AutoReset = true;
             timer.Enabled = true;
         }

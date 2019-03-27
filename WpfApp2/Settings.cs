@@ -13,8 +13,7 @@ namespace WpfApp2
         //デバッグ用
         public static int CountSeconds = 60;
 
-        //
-        public static string DefaultAPIKey = "339dd60598d05c0c79608ba5adc562e4";
+        public static string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
 
         public static string IconFileDir = "data/icons/";
 

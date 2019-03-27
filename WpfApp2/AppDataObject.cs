@@ -51,12 +51,12 @@ namespace WpfApp2
 
         //Toggl設定
         public bool IsLinkedToToggle { get; set; } = true;
-        public string LinkedProjectName { get; set; } = "無し";
-        public string LinkedTag { get; set; } = "無し";
+        public string LinkedProjectName { get; set; } = "";
+        public string LinkedTag { get; set; } = "";
 
 
-        public List<string> ProjectNames { get; set; }
-        public List<string> TagNames { get; set; }
+        public List<string> ProjectNames { get; set; } = new List<string>() { "" };
+        public List<string> TagNames { get; set; } = new List<string>() { "" };
 
         public AppDataObject(MainWindow mainWindow, string processName)
         {

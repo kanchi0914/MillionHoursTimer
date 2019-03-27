@@ -19,7 +19,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
-
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace WpfApp2
 {
@@ -109,7 +109,10 @@ namespace WpfApp2
             togglManager.Init();
             SettingMenuWindow.InitTogglList();
 
-            //crete right click menu
+            //メニューの作成
+            CreateMenu();
+
+            //右クリックメニューの作成
             CreateContextMenu();
 
         }
@@ -257,6 +260,8 @@ namespace WpfApp2
             FileListWindows.Add(fileListWindow);
         }
 
+        #region 右クリックメニュー
+
         private void CreateContextMenu()
         {
             //右クリックメニュー
@@ -271,7 +276,7 @@ namespace WpfApp2
             menuItem2.Header = "ファイル拡張子を設定";
             menuItem3.Header = "一覧から削除";
 
-            menuItem.Click += OnClickAdd;
+            menuItem.Click += OnClickAddApp;
             menuItem0.Click += OnClickedChangeNameOfDesplayedName;
             menuItem1.Click += OnClickedConfirmTimeOfFiles;
             menuItem2.Click += OnClickedSetFileExtension;
@@ -327,20 +332,84 @@ namespace WpfApp2
             }
         }
 
+        #endregion
+
+        public void CreateMenu()
+        {
+            AddApp.Click += OnClickAddApp;
+            Import.Click += OnClickImportData;
+            Export.Click += OnClickExportData;
+        }
+
 
         //記録するアプリケーションの登録
-        private void OnClickAdd(object sender, RoutedEventArgs e)
+        private void OnClickAddApp(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Add");
+            //var dialog = new OpenFileDialog();
+            //dialog.Title = "実行ファイル(.exe)を選択してください";
+            //dialog.Filter = "実行ファイル(*.exe)|*.exe";
+            //string filePath = "";
+            //if (dialog.ShowDialog() == true)
+            //{
+            //    filePath = dialog.FileName;
+            //    AddListFromPath(filePath);
+            //}
+
+            string path = GetFilePathByFileDialog();
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                AddListFromPath(path);
+            }
+
+        }
+
+        private string GetFilePathByFileDialog()
+        {
             var dialog = new OpenFileDialog();
             dialog.Title = "実行ファイル(.exe)を選択してください";
             dialog.Filter = "実行ファイル(*.exe)|*.exe";
-            string filePath = "";
             if (dialog.ShowDialog() == true)
             {
-                filePath = dialog.FileName;
-                AddListFromPath(filePath);
+                return dialog.FileName;
             }
+            else
+            {
+                return null;
+            }
+        }
+
+        private string GetFolderPathByFileDialog()
+        {
+            var dialog = new CommonOpenFileDialog("フォルダを選択してください");
+            dialog.IsFolderPicker = true;
+            var ret = dialog.ShowDialog();
+            if (ret == CommonFileDialogResult.Ok)
+            {
+                //MessageBox.Show(dialog.FileName);
+                return dialog.FileName;
+                //TextBox1.Text = dialog.FileName;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+
+        public void OnClickImportData(object sender, RoutedEventArgs e)
+        {
+            string s = GetFolderPathByFileDialog();
+            if (!string.IsNullOrEmpty(s))
+            {
+                MessageBox.Show(s);
+            }
+        }
+
+        public void OnClickExportData(object sender, RoutedEventArgs e)
+        {
+            GetFolderPathByFileDialog();
         }
 
         public string AddListFromPath(string filePath)
