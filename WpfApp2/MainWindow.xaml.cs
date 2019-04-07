@@ -80,6 +80,8 @@ namespace WpfApp2
             LoadSettings();
             LoadCsvData();
 
+            Console.WriteLine(AppDatas);
+
             //設定画面
             timeCounter = new TimeCounter(this);
             TogglManager = new TogglManager(this);
@@ -115,6 +117,8 @@ namespace WpfApp2
 
             //メニューの作成
             CreateMenu();
+
+            Console.WriteLine(AppDatas);
 
             //右クリックメニューの作成
             CreateContextMenu();
@@ -340,6 +344,7 @@ namespace WpfApp2
 
         public void CreateMenu()
         {
+            
             AddApp.Click += OnClickAddApp;
             Import.Click += OnClickImportData;
             Export.Click += OnClickExportData;

@@ -35,6 +35,8 @@ namespace WpfApp2
         {
             InitializeComponent();
 
+            ApplicationListInToggleSetting.ItemsSource = mainWindow.AppDatas;
+
             this.mainWindow = mainWindow;
 
             InitComponents();
@@ -63,25 +65,30 @@ namespace WpfApp2
 
         public void InitTogglList()
         {
-            ApplicationListInToggleSetting.ItemsSource = mainWindow.AppDatas;
+            RefreshToggleList();
+        }
+
+        public void RefreshToggleList()
+        {
             User.Text = "ユーザー：" + mainWindow.TogglManager.User;
 
-            var projectNames = new List<string>();
+            //var projectNames = new List<string>();
 
             //foreach ((string s, int i) in mainWindow.togglManager.ProjectIDs)
             //{
             //    projectNames.Add(s);
             //}
 
-            foreach (KeyValuePair<string, int> kvp in mainWindow.TogglManager.ProjectIDs)
-            {
-                projectNames.Add(kvp.Key);
-            }
+            //foreach (KeyValuePair<string, int> kvp in mainWindow.TogglManager.ProjectIDs)
+            //{
+            //    projectNames.Add(kvp.Key);
+            //}
 
 
             foreach (AppDataObject data in mainWindow.AppDatas)
             {
-                data.ProjectNames = projectNames;
+                //data.ProjectNames = projectNames;
+                data.ProjectNames = mainWindow.TogglManager.ProjectIDs.Keys.ToList();
                 data.TagNames = mainWindow.TogglManager.Tags;
             }
 
@@ -91,12 +98,11 @@ namespace WpfApp2
             //    ProjectDatas.Add(data);
             //}
 
-            foreach (KeyValuePair<string, int> kvp in mainWindow.TogglManager.ProjectIDs)
-            {
-                var data = new ProjectData() { ProjectName = kvp.Key, ProjectID = kvp.Value };
-                ProjectDatas.Add(data);
-            }
-
+            //foreach (KeyValuePair<string, int> kvp in mainWindow.TogglManager.ProjectIDs)
+            //{
+            //    var data = new ProjectData() { ProjectName = kvp.Key, ProjectID = kvp.Value };
+            //    ProjectDatas.Add(data);
+            //}
         }
 
         public void OnClickedOKButton(object sender, RoutedEventArgs e)
@@ -107,14 +113,16 @@ namespace WpfApp2
                 try
                 {
                     mainWindow.TogglManager.SetAPIKey(inputBox.Text);
-                    InitTogglList();
+                    //InitTogglList();
+                    RefreshToggleList();
                     ApplicationListInToggleSetting.Dispatcher.BeginInvoke(new Action(() => ApplicationListInToggleSetting.Items.Refresh()));
                     MessageBox.Show("認証が完了しました");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
-                    MessageBox.Show("API Keyの認証に失敗しました。正しく入力されているか確認してください");
+                    MessageBox.Show(ex.ToString());
+                    //MessageBox.Show("API Keyの認証に失敗しました。正しく入力されているか確認してください");
                 }
             }
 
@@ -129,7 +137,7 @@ namespace WpfApp2
             Properties.Settings.Default.isCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
             Properties.Settings.Default.isAdditionalFileName = (bool)AdditionalCount.IsChecked;
 
-            //Properties.Settings.Default.APIKey = mainWindow.TogglManager.ApiKey;
+            Properties.Settings.Default.APIKey = mainWindow.TogglManager.ApiKey;
 
             Properties.Settings.Default.Save();
 

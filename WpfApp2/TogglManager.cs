@@ -55,11 +55,24 @@ namespace WpfApp2
 
             try
             {
-                if (!string.IsNullOrEmpty(ApiKey))
+
+                if (string.IsNullOrEmpty(ApiKey))
                 {
-                    var userService = new UserService(ApiKey);
-                    User = userService.GetCurrent().Email;
+                    return;
                 }
+
+                //
+                var userService = new UserService(ApiKey);
+                User = userService.GetCurrent().Email;
+
+                ProjectIDs = new Dictionary<string, int>();
+                Tags= new List<string>() { "" };
+
+                //if (!string.IsNullOrEmpty(ApiKey))
+                //{
+                //    var userService = new UserService(ApiKey);
+                //    User = userService.GetCurrent().Email;
+                //}
 
                 var projectService = new ProjectService(ApiKey);
                 List<Project> projects = projectService.List();

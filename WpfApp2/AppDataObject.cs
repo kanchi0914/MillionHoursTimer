@@ -17,7 +17,7 @@ namespace WpfApp2
     public class AppDataObject
     {
         //アイコン画像の保存先ディレクトリ
-        private readonly string iconFileDir = Settings.IconFileDir;
+        private readonly string iconFileDir = "data/icons/";
 
         private MainWindow mainWindow;
 
@@ -211,7 +211,7 @@ namespace WpfApp2
             System.Drawing.Icon icon;
             try
             {
-                icon = System.Drawing.Icon.ExtractAssociatedIcon(path);
+                icon = System.Drawing.Icon.ExtractAssociatedIcon(@path);
 
                 //SaveIconImage(ImageSource);
                 IconImage = new Image();
@@ -238,7 +238,7 @@ namespace WpfApp2
         public void SaveIconImage(ImageSource source)
         {
             string uriPath = iconFileDir + $"{ProcessName}.png";
-            using (var fileStream = new FileStream(uriPath, FileMode.Create))
+            using (var fileStream = new FileStream(@uriPath, FileMode.Create))
             {
                 BitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create((BitmapSource)source));
@@ -250,12 +250,18 @@ namespace WpfApp2
         public void LoadIconImage()
         {
             var bmpImage = new BitmapImage();
-            //string uriPath = iconFileDir + $"testicon.png";
-            string uriPath = iconFileDir + $"{ProcessName}.png";
+            string uriPath = iconFileDir + ProcessName + ".png";
+            //string uriPath = AppDomain.CurrentDomain.BaseDirectory + "/" + iconFileDir + ProcessName + $".png";
+
+            //bmpImage.BeginInit();
+            //bmpImage.UriSource = new Uri(uriPath, UriKind.Relative);
+            //bmpImage.EndInit();
+            //ImageSource = bmpImage;
+
             try
             {
                 bmpImage.BeginInit();
-                bmpImage.UriSource = new Uri(uriPath, UriKind.Relative);
+                bmpImage.UriSource = new Uri(@uriPath, UriKind.Relative);
                 bmpImage.EndInit();
                 ImageSource = bmpImage;
             }
@@ -265,6 +271,23 @@ namespace WpfApp2
             }
         }
 
+        //public void LoadIconImage()
+        //{
+        //    var bmpImage = new BitmapImage();
+        //    string uriPath = iconFileDir + $"tinko.png";
+        //    try
+        //    {
+        //        bmpImage.BeginInit();
+        //        bmpImage.UriSource = new Uri(@uriPath, UriKind.Relative);
+        //        bmpImage.EndInit();
+        //        ImageSource = bmpImage;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //    }
+        //}
+
         public void SaveFileData()
         {
             String path = ProcessName + "_files.csv";
@@ -272,7 +295,7 @@ namespace WpfApp2
             {
                 try
                 {
-                    using (var sw = new System.IO.StreamWriter(path, false, Encoding.UTF8))
+                    using (var sw = new System.IO.StreamWriter(@path, false, Encoding.UTF8))
                     {
                         sw.WriteLine($"ファイル名,累積作業時間");
                         foreach (FileData file in Files)

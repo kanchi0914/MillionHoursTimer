@@ -99,6 +99,8 @@ namespace WpfApp2
                 window.Update();
             }
 
+            Console.WriteLine(mainWindow.AppDatas);
+
             //終了確認
             CheckClosedApp();
 
