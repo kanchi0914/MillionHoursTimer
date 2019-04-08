@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 //using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -23,6 +19,8 @@ namespace WpfApp2
 
         //プロセスの名前（不変）
         public string ProcessName { get; } = "";
+
+        public List<string> Titles { get; set; } = new List<string>();
 
         //ウィンドウに表示される名前
         public string DisplayedName { get; set; } = "";
@@ -45,6 +43,7 @@ namespace WpfApp2
 
         public int TodaysMinutes { get; set; }
         public int TotalMinutes { get; set; }
+        public int MinutesFromLaunched { get; set; }
 
         //Toggｌ記録用の終了確認フラグ
         public bool IsRunning { get; set; } = false;
@@ -87,6 +86,7 @@ namespace WpfApp2
             }
         }
 
+
         public void SetLastLaunchedTime(string data)
         {
             if (!string.IsNullOrEmpty(data) && data != "-")
@@ -115,33 +115,57 @@ namespace WpfApp2
         {
             get
             {
-                TimeSpan ts = new TimeSpan(0, TotalMinutes, 0);
-                if (ts.Hours == 0 && ts.Minutes == 0)
-                {
-                    return ("-");
-                }
-                else
-                {
-                    return ($"{ts.Hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
-                }
+                //TimeSpan ts = new TimeSpan(0, TotalMinutes, 0);
+                //if (ts.Hours == 0 && ts.Minutes == 0)
+                //{
+                //    return ("-");
+                //}
+                //else
+                //{
+                //    return ($"{ts.Hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
+                //}
+                return Settings.GetFormattedStringFromMinutes(TotalMinutes);
             }
         }
 
         public string GetTodaysTime
         {
+            //get
+            //{
+            //    TimeSpan ts = new TimeSpan(0, TodaysMinutes, 0);
+            //    if (ts.Hours == 0 && ts.Minutes == 0)
+            //    {
+            //        return ("-");
+            //    }
+            //    else
+            //    {
+            //        return ($"{ts.Hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
+            //    }
+            //}
             get
             {
-                TimeSpan ts = new TimeSpan(0, TodaysMinutes, 0);
-                if (ts.Hours == 0 && ts.Minutes == 0)
-                {
-                    return ("-");
-                }
-                else
-                {
-                    return ($"{ts.Hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
-                }
+                return Settings.GetFormattedStringFromMinutes(TodaysMinutes);
             }
         }
+
+        ///// <summary>
+        ///// 『〇〇時間○○分』の形にして返す
+        ///// </summary>
+        ///// <param name="minutes"></param>
+        ///// <returns></returns>
+        //public string GetFormattedStringFromMinutes(int minutes)
+        //{
+        //    TimeSpan ts = new TimeSpan(0, TotalMinutes, 0);
+        //    if (ts.Hours == 0 && ts.Minutes == 0)
+        //    {
+        //        return ("-");
+        //    }
+        //    else
+        //    {
+        //        var hours = ts.Days * 24 + ts.Hours;
+        //        return ($"{hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
+        //    }
+        //}
 
         public string GetLastLaunchedTime
         {
@@ -190,7 +214,7 @@ namespace WpfApp2
                         FileData file = new FileData()
                         {
                             Name = parsedLine[0],
-                            Minutes = int.Parse(parsedLine[1])
+                            TotalMinutes = int.Parse(parsedLine[1])
                         };
                         Files.Add(file);
                     }
@@ -300,7 +324,7 @@ namespace WpfApp2
                         sw.WriteLine($"ファイル名,累積作業時間");
                         foreach (FileData file in Files)
                         {
-                            sw.WriteLine($"{file.Name},{file.Minutes}");
+                            sw.WriteLine($"{file.Name},{file.TotalMinutes}");
                         }
                     }
                 }
@@ -335,65 +359,124 @@ namespace WpfApp2
             //LastDate = currentDate;
         }
 
-        public void AddMinuteToFiles(Process p)
+        public void AddMinuteToFiles()
         {
-            string fileName = "";
-            string windowTitle = p.MainWindowTitle;
 
-            string[] parsed = windowTitle.Split(' ');
+            WindowTitles2 windowTitles2 = new WindowTitles2();
+            var titles = windowTitles2.Get(ProcessName);
 
-            foreach (string s in parsed)
+            if (this.ProcessName == "CLIPStudioPaint")
             {
-                foreach (string f in FileExtensions)
+
+            }
+
+            foreach (string t in titles)
+            {
+
+                string fileName = "";
+                string title = t;
+                string[] parsed = title.Split(' ');
+
+                foreach (string s in parsed)
                 {
-                    //登録した拡張子に合致するものがあった
-                    if (s.Contains(f))
+                    foreach (string f in FileExtensions)
                     {
-                        fileName = s;
-                        break;
+                        //登録した拡張子に合致するものがあった
+                        if (s.Contains(f))
+                        {
+                            fileName = s;
+                            break;
+                        }
                     }
                 }
+
+                //拡張機能
+                if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
+                {
+                    string[] parsed0 = title.Split('-');
+                    fileName = parsed0[0];
+                }
+
+                if (!string.IsNullOrEmpty(fileName))
+                {
+                    Console.WriteLine(fileName);
+                    FileData file = Files.Find(f => f.Name == fileName);
+                    if (file != null)
+                    {
+                        file.TotalMinutes += mainWindow.CountMinutes;
+                    }
+                    else
+                    {
+                        Files.Add(new FileData { Name = fileName });
+                    }
+                }
+
             }
 
-            //拡張機能
-            if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
-            {
-                string[] parsed0 = windowTitle.Split('-');
-                fileName = parsed0[0];
-            }
+            //foreach (string title in WindowTitles.Titles)
+            //{
+            //    string[] parsed = title.Split(' ');
+            //}
 
-            if (!string.IsNullOrEmpty(fileName))
-            {
-                FileData file = Files.Find(f => f.Name == fileName);
-                //Console.WriteLine(file.Name);
-                if (file != null)
-                {
-                    file.Minutes += mainWindow.CountMinutes;
-                }
-                else
-                {
-                    Files.Add(new FileData{ Name = fileName });
-                }
-            }
+            //string windowTitle = p.MainWindowTitle;
+
+            //string[] parsed = windowTitle.Split(' ');
+
+            //foreach (string s in parsed)
+            //{
+            //    foreach (string f in FileExtensions)
+            //    {
+            //        //登録した拡張子に合致するものがあった
+            //        if (s.Contains(f))
+            //        {
+            //            fileName = s;
+            //            break;
+            //        }
+            //    }
+            //}
+
+            ////拡張機能
+            //if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
+            //{
+            //    string[] parsed0 = windowTitle.Split('-');
+            //    fileName = parsed0[0];
+            //}
+
+            //if (!string.IsNullOrEmpty(fileName))
+            //{
+            //    Console.WriteLine(fileName);
+            //    FileData file = Files.Find(f => f.Name == fileName);
+            //    //Console.WriteLine(file.Name);
+            //    if (file != null)
+            //    {
+            //        file.Minutes += mainWindow.CountMinutes;
+            //    }
+            //    else
+            //    {
+            //        Files.Add(new FileData{ Name = fileName });
+            //    }
+            //}
         }
 
         public class FileData
         {
-            public string Name { get; set; }
-            public int Minutes { get; set; }
+            public string Name { get; set; } = "";
+            public int TotalMinutes { get; set; }
+            public int MinutesFromLaunched { get; set; }
 
             public string GetTime
             {
                 get
                 {
-                    TimeSpan ts = new TimeSpan(0, Minutes, 0);
-                    return ($"{ts.Hours.ToString()}時間　{ts.Minutes.ToString()}分");
+                    return Settings.GetFormattedStringFromMinutes(TotalMinutes);
+                    //TimeSpan ts = new TimeSpan(0, Minutes, 0);
+                    //return ($"{ts.Hours.ToString()}時間　{ts.Minutes.ToString()}分");
                 }
             }
 
             public void Set(int num)
             {
-                Minutes += num;
+                TotalMinutes += num;
             }
 
             public override bool Equals(object obj)

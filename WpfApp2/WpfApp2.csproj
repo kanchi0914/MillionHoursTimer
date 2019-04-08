@@ -78,6 +78,7 @@
     </ApplicationDefinition>
     <Compile Include="BoolVisibilityConverter.cs" />
     <Compile Include="DirectoryProcessor.cs" />
+    <Compile Include="EnumWindowsClass.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Components\NotifyIcon.cs">
       <SubType>Component</SubType>
@@ -100,6 +101,9 @@
     <Compile Include=".xaml.cs">
       <DependentUpon>AppNameSettingWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WindowHandles.cs" />
+    <Compile Include="WindowTitles.cs" />
+    <Compile Include="WindowTitles2.cs" />
     <Page Include="FileExtensionSettingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
