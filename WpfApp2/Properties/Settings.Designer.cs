@@ -26,12 +26,12 @@ namespace WpfApp2.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isCountingMinimized {
+        public bool isCountingNotMinimized {
             get {
-                return ((bool)(this["isCountingMinimized"]));
+                return ((bool)(this["isCountingNotMinimized"]));
             }
             set {
-                this["isCountingMinimized"] = value;
+                this["isCountingNotMinimized"] = value;
             }
         }
         

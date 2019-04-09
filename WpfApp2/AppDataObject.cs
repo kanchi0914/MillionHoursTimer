@@ -12,8 +12,11 @@ namespace WpfApp2
 {
     public class AppDataObject
     {
+
+        private string currentDir;
+
         //アイコン画像の保存先ディレクトリ
-        private readonly string iconFileDir = "data/icons/";
+        private readonly string iconFileDir = "/data/icons/";
 
         private MainWindow mainWindow;
 
@@ -125,7 +128,7 @@ namespace WpfApp2
                 //{
                 //    return ($"{ts.Hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
                 //}
-                return Settings.GetFormattedStringFromMinutes(TotalMinutes);
+                return SettingsAndUtilities.GetFormattedStringFromMinutes(TotalMinutes);
             }
         }
 
@@ -145,7 +148,7 @@ namespace WpfApp2
             //}
             get
             {
-                return Settings.GetFormattedStringFromMinutes(TodaysMinutes);
+                return SettingsAndUtilities.GetFormattedStringFromMinutes(TodaysMinutes);
             }
         }
 
@@ -202,16 +205,19 @@ namespace WpfApp2
         /// </summary>
         public void LoadFileData()
         {
-            String path = ProcessName + "_files.csv";
+            string path = Directory.GetCurrentDirectory() + "/data/fileData/" + ProcessName + "_files.csv";
+            //string path = "data/fileData\\" + ProcessName + "_files.csv";
+            Console.WriteLine(path);
+
             try
             {
-                using (StreamReader reader = new StreamReader(path, Encoding.UTF8))
+                using (StreamReader reader = new StreamReader(@path, Encoding.UTF8))
                 {
                     reader.ReadLine();
                     while (!reader.EndOfStream)
                     {
-                        String line = reader.ReadLine();
-                        String[] parsedLine = line.Split(',');
+                        string line = reader.ReadLine();
+                        string[] parsedLine = line.Split(',');
                         FileData file = new FileData()
                         {
                             Name = parsedLine[0],
@@ -224,6 +230,31 @@ namespace WpfApp2
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+        }
+
+        public void SaveFileData()
+        {
+            //String path = "data/fileData/" + ProcessName + "_files.csv";
+            string path = Directory.GetCurrentDirectory() + "/data/fileData/" + ProcessName + "_files.csv";
+            //string path = "data/fileData\\" + ProcessName + "_files.csv";
+            if (Files.Count > 0)
+            {
+                try
+                {
+                    using (var sw = new System.IO.StreamWriter(@path, false, Encoding.UTF8))
+                    {
+                        sw.WriteLine($"ファイル名,累積作業時間");
+                        foreach (FileData file in Files)
+                        {
+                            sw.WriteLine($"{file.Name},{file.TotalMinutes}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 
@@ -262,7 +293,9 @@ namespace WpfApp2
 
         public void SaveIconImage(ImageSource source)
         {
-            string uriPath = iconFileDir + $"{ProcessName}.png";
+            //string uriPath = iconFileDir + $"{ProcessName}.png";
+            string uriPath = Directory.GetCurrentDirectory() + "/data/icons/" + $"{ProcessName}.png";
+
             using (var fileStream = new FileStream(@uriPath, FileMode.Create))
             {
                 BitmapEncoder encoder = new PngBitmapEncoder();
@@ -275,8 +308,22 @@ namespace WpfApp2
         public void LoadIconImage()
         {
             var bmpImage = new BitmapImage();
-            string uriPath = iconFileDir + ProcessName + ".png";
+            //string uriPath = "data/icons/" + ProcessName + ".png";
+            //string uriPath = "data/icons/" + "testicon3.png";
+            //Console.WriteLine(Directory.GetCurrentDirectory());
+
+            //string uriPath = Directory.GetCurrentDirectory() + iconFileDir + $"{ProcessName}.png";
+            string uriPath = Directory.GetCurrentDirectory() + "/data/icons/" + $"{ProcessName}.png";
+            //Console.WriteLine(@uriPath);
+            //string uriPath = ProcessName + ".png";
             //string uriPath = AppDomain.CurrentDomain.BaseDirectory + "/" + iconFileDir + ProcessName + $".png";
+
+
+            //uriPath = "data/icons/" + "testicon3.png";
+            //Uri uri = new Uri(uriPath, UriKind.Relative);
+            //bmpImage = new BitmapImage(uri);
+            //ImageSource = bmpImage;
+
 
             //bmpImage.BeginInit();
             //bmpImage.UriSource = new Uri(uriPath, UriKind.Relative);
@@ -286,7 +333,7 @@ namespace WpfApp2
             try
             {
                 bmpImage.BeginInit();
-                bmpImage.UriSource = new Uri(@uriPath, UriKind.Relative);
+                bmpImage.UriSource = new Uri(@uriPath, UriKind.Absolute);
                 bmpImage.EndInit();
                 ImageSource = bmpImage;
             }
@@ -296,47 +343,12 @@ namespace WpfApp2
             }
         }
 
-        //public void LoadIconImage()
-        //{
-        //    var bmpImage = new BitmapImage();
-        //    string uriPath = iconFileDir + $"tinko.png";
-        //    try
-        //    {
-        //        bmpImage.BeginInit();
-        //        bmpImage.UriSource = new Uri(@uriPath, UriKind.Relative);
-        //        bmpImage.EndInit();
-        //        ImageSource = bmpImage;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //    }
-        //}
-
-        public void SaveFileData()
-        {
-            String path = ProcessName + "_files.csv";
-            if (Files.Count > 0)
-            {
-                try
-                {
-                    using (var sw = new System.IO.StreamWriter(@path, false, Encoding.UTF8))
-                    {
-                        sw.WriteLine($"ファイル名,累積作業時間");
-                        foreach (FileData file in Files)
-                        {
-                            sw.WriteLine($"{file.Name},{file.TotalMinutes}");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }
-        }
-
-        public void AccumulateMinute()
+        /// <summary>
+        /// 設定した分毎に呼ばれ、時間を追加
+        /// 実際に記録されるのは一定時間が経ってから
+        /// </summary>
+        /// <param name="filename"></param>
+        public void AccumulateMinutes()
         {
             if (!IsRunning)
             {
@@ -352,43 +364,11 @@ namespace WpfApp2
                 {
                     AddMinutes(Properties.Settings.Default.MinCountStartTime);
                     IsCountStarted = true;
-                    //TotalMinutes += Properties.Settings.Default.MinCountStartTime;
-                    //string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
-                    //if (currentDate != LastTime.ToString("yyyy/MM/dd"))
-                    //{
-                    //    var minute = DateTime.Now.Minute;
-                    //    TodaysMinutes = minute;
-                    //}
-                    //else
-                    //{
-                    //    TodaysMinutes += Properties.Settings.Default.MinCountStartTime;
-                    //}
-
-                    //LastTime = DateTime.Now;
                 }
                 else
                 {
 
                     AddMinutes(Properties.Settings.Default.CountInterval);
-
-                    //TotalMinutes += mainWindow.CountMinutes;
-
-                    //TotalMinutes += Properties.Settings.Default.CountInterval;
-                    //string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
-
-                    //if (currentDate != LastTime.ToString("yyyy/MM/dd"))
-                    //{
-                    //    var minute = DateTime.Now.Minute;
-                    //    TodaysMinutes = minute;
-                    //}
-                    //else
-                    //{
-                    //    //TodaysMinutes += mainWindow.CountMinutes;
-                    //    TodaysMinutes += Properties.Settings.Default.CountInterval;
-                    //}
-
-                    //LastTime = DateTime.Now;
-                    //LastDate = currentDate;
                 }
             }
 
@@ -411,54 +391,95 @@ namespace WpfApp2
             LastTime = DateTime.Now;
         }
 
-        public void AccumulateMinuteToFileData()
+        public void AccumulateMinuteToFileData(string windowTitle)
         {
+            string fileName = "";
+            string title = windowTitle;
+            string[] parsed = title.Split(' ');
 
+            foreach (string s in parsed)
+            {
+                foreach (string f in FileExtensions)
+                {
+                    //登録した拡張子に合致するものがあった
+                    if (s.Contains(f))
+                    {
+                        fileName = s;
+                        break;
+                    }
+                }
+            }
+
+            //拡張機能
+            if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
+            {
+                string[] parsed0 = title.Split('-');
+                fileName = parsed0[0];
+            }
+
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                FileData file = Files.Find(f => f.Name == fileName);
+                //ファイルが既に存在すれば時間を追加し、なければ作成
+                if (file != null)
+                {
+                    file.AccumulateMinute();
+                }
+                else
+                {
+                    AddFileData(fileName);
+                }
+            }
+        }
+
+        public void AccumulateMinuteToFileDatas()
+        {
             //ウィンドウタイトルを取得
             WindowTitles2 windowTitles2 = new WindowTitles2();
             var titles = windowTitles2.Get(ProcessName);
 
             foreach (string t in titles)
             {
-                string fileName = "";
-                string title = t;
-                string[] parsed = title.Split(' ');
+                AccumulateMinuteToFileData(t);
+                //string fileName = "";
+                //string title = t;
+                //string[] parsed = title.Split(' ');
 
-                foreach (string s in parsed)
-                {
-                    foreach (string f in FileExtensions)
-                    {
-                        //登録した拡張子に合致するものがあった
-                        if (s.Contains(f))
-                        {
-                            fileName = s;
-                            break;
-                        }
-                    }
-                }
+                //foreach (string s in parsed)
+                //{
+                //    foreach (string f in FileExtensions)
+                //    {
+                //        //登録した拡張子に合致するものがあった
+                //        if (s.Contains(f))
+                //        {
+                //            fileName = s;
+                //            break;
+                //        }
+                //    }
+                //}
 
-                //拡張機能
-                if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
-                {
-                    string[] parsed0 = title.Split('-');
-                    fileName = parsed0[0];
-                }
+                ////拡張機能
+                //if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
+                //{
+                //    string[] parsed0 = title.Split('-');
+                //    fileName = parsed0[0];
+                //}
 
-                if (!string.IsNullOrEmpty(fileName))
-                {
-                    FileData file = Files.Find(f => f.Name == fileName);
-                    //ファイルが既に存在すれば時間を追加し、なければ作成
-                    if (file != null)
-                    {
-                        file.AccumulateMinute();
-                    }
-                    else
-                    {
-                        AddFileData(fileName);
-                    }
-                }
-
+                //if (!string.IsNullOrEmpty(fileName))
+                //{
+                //    FileData file = Files.Find(f => f.Name == fileName);
+                //    //ファイルが既に存在すれば時間を追加し、なければ作成
+                //    if (file != null)
+                //    {
+                //        file.AccumulateMinute();
+                //    }
+                //    else
+                //    {
+                //        AddFileData(fileName);
+                //    }
+                //}
             }
+
         }
 
         private void AddFileData(string fileName)
@@ -477,12 +498,13 @@ namespace WpfApp2
             public int TotalMinutes { get; set; }
             public int MinutesFromLaunched { get; set; }
             public bool IsCountStarted { get; set; } = false;
+            public bool IsCounted { get; set; } = false;
 
             public string GetTime
             {
                 get
                 {
-                    return Settings.GetFormattedStringFromMinutes(TotalMinutes);
+                    return SettingsAndUtilities.GetFormattedStringFromMinutes(TotalMinutes);
                     //TimeSpan ts = new TimeSpan(0, Minutes, 0);
                     //return ($"{ts.Hours.ToString()}時間　{ts.Minutes.ToString()}分");
                 }

@@ -2,7 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WpfApp2.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="isCountingMinimized" Type="System.Boolean" Scope="User">
+    <Setting Name="isCountingNotMinimized" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="isCountingOnlyActive" Type="System.Boolean" Scope="User">

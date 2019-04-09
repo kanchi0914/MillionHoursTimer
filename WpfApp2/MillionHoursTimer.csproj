@@ -87,7 +87,7 @@
     </Compile>
     <Compile Include="DirectoryProcessor.cs" />
     <Compile Include="EnumWindowsClass.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="SettingsAndUtilities.cs" />
     <Compile Include="Components\NotifyIcon.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -172,6 +172,9 @@
     <Content Include="data\appData.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="data\fileData\.gitignore">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -181,9 +184,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="data\fileData\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Resources\clockIcon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

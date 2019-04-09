@@ -54,7 +54,7 @@ namespace WpfApp2
 
         //記録開始時間(何分立ってから記録を開始するか)
         //public int ThresholdOfStartingCount { get; set; }
-        public bool IsCountingMinimized { get; set; }
+        public bool IsCountingNotMinimized { get; set; }
         public bool IsCountingOnlyActive { get; set; }
         //public int CountMinutes { get; set; }
         public string Date { get; set; }
@@ -68,12 +68,11 @@ namespace WpfApp2
         public MainWindow()
         {
 
-            Console.WriteLine(Properties.Settings.Default);
+            //Properties.Settings.Default.Reload();
 
             //タスクバーに表示されないように
             ShowInTaskbar = false;
-
-            Console.WriteLine(Properties.Settings.Default.APIKey);
+            
 
             InitNotifyIcon();
 
@@ -222,7 +221,8 @@ namespace WpfApp2
                 return;
             }
 
-            SettingMenuWindow.Close();
+            //SettingMenuWindow.Close();
+
             foreach (Window w in FileListWindows)
             {
                 w.Close();
@@ -230,9 +230,17 @@ namespace WpfApp2
             _notifyIcon.Dispose();
 
             isFromTask = true;
-            //_notifyIcon.Dispose();
+
+
+            Application.Current.Shutdown();
+
+
+            ////_notifyIcon.Dispose();
             //isClosingFromWindow = true;
-            System.Windows.Application.Current.Shutdown();
+
+            //Properties.Settings.Default.Save();
+            //Properties.Settings.Default.Reload();
+
             //if (isFromWindow)
             //{
             //    System.Windows.Application.Current.Shutdown();
@@ -244,7 +252,7 @@ namespace WpfApp2
         {
             Date = Properties.Settings.Default.date;
             //ThresholdOfStartingCount = Properties.Settings.Default.thresholdOfStartingCount;
-            IsCountingMinimized = Properties.Settings.Default.isCountingMinimized;
+            IsCountingNotMinimized = Properties.Settings.Default.isCountingNotMinimized;
             IsCountingOnlyActive = Properties.Settings.Default.isCountingOnlyActive;
             //CountMinutes = Properties.Settings.Default.countMinutes;
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WpfApp2
 {
-    public static class Settings
+    public static class SettingsAndUtilities
     {
 
         //何秒ごとにカウントするか

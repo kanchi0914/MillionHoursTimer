@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Configuration;
 
 namespace WpfApp2
 {
@@ -38,6 +39,7 @@ namespace WpfApp2
 
         public SettingWindow(MainWindow mainWindow)
         {
+            Properties.Settings.Default.Reload();
             InitializeComponent();
 
             ApplicationListInToggleSetting.ItemsSource = mainWindow.AppDatas;
@@ -56,7 +58,7 @@ namespace WpfApp2
 
         public void InitComponents()
         {
-            NotCountMinimized.IsChecked = Properties.Settings.Default.isCountingMinimized;
+            NotCountMinimized.IsChecked = Properties.Settings.Default.isCountingNotMinimized;
             OnlyCountActive.IsChecked = Properties.Settings.Default.isCountingOnlyActive;
             AdditionalCount.IsChecked = Properties.Settings.Default.isAdditionalFileName;
 
@@ -66,20 +68,19 @@ namespace WpfApp2
             apiKeyInput = FindName("APIKeyInput") as TextBox;
             apiKeyInput.Text = mainWindow.TogglManager.ApiKey;
 
-            //minCountStartTimeInput = FindName("MinCountTime") as TextBox;
-            //minCountStartTimeInput.Text = Properties.Settings.Default.MinCountStartTime.ToString();
+            minCountStartTimeInput = FindName("MinCountTime") as TextBox;
+            minCountStartTimeInput.Text = Properties.Settings.Default.MinCountStartTime.ToString();
 
             APIKeyInput.Text = mainWindow.TogglManager.ApiKey;
 
-            CountInterval.Text = Properties.Settings.Default.CountInterval.ToString();
-            MinCountTime.Text = Properties.Settings.Default.MinCountStartTime.ToString();
-
-            MaxFileNum.Text = Properties.Settings.Default.MaxFileNum.ToString();
+            //CountInterval.Text = Properties.Settings.Default.CountInterval.ToString();
+            //MinCountTime.Text = Properties.Settings.Default.MinCountStartTime.ToString();
+            //MaxFileNum.Text = Properties.Settings.Default.MaxFileNum.ToString();
 
             //MinCountTime.Text = "1000";
 
-            //countIntervalInput = FindName("CountInterval") as TextBox;
-            //countIntervalInput.Text = Properties.Settings.Default.CountInterval.ToString();
+            countIntervalInput = FindName("CountInterval") as TextBox;
+            countIntervalInput.Text = Properties.Settings.Default.CountInterval.ToString();
 
 
         }
@@ -168,22 +169,22 @@ namespace WpfApp2
         /// </summary>
         private void Save()
         {
-            mainWindow.IsCountingMinimized = (bool)NotCountMinimized.IsChecked;
+            mainWindow.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
             mainWindow.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
 
-            Properties.Settings.Default.isCountingMinimized = (bool)NotCountMinimized.IsChecked;
+            Properties.Settings.Default.isCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
             Properties.Settings.Default.isCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
             Properties.Settings.Default.isAdditionalFileName = (bool)AdditionalCount.IsChecked;
 
-
-            //Properties.Settings.Default.CountInterval =  countIntervalInput.Text;
-            Properties.Settings.Default.CountInterval = int.Parse(CountInterval.Text);
-            Properties.Settings.Default.MinCountStartTime = int.Parse(MinCountTime.Text);
-            Properties.Settings.Default.MaxFileNum = int.Parse(MaxFileNum.Text);
+            Properties.Settings.Default.CountInterval = int.Parse(countIntervalInput.Text);
+            Properties.Settings.Default.MinCountStartTime = int.Parse(minCountStartTimeInput.Text);
+            //Properties.Settings.Default.MaxFileNum = int.Parse(MaxFileNum.Text);
 
             Properties.Settings.Default.APIKey = mainWindow.TogglManager.ApiKey;
 
+            //Properties.Settings.Default.Upgrade();
             Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
 
             mainWindow.timeCounter.UpdateTimer();
 

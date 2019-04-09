@@ -33,15 +33,6 @@ namespace WpfApp2
     {
 
         private MainWindow mainWindow;
-        //List<TitleAndProcess> processes = new List<TitleAndProcess>();
-
-        //[DllImport("user32")]
-        //private static extern bool EnumWindows(WNDENUMPROC lpEnumFunc, IntPtr lParam);
-
-        //private delegate bool WNDENUMPROC(IntPtr hWnd, IntPtr lParam);
-
-        //[DllImport("user32")]
-        //private static extern bool IsWindowVisible(IntPtr hWnd);
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
@@ -104,14 +95,14 @@ namespace WpfApp2
             timer.Elapsed += new TM.ElapsedEventHandler(TimeDisp);
             //timer.Interval = (mainWindow.CountMinutes * 60) * (int)mainWindow.CountMinutes * 1000;
             //timer.Interval = (interval * Settings.CountSeconds) * 1000;
-            timer.Interval = (Properties.Settings.Default.CountInterval * Settings.CountSeconds) * 1000;
+            timer.Interval = (Properties.Settings.Default.CountInterval * SettingsAndUtilities.CountSeconds) * 1000;
             timer.AutoReset = true;
             timer.Enabled = true;
         }
 
         public void UpdateTimer()
         {
-            timer.Interval = (Properties.Settings.Default.CountInterval * Settings.CountSeconds) * 1000;
+            timer.Interval = (Properties.Settings.Default.CountInterval * SettingsAndUtilities.CountSeconds) * 1000;
         }
 
         private void TimeDisp(object sender, EventArgs e)
@@ -120,12 +111,12 @@ namespace WpfApp2
             List<AppDataObject> tempAppData = new List<AppDataObject>(mainWindow.AppDatas);
 
             //すべてのアプリをカウント
-            if (!mainWindow.IsCountingMinimized && !mainWindow.IsCountingOnlyActive)
+            if (!mainWindow.IsCountingNotMinimized && !mainWindow.IsCountingOnlyActive)
             {
                 CountAllApps();
             }
             //最小化しているときはカウントしない
-            else if (mainWindow.IsCountingMinimized)
+            else if (mainWindow.IsCountingNotMinimized)
             {
                 CountNotMinimizedApp();
             }
@@ -154,61 +145,28 @@ namespace WpfApp2
             //listviewの更新
             mainWindow.listView.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Refresh()));
 
+            //ファイルデータの重複防止フラグをリセット
+            ResetFileCount();
+
         }
 
         #region 計測メソッド
 
         public void CountAllApps()
         {
-
-            //Process[] ps = Process.GetProcesses();
-            //foreach (Process p in ps)
-            //{
-            //    //Console.WriteLine(p.MainWindowHandle);
-            //    WindowTitles.PrintCaptionAndProcess(p.MainWindowHandle);
-            //}
-
-            //Process[] pss = EnumWindowsClass.GetProcessesByWindow(null, "CLIPStudioPaint");
-            //EnumWindows();
-
-
-            //foreach (Process p in pss)
-            //{
-            //    Console.WriteLine("プロセス名:" + p.ProcessName);
-            //    Console.WriteLine("プロセスID:" + p.Id);
-            //    Console.WriteLine("ウィンドウタイトル:" + p.MainWindowTitle);
-            //}
-
-            //foreach (Process item in Process.GetProcesses())
-            //{
-            //    if (item.MainWindowHandle != IntPtr.Zero)
-            //    {
-            //        Console.WriteLine("title:" + item.MainWindowTitle);
-            //    }
-            //}
-
-            //WindowTitles.Get("CLIPStudioPaint");
-            //Console.WriteLine(WindowTitles.Titles);
-
-            //WindowsHandles.Initialize("CLIPStudioPaint");
-            //Console.WriteLine(WindowsHandles.WindowsList);
-            //bool exists = WindowsHandles.ExistsTitle("aaaa");
-            
             foreach (AppDataObject data in mainWindow.AppDatas)
             {
                 Process[] processes = Process.GetProcessesByName(data.ProcessName);
                 if (processes.Length > 0)
                 {
-                    data.AccumulateMinute();
-                    data.AccumulateMinuteToFileData();
+                    data.AccumulateMinutes();
+                    data.AccumulateMinuteToFileDatas();
                 }
             }
         }
 
         public void CountNotMinimizedApp()
         {
-
-
             foreach (AppDataObject data in mainWindow.AppDatas)
             {
                 bool isCounted = false;
@@ -216,17 +174,18 @@ namespace WpfApp2
 
                 if (processes.Length > 0)
                 {
+                    //Console.WriteLine(processes.Length);
                     foreach (Process p in processes)
                     {
-                        if (p.MainWindowHandle != IntPtr.Zero && !IsIconic(p.MainWindowHandle))
+                        //  if (p.MainWindowHandle != IntPtr.Zero && !IsIconic(p.MainWindowHandle))
+                        if (true)
                         {
                             if (!isCounted)
                             {
-                                data.AccumulateMinute();
-                                data.AccumulateMinuteToFileData();
+                                data.AccumulateMinutes();
+                                data.AccumulateMinuteToFileDatas();
                                 isCounted = true;
                             }
-                            //data.AddMinuteToFiles(p.ProcessName);
                         }
                     }
                 }
@@ -247,7 +206,7 @@ namespace WpfApp2
                 if (0 != processid)
                 {
                     Process p = Process.GetProcessById(processid);
-                    if (mainWindow.IsCountingMinimized)
+                    if (mainWindow.IsCountingNotMinimized)
                     {
                         if (p.MainWindowHandle != IntPtr.Zero && !IsIconic(p.MainWindowHandle))
                         {
@@ -263,8 +222,8 @@ namespace WpfApp2
                     //found registerd app
                     if (data != null)
                     {
-                        data.AccumulateMinute();
-                        data.AccumulateMinuteToFileData();
+                        data.AccumulateMinutes();
+                        data.AccumulateMinuteToFileData(sb.ToString());
                         //data.AddMinuteToFiles(p.ProcessName);
                     }
                 }
@@ -275,16 +234,18 @@ namespace WpfApp2
             }
         }
 
-        //public void AddMinuteToFileData(AppDataObject data)
-        //{
-        //    WindowTitles2 windowTitles2 = new WindowTitles2();
-        //    var titles = windowTitles2.Get(data.ProcessName);
-        //    data.AddMinuteToFiles(data.ProcessName, titles);
-        //}
-
         #endregion
 
-
+        public void ResetFileCount()
+        {
+            foreach (AppDataObject appDataObject in mainWindow.AppDatas)
+            {
+                foreach (AppDataObject.FileData fileData in appDataObject.Files)
+                {
+                    fileData.IsCounted = false;
+                }
+            }
+        }
 
         public void CheckClosedApp()
         {
