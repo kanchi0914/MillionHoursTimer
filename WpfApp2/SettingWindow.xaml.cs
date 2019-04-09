@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,6 +24,10 @@ namespace WpfApp2
 
         public MainWindow mainWindow;
 
+        private TextBox apiKeyInput;
+        private TextBox minCountStartTimeInput;
+        private TextBox countIntervalInput;
+
         public class ProjectData
         {
             public string ProjectName { get; set; }
@@ -41,9 +46,8 @@ namespace WpfApp2
 
             InitComponents();
 
-
+            //終了時に呼ばれるコールバックメソッド
             Closed += (s, e) => Save();
-
 
 
             InitTogglList();
@@ -59,8 +63,25 @@ namespace WpfApp2
             OKButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
                 new RoutedEventHandler(OnClickedOKButton));
 
-            var inputBox = FindName("APIKeyInput") as TextBox;
-            inputBox.Text = mainWindow.TogglManager.ApiKey;
+            apiKeyInput = FindName("APIKeyInput") as TextBox;
+            apiKeyInput.Text = mainWindow.TogglManager.ApiKey;
+
+            //minCountStartTimeInput = FindName("MinCountTime") as TextBox;
+            //minCountStartTimeInput.Text = Properties.Settings.Default.MinCountStartTime.ToString();
+
+            APIKeyInput.Text = mainWindow.TogglManager.ApiKey;
+
+            CountInterval.Text = Properties.Settings.Default.CountInterval.ToString();
+            MinCountTime.Text = Properties.Settings.Default.MinCountStartTime.ToString();
+
+            MaxFileNum.Text = Properties.Settings.Default.MaxFileNum.ToString();
+
+            //MinCountTime.Text = "1000";
+
+            //countIntervalInput = FindName("CountInterval") as TextBox;
+            //countIntervalInput.Text = Properties.Settings.Default.CountInterval.ToString();
+
+
         }
 
         public void InitTogglList()
@@ -128,6 +149,23 @@ namespace WpfApp2
 
         }
 
+        private void textBoxPrice_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // 0-9のみ
+            e.Handled = !new Regex("[0-9]").IsMatch(e.Text);
+        }
+        private void textBoxPrice_PreviewExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            // 貼り付けを許可しない
+            if (e.Command == ApplicationCommands.Paste)
+            {
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// ウィンドウを閉じたときに呼ばれる
+        /// </summary>
         private void Save()
         {
             mainWindow.IsCountingMinimized = (bool)NotCountMinimized.IsChecked;
@@ -137,11 +175,18 @@ namespace WpfApp2
             Properties.Settings.Default.isCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
             Properties.Settings.Default.isAdditionalFileName = (bool)AdditionalCount.IsChecked;
 
+
+            //Properties.Settings.Default.CountInterval =  countIntervalInput.Text;
+            Properties.Settings.Default.CountInterval = int.Parse(CountInterval.Text);
+            Properties.Settings.Default.MinCountStartTime = int.Parse(MinCountTime.Text);
+            Properties.Settings.Default.MaxFileNum = int.Parse(MaxFileNum.Text);
+
             Properties.Settings.Default.APIKey = mainWindow.TogglManager.ApiKey;
 
             Properties.Settings.Default.Save();
 
-            Console.WriteLine();
+            mainWindow.timeCounter.UpdateTimer();
+
         }
 
     }

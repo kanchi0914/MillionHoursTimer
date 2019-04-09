@@ -8,20 +8,23 @@
     <Setting Name="isCountingOnlyActive" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="countMinutes" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
-    </Setting>
     <Setting Name="isAdditionalFileName" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="date" Type="System.String" Scope="User">
       <Value Profile="(Default)">2000/01/01</Value>
     </Setting>
-    <Setting Name="thresholdOfStartingCount" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">5</Value>
-    </Setting>
     <Setting Name="APIKey" Type="System.String" Scope="User">
       <Value Profile="(Default)">1610b6739c0904ad6774df3ddcf460ea</Value>
+    </Setting>
+    <Setting Name="MinCountStartTime" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="CountInterval" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="MaxFileNum" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
     </Setting>
   </Settings>
 </SettingsFile>

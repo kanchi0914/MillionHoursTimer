@@ -49,18 +49,6 @@ namespace WpfApp2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int countMinutes {
-            get {
-                return ((int)(this["countMinutes"]));
-            }
-            set {
-                this["countMinutes"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool isAdditionalFileName {
             get {
@@ -85,18 +73,6 @@ namespace WpfApp2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int thresholdOfStartingCount {
-            get {
-                return ((int)(this["thresholdOfStartingCount"]));
-            }
-            set {
-                this["thresholdOfStartingCount"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1610b6739c0904ad6774df3ddcf460ea")]
         public string APIKey {
             get {
@@ -104,6 +80,42 @@ namespace WpfApp2.Properties {
             }
             set {
                 this["APIKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int MinCountStartTime {
+            get {
+                return ((int)(this["MinCountStartTime"]));
+            }
+            set {
+                this["MinCountStartTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int CountInterval {
+            get {
+                return ((int)(this["CountInterval"]));
+            }
+            set {
+                this["CountInterval"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int MaxFileNum {
+            get {
+                return ((int)(this["MaxFileNum"]));
+            }
+            set {
+                this["MaxFileNum"] = value;
             }
         }
     }

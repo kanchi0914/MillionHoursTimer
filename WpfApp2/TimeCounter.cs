@@ -56,9 +56,15 @@ namespace WpfApp2
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool IsIconic(IntPtr hWnd);
 
+        private TM.Timer timer;
+
+        private int interval = Properties.Settings.Default.CountInterval;
+
         public TimeCounter(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
+
+            interval = Properties.Settings.Default.CountInterval;
             CreateTimer();
 
 
@@ -93,12 +99,19 @@ namespace WpfApp2
         //直す
         private void CreateTimer()
         {
-            TM.Timer timer = new TM.Timer();
+            //TM.Timer timer = new TM.Timer();
+            timer = new TM.Timer();
             timer.Elapsed += new TM.ElapsedEventHandler(TimeDisp);
             //timer.Interval = (mainWindow.CountMinutes * 60) * (int)mainWindow.CountMinutes * 1000;
-            timer.Interval = (mainWindow.CountMinutes * Settings.CountSeconds) * (int)mainWindow.CountMinutes * 1000;
+            //timer.Interval = (interval * Settings.CountSeconds) * 1000;
+            timer.Interval = (Properties.Settings.Default.CountInterval * Settings.CountSeconds) * 1000;
             timer.AutoReset = true;
             timer.Enabled = true;
+        }
+
+        public void UpdateTimer()
+        {
+            timer.Interval = (Properties.Settings.Default.CountInterval * Settings.CountSeconds) * 1000;
         }
 
         private void TimeDisp(object sender, EventArgs e)
@@ -186,8 +199,8 @@ namespace WpfApp2
                 Process[] processes = Process.GetProcessesByName(data.ProcessName);
                 if (processes.Length > 0)
                 {
-                    data.AddMinute();
-                    data.AddMinuteToFiles();
+                    data.AccumulateMinute();
+                    data.AccumulateMinuteToFileData();
                 }
             }
         }
@@ -209,8 +222,8 @@ namespace WpfApp2
                         {
                             if (!isCounted)
                             {
-                                data.AddMinute();
-                                data.AddMinuteToFiles();
+                                data.AccumulateMinute();
+                                data.AccumulateMinuteToFileData();
                                 isCounted = true;
                             }
                             //data.AddMinuteToFiles(p.ProcessName);
@@ -250,8 +263,8 @@ namespace WpfApp2
                     //found registerd app
                     if (data != null)
                     {
-                        data.AddMinute();
-                        data.AddMinuteToFiles();
+                        data.AccumulateMinute();
+                        data.AccumulateMinuteToFileData();
                         //data.AddMinuteToFiles(p.ProcessName);
                     }
                 }
@@ -278,11 +291,14 @@ namespace WpfApp2
             foreach (AppDataObject data in mainWindow.AppDatas)
             {
                 //記録していたアプリが終了した
-                if (data.IsRunning && (DateTime.Now - data.LastTime).TotalMinutes > mainWindow.CountMinutes)
+                if (data.IsCountStarted)
                 {
-                    data.IsRunning = false;
-                    Console.WriteLine($"exit {data.DisplayedName}");
-                    mainWindow.TogglManager.SetTimeEntry(data);
+                    if (data.IsRunning && (DateTime.Now - data.LastTime).TotalMinutes > Properties.Settings.Default.CountInterval)
+                    {
+                        data.IsRunning = false;
+                        Console.WriteLine($"exit {data.DisplayedName}");
+                        mainWindow.TogglManager.SetTimeEntry(data);
+                    }
                 }
             }
         }

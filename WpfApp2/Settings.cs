@@ -23,6 +23,7 @@ namespace WpfApp2
 
 
 
+
         /// <summary>
         /// 『〇〇時間○○分』の形にして返す
         /// </summary>

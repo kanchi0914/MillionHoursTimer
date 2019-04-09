@@ -76,7 +76,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="aaaClass2.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="BoolVisibilityConverter.cs" />
+    <Compile Include="CustomControl1.cs" />
+    <Compile Include="CustomControl2.cs" />
+    <Compile Include="NumericTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DirectoryProcessor.cs" />
     <Compile Include="EnumWindowsClass.cs" />
     <Compile Include="Settings.cs" />
@@ -133,6 +141,10 @@
     <Page Include="AppNameSettingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

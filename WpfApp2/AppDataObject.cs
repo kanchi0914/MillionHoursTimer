@@ -44,6 +44,7 @@ namespace WpfApp2
         public int TodaysMinutes { get; set; }
         public int TotalMinutes { get; set; }
         public int MinutesFromLaunched { get; set; }
+        public bool IsCountStarted { get; set; } = false;
 
         //Toggｌ記録用の終了確認フラグ
         public bool IsRunning { get; set; } = false;
@@ -335,7 +336,7 @@ namespace WpfApp2
             }
         }
 
-        public void AddMinute()
+        public void AccumulateMinute()
         {
             if (!IsRunning)
             {
@@ -343,36 +344,82 @@ namespace WpfApp2
                 IsRunning = true;
             }
 
-            TotalMinutes += mainWindow.CountMinutes;
-            string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
+            MinutesFromLaunched += Properties.Settings.Default.CountInterval;
 
+            if (MinutesFromLaunched >= Properties.Settings.Default.MinCountStartTime)
+            {
+                if (!IsCountStarted)
+                {
+                    AddMinutes(Properties.Settings.Default.MinCountStartTime);
+                    IsCountStarted = true;
+                    //TotalMinutes += Properties.Settings.Default.MinCountStartTime;
+                    //string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
+                    //if (currentDate != LastTime.ToString("yyyy/MM/dd"))
+                    //{
+                    //    var minute = DateTime.Now.Minute;
+                    //    TodaysMinutes = minute;
+                    //}
+                    //else
+                    //{
+                    //    TodaysMinutes += Properties.Settings.Default.MinCountStartTime;
+                    //}
+
+                    //LastTime = DateTime.Now;
+                }
+                else
+                {
+
+                    AddMinutes(Properties.Settings.Default.CountInterval);
+
+                    //TotalMinutes += mainWindow.CountMinutes;
+
+                    //TotalMinutes += Properties.Settings.Default.CountInterval;
+                    //string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
+
+                    //if (currentDate != LastTime.ToString("yyyy/MM/dd"))
+                    //{
+                    //    var minute = DateTime.Now.Minute;
+                    //    TodaysMinutes = minute;
+                    //}
+                    //else
+                    //{
+                    //    //TodaysMinutes += mainWindow.CountMinutes;
+                    //    TodaysMinutes += Properties.Settings.Default.CountInterval;
+                    //}
+
+                    //LastTime = DateTime.Now;
+                    //LastDate = currentDate;
+                }
+            }
+
+        }
+
+        public void AddMinutes(int minutes)
+        {
+            TotalMinutes += minutes;
+            string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
             if (currentDate != LastTime.ToString("yyyy/MM/dd"))
             {
-                TodaysMinutes = 0;
+                var minute = DateTime.Now.Minute;
+                TodaysMinutes = minute;
             }
             else
             {
-                TodaysMinutes += mainWindow.CountMinutes;
+                TodaysMinutes += minutes;
             }
 
             LastTime = DateTime.Now;
-            //LastDate = currentDate;
         }
 
-        public void AddMinuteToFiles()
+        public void AccumulateMinuteToFileData()
         {
 
+            //ウィンドウタイトルを取得
             WindowTitles2 windowTitles2 = new WindowTitles2();
             var titles = windowTitles2.Get(ProcessName);
 
-            if (this.ProcessName == "CLIPStudioPaint")
-            {
-
-            }
-
             foreach (string t in titles)
             {
-
                 string fileName = "";
                 string title = t;
                 string[] parsed = title.Split(' ');
@@ -399,63 +446,29 @@ namespace WpfApp2
 
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    Console.WriteLine(fileName);
                     FileData file = Files.Find(f => f.Name == fileName);
+                    //ファイルが既に存在すれば時間を追加し、なければ作成
                     if (file != null)
                     {
-                        file.TotalMinutes += mainWindow.CountMinutes;
+                        file.AccumulateMinute();
                     }
                     else
                     {
-                        Files.Add(new FileData { Name = fileName });
+                        AddFileData(fileName);
                     }
                 }
 
             }
+        }
 
-            //foreach (string title in WindowTitles.Titles)
-            //{
-            //    string[] parsed = title.Split(' ');
-            //}
-
-            //string windowTitle = p.MainWindowTitle;
-
-            //string[] parsed = windowTitle.Split(' ');
-
-            //foreach (string s in parsed)
-            //{
-            //    foreach (string f in FileExtensions)
-            //    {
-            //        //登録した拡張子に合致するものがあった
-            //        if (s.Contains(f))
-            //        {
-            //            fileName = s;
-            //            break;
-            //        }
-            //    }
-            //}
-
-            ////拡張機能
-            //if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
-            //{
-            //    string[] parsed0 = windowTitle.Split('-');
-            //    fileName = parsed0[0];
-            //}
-
-            //if (!string.IsNullOrEmpty(fileName))
-            //{
-            //    Console.WriteLine(fileName);
-            //    FileData file = Files.Find(f => f.Name == fileName);
-            //    //Console.WriteLine(file.Name);
-            //    if (file != null)
-            //    {
-            //        file.Minutes += mainWindow.CountMinutes;
-            //    }
-            //    else
-            //    {
-            //        Files.Add(new FileData{ Name = fileName });
-            //    }
-            //}
+        private void AddFileData(string fileName)
+        {
+            //最大件数をオーバーしている場合、先頭の要素を削除
+            if (Files.Count > Properties.Settings.Default.MaxFileNum)
+            {
+                Files.RemoveAt(0);
+            }
+            Files.Add(new FileData { Name = fileName });
         }
 
         public class FileData
@@ -463,6 +476,7 @@ namespace WpfApp2
             public string Name { get; set; } = "";
             public int TotalMinutes { get; set; }
             public int MinutesFromLaunched { get; set; }
+            public bool IsCountStarted { get; set; } = false;
 
             public string GetTime
             {
@@ -477,6 +491,29 @@ namespace WpfApp2
             public void Set(int num)
             {
                 TotalMinutes += num;
+            }
+
+            public void AccumulateMinute()
+            {
+                MinutesFromLaunched += Properties.Settings.Default.CountInterval;
+
+                if (MinutesFromLaunched >= Properties.Settings.Default.MinCountStartTime)
+                {
+                    if (!IsCountStarted)
+                    {
+                        AddMinutes(Properties.Settings.Default.MinCountStartTime);
+                        IsCountStarted = true;
+                    }
+                    else
+                    {
+                        AddMinutes(Properties.Settings.Default.CountInterval);
+                    }
+                }
+            }
+
+            public void AddMinutes(int minutes)
+            {
+                TotalMinutes += minutes;
             }
 
             public override bool Equals(object obj)

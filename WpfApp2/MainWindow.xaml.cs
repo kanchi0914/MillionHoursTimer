@@ -53,10 +53,10 @@ namespace WpfApp2
         }
 
         //記録開始時間(何分立ってから記録を開始するか)
-        public int ThresholdOfStartingCount { get; set; }
+        //public int ThresholdOfStartingCount { get; set; }
         public bool IsCountingMinimized { get; set; }
         public bool IsCountingOnlyActive { get; set; }
-        public int CountMinutes { get; set; }
+        //public int CountMinutes { get; set; }
         public string Date { get; set; }
         public List<AppDataObject> AppDatas { get; set; } = new List<AppDataObject>();
         public List<FileViewWindow> FileListWindows { get; set; } = new List<FileViewWindow>();
@@ -67,6 +67,8 @@ namespace WpfApp2
 
         public MainWindow()
         {
+
+            Console.WriteLine(Properties.Settings.Default);
 
             //タスクバーに表示されないように
             ShowInTaskbar = false;
@@ -241,10 +243,10 @@ namespace WpfApp2
         private void LoadSettings()
         {
             Date = Properties.Settings.Default.date;
-            ThresholdOfStartingCount = Properties.Settings.Default.thresholdOfStartingCount;
+            //ThresholdOfStartingCount = Properties.Settings.Default.thresholdOfStartingCount;
             IsCountingMinimized = Properties.Settings.Default.isCountingMinimized;
             IsCountingOnlyActive = Properties.Settings.Default.isCountingOnlyActive;
-            CountMinutes = Properties.Settings.Default.countMinutes;
+            //CountMinutes = Properties.Settings.Default.countMinutes;
         }
 
         private void InitListView()

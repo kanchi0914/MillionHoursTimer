@@ -14,7 +14,7 @@
     <Grid>
         <StackPanel>
             <TabControl Name="maintab">
-                <TabItem Header="基本設定" Height="30" Name="tab1" />
+                <TabItem Header="記録設定" Height="30" Name="tab1" />
                 <TabItem Header="拡張設定" Height="30" Name="tab2" />
                 <TabItem Header="Toggl連携設定" Height="30" Name="tab3" />
             </TabControl>
@@ -22,12 +22,6 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="2*" />
-                    <!--
-                                        <RowDefinition Height="20" />
-                    <RowDefinition Height="50" />
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="50" />
-                    -->
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="2*" />
                     <RowDefinition Height="1*" />
@@ -41,25 +35,45 @@
                 <TextBlock Grid.Row="3" TextWrapping="Wrap" Text="現在アクティブになっているアプリケーションのみ時間を計測します。"/>
                 <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left">
                     <Label Content="カウント間隔" VerticalAlignment="Center"/>
-                    <TextBox Width="50" Text="1" TextAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBox Name="CountInterval" 
+                               InputMethod.IsInputMethodEnabled="False"
+                                PreviewTextInput="textBoxPrice_PreviewTextInput"
+                                 CommandManager.PreviewExecuted="textBoxPrice_PreviewExecuted"
+                             Width="50" Text="1" TextAlignment="Right" VerticalAlignment="Center"/>
                     <Label Content="分" VerticalAlignment="Center"/>
                 </StackPanel>
                 <TextBlock Grid.Row="5" TextWrapping="Wrap" Text="設定した時間(分)ごとにカウントします。"/>
                 <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Left">
                     <Label Content="最小カウント開始時間" VerticalAlignment="Center"/>
-                    <TextBox Width="50" Text="5" TextAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBox Name="MinCountTime" Width="50" Text="1" 
+                               InputMethod.IsInputMethodEnabled="False"
+  PreviewTextInput="textBoxPrice_PreviewTextInput"
+  CommandManager.PreviewExecuted="textBoxPrice_PreviewExecuted"
+                             TextAlignment="Right" VerticalAlignment="Center"/>
                     <Label Content="分" VerticalAlignment="Center"/>
                 </StackPanel>
                 <TextBlock Grid.Row="7" TextWrapping="Wrap" Text="アプリケーションの起動を確認後、設定した時間が経過してからカウントを開始します。"/>
             </Grid>
             <Grid Margin="20" Visibility="{Binding ElementName=tab2, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
                     <RowDefinition Height="20" />
                     <RowDefinition Height="30" />
                     <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
-                <CheckBox Name="AdditionalCount" Grid.Row="0" Content="拡張ファイル名設定をオンにする(試験的)" MinWidth="50" IsChecked="False"/>
-                <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="オンにすると、タイトルバーにファイルの拡張子名が表示されない&#xa;アプリケーションでもファイル毎の作業時間を記録できる可能性があります。"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Label Content="最大記録ファイル数" VerticalAlignment="Center"/>
+                    <TextBox Name="MaxFileNum" Width="50" Text="100" 
+                               PreviewTextInput="textBoxPrice_PreviewTextInput"
+  CommandManager.PreviewExecuted="textBoxPrice_PreviewExecuted"
+                             TextAlignment="Right" VerticalAlignment="Center"/>
+                    <Label Content="件" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="アプリケーション毎に記録されるファイル名の最大記録件数を設定します。&#xa;最大件数をオーバーすると、古いものから順に削除されます。"/>
+                <CheckBox Name="AdditionalCount" Grid.Row="3" Content="拡張ファイル名設定をオンにする(試験的)" MinWidth="50" IsChecked="False"/>
+                <TextBlock Grid.Row="4" TextWrapping="Wrap" Text="オンにすると、タイトルバーにファイルの拡張子名が表示されない&#xa;アプリケーションでもファイル毎の作業時間を記録できる可能性があります。"/>
             </Grid>
             <Grid Margin="20" Height="300" Visibility="{Binding ElementName=tab3, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">
                 <Grid.RowDefinitions>
