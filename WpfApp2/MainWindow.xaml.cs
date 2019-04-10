@@ -197,6 +197,13 @@ namespace WpfApp2
 
         }
 
+        public void CreateMenu()
+        {
+            AddApp.Click += OnClickAddApp;
+            Import.Click += OnClickImportData;
+            Export.Click += OnClickExportData;
+        }
+
         private void LoadSettings()
         {
             Date = Properties.Settings.Default.date;
@@ -309,6 +316,10 @@ namespace WpfApp2
             }
         }
 
+        /// <summary>
+        /// アプリケーションのデータを削除
+        /// </summary>
+        /// <param name="obj"></param>
         private void RemoveAppDate(AppDataObject obj)
         {
             AppDatas.Remove(obj);
@@ -319,12 +330,7 @@ namespace WpfApp2
 
         #endregion
 
-        public void CreateMenu()
-        {
-            AddApp.Click += OnClickAddApp;
-            Import.Click += OnClickImportData;
-            Export.Click += OnClickExportData;
-        }
+
 
 
         //記録するアプリケーションの登録
