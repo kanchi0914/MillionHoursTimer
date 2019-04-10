@@ -169,8 +169,8 @@ namespace WpfApp2
         /// </summary>
         private void Save()
         {
-            mainWindow.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
-            mainWindow.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
+            //mainWindow.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
+            //mainWindow.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
 
             Properties.Settings.Default.isCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
             Properties.Settings.Default.isCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
@@ -184,7 +184,6 @@ namespace WpfApp2
 
             //Properties.Settings.Default.Upgrade();
             Properties.Settings.Default.Save();
-            Properties.Settings.Default.Reload();
 
             mainWindow.timeCounter.UpdateTimer();
 

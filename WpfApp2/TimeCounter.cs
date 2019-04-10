@@ -111,17 +111,18 @@ namespace WpfApp2
             List<AppDataObject> tempAppData = new List<AppDataObject>(mainWindow.AppDatas);
 
             //すべてのアプリをカウント
-            if (!mainWindow.IsCountingNotMinimized && !mainWindow.IsCountingOnlyActive)
+            if (!Properties.Settings.Default.isCountingNotMinimized &&
+                !Properties.Settings.Default.isCountingOnlyActive)
             {
                 CountAllApps();
             }
             //最小化しているときはカウントしない
-            else if (mainWindow.IsCountingNotMinimized)
+            else if (Properties.Settings.Default.isCountingNotMinimized)
             {
                 CountNotMinimizedApp();
             }
             //アクティブウィンドウのみをカウント
-            else if (mainWindow.IsCountingOnlyActive)
+            else if (Properties.Settings.Default.isCountingOnlyActive)
             {
                 CountOnlyActiveApp();
             }
@@ -206,7 +207,7 @@ namespace WpfApp2
                 if (0 != processid)
                 {
                     Process p = Process.GetProcessById(processid);
-                    if (mainWindow.IsCountingNotMinimized)
+                    if (Properties.Settings.Default.isCountingNotMinimized)
                     {
                         if (p.MainWindowHandle != IntPtr.Zero && !IsIconic(p.MainWindowHandle))
                         {

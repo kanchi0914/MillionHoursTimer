@@ -8,7 +8,8 @@
         Title="MainWindow" Height="450" Width="600"
         AllowDrop="True"
         Drop="Window_Drop" PreviewDragOver="Window_PreviewDragOver"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        >
 
   <!--ListViewの設定-->
   <Window.Resources>

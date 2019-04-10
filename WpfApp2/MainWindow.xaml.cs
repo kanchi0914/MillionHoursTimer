@@ -28,35 +28,20 @@ namespace WpfApp2
 
     public partial class MainWindow : Window
     {
-
-        //private Components.NotifyIcon notifyIcon = new Components.NotifyIcon();
         private System.Windows.Forms.NotifyIcon _notifyIcon;
-
-        //private List<AppDataObject> appDatas = new List<AppDataObject>();
-
-        //private SettingWindow settingMenuWindow;
-        //private List<FileViewWindow> fileListWindows = new List<FileViewWindow>();
-
-        bool isClosingFromWindow = true;
-        bool isFromTask = false;
 
         struct TitleAndProcess
         {
-            public String title;
+            public string title;
             public Process process;
 
-            public TitleAndProcess(String t, Process p)
+            public TitleAndProcess(string t, Process p)
             {
                 title = t;
                 process = p;
             }
         }
 
-        //記録開始時間(何分立ってから記録を開始するか)
-        //public int ThresholdOfStartingCount { get; set; }
-        public bool IsCountingNotMinimized { get; set; }
-        public bool IsCountingOnlyActive { get; set; }
-        //public int CountMinutes { get; set; }
         public string Date { get; set; }
         public List<AppDataObject> AppDatas { get; set; } = new List<AppDataObject>();
         public List<FileViewWindow> FileListWindows { get; set; } = new List<FileViewWindow>();
@@ -67,12 +52,9 @@ namespace WpfApp2
 
         public MainWindow()
         {
-
-            //Properties.Settings.Default.Reload();
-
+           
             //タスクバーに表示されないように
             ShowInTaskbar = false;
-            
 
             InitNotifyIcon();
 
@@ -81,15 +63,13 @@ namespace WpfApp2
             LoadSettings();
             LoadCsvData();
 
-            Console.WriteLine(AppDatas);
 
             //設定画面
             timeCounter = new TimeCounter(this);
             TogglManager = new TogglManager(this);
-
             SettingMenuWindow = new SettingWindow(this);
 
-            //reset todays count if date has changed
+            //日付の確認
             string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
             if (Date != currentDate)
             {
@@ -101,6 +81,7 @@ namespace WpfApp2
                 }
             }
 
+            //アプリのリストビューを初期化
             try
             {
                 InitListView();
@@ -108,24 +89,19 @@ namespace WpfApp2
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-
             }
-            
-
-            
-            //TogglManager.Init();
-            //SettingMenuWindow.InitTogglList();
-
+        
             //メニューの作成
             CreateMenu();
-
-            Console.WriteLine(AppDatas);
 
             //右クリックメニューの作成
             CreateContextMenu();
 
         }
 
+        /// <summary>
+        /// タスクトレイアイコンを設定する
+        /// </summary>
         private void InitNotifyIcon()
         {
             _notifyIcon = new System.Windows.Forms.NotifyIcon();
@@ -144,7 +120,6 @@ namespace WpfApp2
 
             //タスクトレイアイコンのクリックイベントハンドラを登録する
             _notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(_notifyIcon_MouseClick);
-
         }
 
         private void _notifyIcon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -162,26 +137,24 @@ namespace WpfApp2
             catch { }
         }
 
-        //終了メニューのイベントハンドラ
+       /// <summary>
+       /// アイコンの右クリックメニュー『終了』選択時に呼ばれる
+       /// </summary>
+       /// <param name="sender"></param>
+       /// <param name="e"></param>
         private void exitItem_Click(object sender, EventArgs e)
         {
-
-            //System.Windows.Application.Current.Shutdown();
-            //System.ComponentModel.CancelEventArgs cancelEventArgs = System.Windows.Application.Current.Shutdown():
-            isClosingFromWindow = false;
+            //isClosingFromWindow = false;
             OnClickExit();
-            //try
-            //{
-            //    //_notifyIcon.Dispose();
-            //    System.Windows.Application.Current.Shutdown();
-            //}
-            //catch {  }
-
         }
 
+        /// <summary>
+        /// メインウィンドウを閉じたときに呼ばれ，閉じるのをキャンセルし最小化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected virtual void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
             try
             {
                 //閉じるのをキャンセルする
@@ -191,22 +164,6 @@ namespace WpfApp2
                 Visibility = System.Windows.Visibility.Collapsed;
             }
             catch { }
-
-            //if (!isFromTask)
-            //{
-            //    string text = "";
-            //    text = "終了してよろしいですか？";
-            //    MessageBoxResult res = MessageBox.Show(text, "Confirmation", MessageBoxButton.OKCancel,
-            //                MessageBoxImage.Question, MessageBoxResult.Cancel);
-            //    if (res == MessageBoxResult.Cancel)
-            //    {
-            //        //isClosingFromWindow = true;
-            //        e.Cancel = true;
-            //        return;
-            //    }
-            //}
-
-
         }
 
         private void OnClickExit(bool isFromWindow = false)
@@ -217,44 +174,34 @@ namespace WpfApp2
                         MessageBoxImage.Question, MessageBoxResult.Cancel);
             if (res == MessageBoxResult.Cancel)
             {
-                //isClosingFromWindow = true;
                 return;
             }
 
-            //SettingMenuWindow.Close();
+            SettingMenuWindow.Close();
 
             foreach (Window w in FileListWindows)
             {
                 w.Close();
             }
+
+            //アイコン表示を終了
             _notifyIcon.Dispose();
 
-            isFromTask = true;
-
+            //isFromTask = true;
 
             Application.Current.Shutdown();
 
-
-            ////_notifyIcon.Dispose();
-            //isClosingFromWindow = true;
-
+            //Properties.Settings.Default.Reload();
             //Properties.Settings.Default.Save();
             //Properties.Settings.Default.Reload();
-
-            //if (isFromWindow)
-            //{
-            //    System.Windows.Application.Current.Shutdown();
-            //}
 
         }
 
         private void LoadSettings()
         {
             Date = Properties.Settings.Default.date;
-            //ThresholdOfStartingCount = Properties.Settings.Default.thresholdOfStartingCount;
-            IsCountingNotMinimized = Properties.Settings.Default.isCountingNotMinimized;
-            IsCountingOnlyActive = Properties.Settings.Default.isCountingOnlyActive;
-            //CountMinutes = Properties.Settings.Default.countMinutes;
+            //IsCountingNotMinimized = Properties.Settings.Default.isCountingNotMinimized;
+            //IsCountingOnlyActive = Properties.Settings.Default.isCountingOnlyActive;
         }
 
         private void InitListView()
@@ -308,6 +255,7 @@ namespace WpfApp2
             contextMenu.Items.Add(menuItem3);
 
             listView.ContextMenu = contextMenu;
+
         }
 
         private void OnClickedChangeNameOfDesplayedName(object sender, RoutedEventArgs e)
@@ -330,19 +278,30 @@ namespace WpfApp2
             fileExtension.Show();
         }
 
+        /// <summary>
+        /// 右クリックメニュー＞削除　をクリック時に呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnClickedDelete(object sender, RoutedEventArgs e)
         {
-            String msg = "一覧から削除します。よろしいですか？\n(データは削除されます)";
+            if (listView.SelectedItems == null)
+                return;
+
+            string msg = "選択された項目を一覧から削除します。\nよろしいですか？\n(データは削除されます)";
             MessageBoxResult res = MessageBox.Show(msg, "削除確認", MessageBoxButton.OKCancel,
             MessageBoxImage.None, MessageBoxResult.Cancel);
             switch (res)
             {
                 case MessageBoxResult.OK:
-                    AppDataObject obj = (AppDataObject)listView.SelectedItem;
-                    AppDatas.Remove(obj);
-                    listView.Items.Remove(obj);
-                    listView.Items.Refresh();
-                    SaveCsvData();
+                    //var appdataObjects = listView.SelectedItems.Cast<AppDataObject>();
+                    //選択された項目を削除
+                    while (listView.SelectedItems.Count > 0)
+                    {
+                        AppDataObject myobj;
+                        myobj = (AppDataObject)listView.SelectedItems[0];
+                        RemoveAppDate(myobj);
+                    }
                     break;
                 case MessageBoxResult.Cancel:
                     // Cancelの処理
@@ -350,11 +309,18 @@ namespace WpfApp2
             }
         }
 
+        private void RemoveAppDate(AppDataObject obj)
+        {
+            AppDatas.Remove(obj);
+            listView.Items.Remove(obj);
+            listView.Items.Refresh();
+            SaveCsvData();
+        }
+
         #endregion
 
         public void CreateMenu()
         {
-            
             AddApp.Click += OnClickAddApp;
             Import.Click += OnClickImportData;
             Export.Click += OnClickExportData;
@@ -402,8 +368,6 @@ namespace WpfApp2
             }
         }
 
-
-
         public void OnClickImportData(object sender, RoutedEventArgs e)
         {
             string path = GetFolderPathByFileDialog();
@@ -420,7 +384,6 @@ namespace WpfApp2
                 }
 
                 DirectoryProcessor.CopyAndReplace(@path, "data");
-
             }
         }
 
@@ -436,7 +399,7 @@ namespace WpfApp2
             }
         }
 
-        public string AddListFromPath(string filePath)
+        public void AddListFromPath(string filePath, bool isFromDropped = true)
         {
             string[] parsed = filePath.Split('\\');
             string name = parsed.Last().Replace(".exe", "");
@@ -444,7 +407,10 @@ namespace WpfApp2
             //重複を確認し、なければ登録
             if (AppDatas.Any(a => a.ProcessName == name))
             {
-                MessageBox.Show("既に登録されています");
+                if (!isFromDropped)
+                {
+                    MessageBox.Show("既に登録されています");
+                }
             }
             else
             {
@@ -456,16 +422,14 @@ namespace WpfApp2
                 AppDatas.Add(appData);
                 listView.Items.Add(appData);
                 AddFileListWindow(appData);
+                SaveCsvData();
             }
-
-            return name;
         }
 
         public void SaveCsvData(string path = "")
         {
             try
             {
-
                 var uri = new Uri("data/appData.csv", UriKind.Relative);
                 string csvData = uri.ToString();
 
@@ -559,23 +523,11 @@ namespace WpfApp2
                 {
                     text += s + "\n";
                 }
-                var file = files[0];
-
-                string extension = System.IO.Path.GetExtension(file);
-                if (".lnk" == extension)
+                //var file = files[0];
+                
+                foreach (string file in files)
                 {
-                    IWshRuntimeLibrary.WshShell shell = new IWshRuntimeLibrary.WshShell();
-                    // ショートカットオブジェクトの取得
-                    IWshRuntimeLibrary.IWshShortcut shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(file);
-                    // ショートカットのリンク先の取得
-                    string targetPath = shortcut.TargetPath.ToString();
-                    var s = AddListFromPath(targetPath);
-                    //MessageBox.Show(".lnkです\n" + targetPath);
-                }
-                else if (extension == ".exe")
-                {
-                    var s = AddListFromPath(file);
-                    //MessageBox.Show(".exeです\n" + s);
+                    GetFilePathFromDroppedLinks(file);
                 }
             }
         }
@@ -586,6 +538,24 @@ namespace WpfApp2
             else
                 e.Effects = DragDropEffects.None;
             e.Handled = true;
+        }
+
+        private void GetFilePathFromDroppedLinks(string file)
+        {
+            string extension = System.IO.Path.GetExtension(file);
+            if (".lnk" == extension)
+            {
+                IWshRuntimeLibrary.WshShell shell = new IWshRuntimeLibrary.WshShell();
+                // ショートカットオブジェクトの取得
+                IWshRuntimeLibrary.IWshShortcut shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(file);
+                // ショートカットのリンク先の取得
+                string targetPath = shortcut.TargetPath.ToString();
+                AddListFromPath(targetPath);
+            }
+            else if (extension == ".exe")
+            {
+                AddListFromPath(file);
+            }
         }
 
         #endregion
