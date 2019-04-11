@@ -17,6 +17,12 @@ namespace WpfApp2
     {
         //Components.NotifyIcon notifyIcon = new Components.NotifyIcon();
         private System.Threading.Mutex mutex = new System.Threading.Mutex(false, "MHTimer");
+        private MainWindow mainWindow;
+
+        public void SetMainWindow(MainWindow mainWindow)
+        {
+
+        }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -44,6 +50,11 @@ namespace WpfApp2
                 mutex.ReleaseMutex();
                 mutex.Close();
             }
+        }
+
+        private void Application_SessionEnding(object sender, SessionEndingCancelEventArgs e)
+        {
+
         }
 
         //protected override void OnExit(ExitEventArgs e)

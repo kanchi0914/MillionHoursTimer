@@ -43,6 +43,7 @@ namespace WpfApp2
             }
             catch(Exception e)
             {
+                ApiKey = "";
                 Console.WriteLine(e);
             }
 
@@ -56,7 +57,6 @@ namespace WpfApp2
 
             try
             {
-
                 if (string.IsNullOrEmpty(ApiKey))
                 {
                     return;

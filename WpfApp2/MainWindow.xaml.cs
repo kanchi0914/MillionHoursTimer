@@ -14,10 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Drawing;
 using System.Diagnostics;
-
+using Microsoft.Win32;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Path = System.IO.Path;
@@ -42,7 +41,6 @@ namespace WpfApp2
             }
         }
 
-        //public string Date { get; set; }
         public List<AppDataObject> AppDatas { get; set; } = new List<AppDataObject>();
         public List<FileViewWindow> FileListWindows { get; set; } = new List<FileViewWindow>();
         public SettingWindow SettingMenuWindow { get; set; }
@@ -53,15 +51,24 @@ namespace WpfApp2
         public MainWindow()
         {
            
-            //タスクバーに表示されないように
+            //タスクバーに表示されないようにする
             ShowInTaskbar = false;
 
+            //タスクトレイアイコンの設定
             InitNotifyIcon();
 
             InitializeComponent();
 
+            //アプリ終了時のイベントを登録
+            Closed += (s, e) => Exit();
+
+            //Windows終了時のイベントを追加
+            SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding);
+
+            //設定の読み込み
             Settings.Load();
             
+            //データの読み込み
             LoadCsvData();
 
             //設定画面
@@ -70,15 +77,13 @@ namespace WpfApp2
             SettingMenuWindow = new SettingWindow(this);
 
             //日付を確認し、今日の日付と違っていれば更新
-            string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
-            if (Settings.Date != currentDate)
-            {
-                Settings.Date = currentDate;
-                foreach (AppDataObject apps in AppDatas)
-                {
-                    apps.TodaysMinutes = 0;
-                }
-            }
+            UpdateDate();
+
+            //メニューの作成
+            CreateMenu();
+
+            //右クリックメニューの作成
+            CreateContextMenu();
 
             //アプリのリストビューを初期化
             try
@@ -89,23 +94,77 @@ namespace WpfApp2
             {
                 Console.WriteLine(ex);
             }
-        
-            //メニューの作成
-            CreateMenu();
-
-            //右クリックメニューの作成
-            CreateContextMenu();
 
 
-            Properties.Settings.Default.SettingsSaving += aaa;
         }
 
-        private void aaa(object sender, EventArgs e)
+        /// <summary>
+        /// 日付を確認し、今日の日付と違っていれば更新
+        /// </summary>
+        private void UpdateDate()
         {
-            //isClosingFromWindow = false;
-            //MessageBox.Show(Properties.Settings.Default.CountInterval.ToString());
-            Console.Write("");
+            string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
+            if (Settings.Date != currentDate)
+            {
+                Settings.Date = currentDate;
+                foreach (AppDataObject apps in AppDatas)
+                {
+                    apps.TodaysMinutes = 0;
+                }
+            }
         }
+
+        /// <summary>
+        /// メニューバー>設定　メニュー　クリック時に呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void topMenu_Click(object sender, RoutedEventArgs e)
+        {
+            if (!SettingMenuWindow.IsActive)
+            {
+                SettingMenuWindow = new SettingWindow(this);
+                SettingMenuWindow.ShowDialog();
+            }
+        }
+
+        /// <summary>
+        /// メインウィンドウを閉じたときに呼ばれ，閉じるのをキャンセルし最小化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected virtual void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                //閉じるのをキャンセルする
+                e.Cancel = true;
+
+                //ウィンドウを非可視にする
+                Visibility = Visibility.Collapsed;
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// アプリ終了時に呼ばれ、データを保存
+        /// </summary>
+        private void Exit()
+        {
+            SaveCsvData();
+        }
+
+        /// <summary>
+        /// シャットダウン時に呼ばれ、データを保存
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SystemEvents_SessionEnding(object sender, SessionEndingEventArgs e)
+        {
+            SaveCsvData();
+        }
+
+        #region タスクトレイアイコン
 
         /// <summary>
         /// タスクトレイアイコンを設定する
@@ -180,29 +239,10 @@ namespace WpfApp2
             Settings.Save();
         }
 
-        //private void OnClickExit(bool isFromWindow = false)
-        //{
-        //}
+        #endregion
 
-        /// <summary>
-        /// メインウィンドウを閉じたときに呼ばれ，閉じるのをキャンセルし最小化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected virtual void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            try
-            {
-                //閉じるのをキャンセルする
-                e.Cancel = true;
 
-                //ウィンドウを非可視にする
-                Visibility = Visibility.Collapsed;
-            }
-            catch { }
-        }
-
-        #region メニューバー
+        #region メニューバー>ファイル メニューの設定
 
         /// <summary>
         /// メニューバーを設定する
@@ -315,26 +355,31 @@ namespace WpfApp2
         private void CreateContextMenu()
         {
             //右クリックメニュー
-            MenuItem menuItem = new MenuItem();
+            //MenuItem menuItem = new MenuItem();
             MenuItem menuItem0 = new MenuItem();
             MenuItem menuItem1 = new MenuItem();
             MenuItem menuItem2 = new MenuItem();
             MenuItem menuItem3 = new MenuItem();
-            menuItem.Header = "アプリケーションを登録";
+            MenuItem menuItem4 = new MenuItem();
+
+            //menuItem.Header = "アプリケーションを登録";
             menuItem0.Header = "表示アプリ名を変更";
             menuItem1.Header = "ファイル別作業時間を確認";
             menuItem2.Header = "ファイル拡張子を設定";
             menuItem3.Header = "一覧から削除";
+            menuItem4.Header = "表示内容をコピー";
 
-            menuItem.Click += OnClickAddApp;
+            //menuItem.Click += OnClickAddApp;
             menuItem0.Click += OnClickedChangeNameOfDesplayedName;
             menuItem1.Click += OnClickedConfirmTimeOfFiles;
             menuItem2.Click += OnClickedSetFileExtension;
             menuItem3.Click += OnClickedDelete;
+            menuItem4.Click += OnClickedCopy;
 
             ContextMenu contextMenu = new ContextMenu();
-            contextMenu.Items.Add(menuItem);
+            //contextMenu.Items.Add(menuItem);
             contextMenu.Items.Add(menuItem0);
+            contextMenu.Items.Add(menuItem4);
             contextMenu.Items.Add(menuItem1);
             contextMenu.Items.Add(menuItem2);
             contextMenu.Items.Add(menuItem3);
@@ -363,6 +408,22 @@ namespace WpfApp2
             fileExtension.Show();
         }
 
+
+        private void OnClickedCopy(object sender, RoutedEventArgs e)
+        {
+            string text = "";
+            foreach (var item in listView.SelectedItems)
+            {
+                AppDataObject data = (AppDataObject)item;
+                text += $"{data.DisplayedName}の起動時間 今日:{data.GetTodaysTime} 累積:{data.GetTotalTime}\n";
+            }
+
+            if (text != "")
+            {
+                Clipboard.SetDataObject(text);
+            }
+        }
+
         /// <summary>
         /// 右クリックメニュー＞削除　をクリック時に呼ばれる
         /// </summary>
@@ -385,7 +446,7 @@ namespace WpfApp2
                     {
                         AppDataObject myobj;
                         myobj = (AppDataObject)listView.SelectedItems[0];
-                        RemoveAppDate(myobj);
+                        RemoveAppData(myobj);
                     }
                     break;
                 case MessageBoxResult.Cancel:
@@ -398,7 +459,7 @@ namespace WpfApp2
         /// アプリケーションのデータを削除
         /// </summary>
         /// <param name="obj"></param>
-        private void RemoveAppDate(AppDataObject obj)
+        private void RemoveAppData(AppDataObject obj)
         {
             AppDatas.Remove(obj);
             listView.Items.Remove(obj);
@@ -481,10 +542,11 @@ namespace WpfApp2
         {
             try
             {
-                var uri = new Uri("data/appData.csv", UriKind.Relative);
-                string csvData = uri.ToString();
+                string filePath = Directory.GetCurrentDirectory() + "/data/appData.csv";
+                //var uri = new Uri("data/appData.csv", UriKind.Relative);
+                //string csvData = uri.ToString();
 
-                using (var sw = new System.IO.StreamWriter(csvData, false, Encoding.UTF8))
+                using (var sw = new System.IO.StreamWriter(filePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine($"アプリケーション名,今日の起動時間,累積起動時間,最終起動日時,toggleと連携するか,連携プロジェクト名");
                     foreach (AppDataObject appData in AppDatas)
@@ -505,22 +567,22 @@ namespace WpfApp2
             }
         }
 
-
         private void LoadCsvData ()
         {
             try
             {
-                Uri uri = new Uri(@"data/appData.csv", UriKind.Relative);
-                string csvData = uri.ToString();
+                //Uri uri = new Uri(@"data/appData.csv", UriKind.Relative);
+                //string csvData = uri.ToString();
+                string filePath = Directory.GetCurrentDirectory() + "/data/appData.csv";
 
                 //using (StreamReader reader = new StreamReader(@"data/data.csv", Encoding.UTF8))
-                using (StreamReader reader = new StreamReader(csvData, Encoding.UTF8))
+                using (StreamReader reader = new StreamReader(filePath, Encoding.UTF8))
                 {
                     reader.ReadLine();
                     while (!reader.EndOfStream)
                     {
-                        String line = reader.ReadLine();
-                        String[] parsedLine = line.Split(',');
+                        string line = reader.ReadLine();
+                        string[] parsedLine = line.Split(',');
                         AppDataObject data = new AppDataObject(this, parsedLine[0])
                         {
                             DisplayedName = parsedLine[0],
@@ -543,18 +605,6 @@ namespace WpfApp2
             foreach (AppDataObject appData in AppDatas)
             {
                 appData.LoadFileData();
-            }
-        }
-
-
-
-
-        private void topMenu_Click(object sender, RoutedEventArgs e)
-        {
-            if (!SettingMenuWindow.IsActive)
-            {
-                SettingMenuWindow = new SettingWindow(this);
-                SettingMenuWindow.ShowDialog();
             }
         }
 

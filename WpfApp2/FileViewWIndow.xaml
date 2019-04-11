@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp2"
         mc:Ignorable="d"
-        Title="Window1" Height="400" Width="400">
+        Title="ファイル名別作業時間" Height="400" Width="400"
+        ResizeMode="NoResize">
     <Grid HorizontalAlignment="Center">
         <Grid HorizontalAlignment="Center">
             <Grid.RowDefinitions>

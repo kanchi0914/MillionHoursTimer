@@ -4,7 +4,8 @@
              xmlns:local="clr-namespace:WpfApp2"
              ShutdownMode="OnExplicitShutdown"
              Startup="Application_Startup" Exit="Application_Exit"
-             StartupUri="MainWindow.xaml">
+             StartupUri="MainWindow.xaml"
+             SessionEnding="Application_SessionEnding">
     <Application.Resources>
          
     </Application.Resources>

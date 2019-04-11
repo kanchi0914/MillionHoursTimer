@@ -95,9 +95,6 @@ namespace WpfApp2
         {
             if (!string.IsNullOrEmpty(data) && data != "-")
             {
-                //string[] dateAndTime = data.Split(' ');
-                //LastDate = dateAndTime[0];
-                //LastTime = DateTime.Parse(dateAndTime[]);
                 LastTime = DateTime.Parse(data);
             }
         }
@@ -119,57 +116,17 @@ namespace WpfApp2
         {
             get
             {
-                //TimeSpan ts = new TimeSpan(0, TotalMinutes, 0);
-                //if (ts.Hours == 0 && ts.Minutes == 0)
-                //{
-                //    return ("-");
-                //}
-                //else
-                //{
-                //    return ($"{ts.Hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
-                //}
                 return GetFormattedStringFromMinutes(TotalMinutes);
             }
         }
 
         public string GetTodaysTime
         {
-            //get
-            //{
-            //    TimeSpan ts = new TimeSpan(0, TodaysMinutes, 0);
-            //    if (ts.Hours == 0 && ts.Minutes == 0)
-            //    {
-            //        return ("-");
-            //    }
-            //    else
-            //    {
-            //        return ($"{ts.Hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
-            //    }
-            //}
             get
             {
                 return GetFormattedStringFromMinutes(TodaysMinutes);
             }
         }
-
-        ///// <summary>
-        ///// 『〇〇時間○○分』の形にして返す
-        ///// </summary>
-        ///// <param name="minutes"></param>
-        ///// <returns></returns>
-        //public string GetFormattedStringFromMinutes(int minutes)
-        //{
-        //    TimeSpan ts = new TimeSpan(0, TotalMinutes, 0);
-        //    if (ts.Hours == 0 && ts.Minutes == 0)
-        //    {
-        //        return ("-");
-        //    }
-        //    else
-        //    {
-        //        var hours = ts.Days * 24 + ts.Hours;
-        //        return ($"{hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
-        //    }
-        //}
 
         public string GetLastLaunchedTime
         {
@@ -283,11 +240,7 @@ namespace WpfApp2
             {
                 Console.WriteLine(e);
             }
- 
-            //MemoryStream data = new MemoryStream(File.ReadAllBytes(path));
-            //WriteableBitmap wbmp = new WriteableBitmap(BitmapFrame.Create(data));
-            //data.Close();
-            //ImageSource = wbmp;
+
 
         }
 
@@ -308,27 +261,7 @@ namespace WpfApp2
         public void LoadIconImage()
         {
             var bmpImage = new BitmapImage();
-            //string uriPath = "data/icons/" + ProcessName + ".png";
-            //string uriPath = "data/icons/" + "testicon3.png";
-            //Console.WriteLine(Directory.GetCurrentDirectory());
-
-            //string uriPath = Directory.GetCurrentDirectory() + iconFileDir + $"{ProcessName}.png";
             string uriPath = Directory.GetCurrentDirectory() + "/data/icons/" + $"{ProcessName}.png";
-            //Console.WriteLine(@uriPath);
-            //string uriPath = ProcessName + ".png";
-            //string uriPath = AppDomain.CurrentDomain.BaseDirectory + "/" + iconFileDir + ProcessName + $".png";
-
-
-            //uriPath = "data/icons/" + "testicon3.png";
-            //Uri uri = new Uri(uriPath, UriKind.Relative);
-            //bmpImage = new BitmapImage(uri);
-            //ImageSource = bmpImage;
-
-
-            //bmpImage.BeginInit();
-            //bmpImage.UriSource = new Uri(uriPath, UriKind.Relative);
-            //bmpImage.EndInit();
-            //ImageSource = bmpImage;
 
             try
             {
@@ -355,7 +288,7 @@ namespace WpfApp2
                 LaunchedTime = DateTime.Now;
                 IsRunning = true;
             }
-
+            
             MinutesFromLaunched += Properties.Settings.Default.CountInterval;
 
             if (MinutesFromLaunched >= Properties.Settings.Default.MinCountStartTime)
@@ -374,6 +307,10 @@ namespace WpfApp2
 
         }
 
+        /// <summary>
+        /// データの時間を更新
+        /// </summary>
+        /// <param name="minutes"></param>
         public void AddMinutes(int minutes)
         {
             TotalMinutes += minutes;
@@ -391,6 +328,10 @@ namespace WpfApp2
             LastTime = DateTime.Now;
         }
 
+        /// <summary>
+        /// ファイルデータに対し、時間を累積
+        /// </summary>
+        /// <param name="windowTitle"></param>
         public void AccumulateMinuteToFileData(string windowTitle)
         {
             string fileName = "";
@@ -432,6 +373,9 @@ namespace WpfApp2
             }
         }
 
+        /// <summary>
+        /// 全てのファイルデータに対し、時間を累積
+        /// </summary>
         public void AccumulateMinuteToFileDatas()
         {
             //ウィンドウタイトルを取得
@@ -441,47 +385,14 @@ namespace WpfApp2
             foreach (string t in titles)
             {
                 AccumulateMinuteToFileData(t);
-                //string fileName = "";
-                //string title = t;
-                //string[] parsed = title.Split(' ');
-
-                //foreach (string s in parsed)
-                //{
-                //    foreach (string f in FileExtensions)
-                //    {
-                //        //登録した拡張子に合致するものがあった
-                //        if (s.Contains(f))
-                //        {
-                //            fileName = s;
-                //            break;
-                //        }
-                //    }
-                //}
-
-                ////拡張機能
-                //if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
-                //{
-                //    string[] parsed0 = title.Split('-');
-                //    fileName = parsed0[0];
-                //}
-
-                //if (!string.IsNullOrEmpty(fileName))
-                //{
-                //    FileData file = Files.Find(f => f.Name == fileName);
-                //    //ファイルが既に存在すれば時間を追加し、なければ作成
-                //    if (file != null)
-                //    {
-                //        file.AccumulateMinute();
-                //    }
-                //    else
-                //    {
-                //        AddFileData(fileName);
-                //    }
-                //}
             }
 
         }
 
+        /// <summary>
+        /// ファイルデータを追加
+        /// </summary>
+        /// <param name="fileName"></param>
         private void AddFileData(string fileName)
         {
             //最大件数をオーバーしている場合、先頭の要素を削除
@@ -505,30 +416,27 @@ namespace WpfApp2
                 get
                 {
                     return GetFormattedStringFromMinutes(TotalMinutes);
-                    //TimeSpan ts = new TimeSpan(0, Minutes, 0);
-                    //return ($"{ts.Hours.ToString()}時間　{ts.Minutes.ToString()}分");
                 }
-            }
-
-            public void Set(int num)
-            {
-                TotalMinutes += num;
             }
 
             public void AccumulateMinute()
             {
-                MinutesFromLaunched += Properties.Settings.Default.CountInterval;
+                //同名ファイルが複数回計測されるのをを防ぐ
+                if (IsCounted) return;
 
-                if (MinutesFromLaunched >= Properties.Settings.Default.MinCountStartTime)
+                MinutesFromLaunched += Settings.CountInterval;
+
+                //指定した時間が経過していたら、データの記録を開始
+                if (MinutesFromLaunched >= Settings.MinCountStartTime)
                 {
                     if (!IsCountStarted)
                     {
-                        AddMinutes(Properties.Settings.Default.MinCountStartTime);
+                        AddMinutes(Settings.MinCountStartTime);
                         IsCountStarted = true;
                     }
                     else
                     {
-                        AddMinutes(Properties.Settings.Default.CountInterval);
+                        AddMinutes(Settings.CountInterval);
                     }
                 }
             }
@@ -554,6 +462,11 @@ namespace WpfApp2
             }
         }
 
+        /// <summary>
+        /// 分のデータを、指定の形式に変換して返す
+        /// </summary>
+        /// <param name="minutes"></param>
+        /// <returns></returns>
         public static string GetFormattedStringFromMinutes(int minutes)
         {
             TimeSpan ts = new TimeSpan(0, minutes, 0);

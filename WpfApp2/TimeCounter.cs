@@ -57,49 +57,23 @@ namespace WpfApp2
 
             interval = Properties.Settings.Default.CountInterval;
             CreateTimer();
-
-
-            //Test();
-            //Console.WriteLine("");
-
         }
 
-
-        private void Test()
-        {
-            foreach (AppDataObject data in mainWindow.AppDatas)
-            {
-
-                Process[] processes = Process.GetProcessesByName(data.ProcessName);
-
-                //if (data.ProcessName == "CLIPStudioPaint")
-                //{
-                //    Console.WriteLine(processes);
-                //}
-
-
-
-
-                if (processes.Length > 0)
-                {
-
-                }
-            }
-        }
-
-        //直す
+        /// <summary>
+        /// タイマーの初期化
+        /// </summary>
         private void CreateTimer()
         {
-            //TM.Timer timer = new TM.Timer();
             timer = new TM.Timer();
             timer.Elapsed += new TM.ElapsedEventHandler(TimeDisp);
-            //timer.Interval = (mainWindow.CountMinutes * 60) * (int)mainWindow.CountMinutes * 1000;
-            //timer.Interval = (interval * Settings.CountSeconds) * 1000;
             timer.Interval = (Properties.Settings.Default.CountInterval * Settings.CountSeconds) * 1000;
             timer.AutoReset = true;
             timer.Enabled = true;
         }
 
+        /// <summary>
+        /// タイマーの設定更新
+        /// </summary>
         public void UpdateTimer()
         {
             timer.Interval = (Properties.Settings.Default.CountInterval * Settings.CountSeconds) * 1000;
@@ -107,9 +81,30 @@ namespace WpfApp2
 
         private void TimeDisp(object sender, EventArgs e)
         {
+            //List<AppDataObject> tempAppData = new List<AppDataObject>(mainWindow.AppDatas);
 
-            List<AppDataObject> tempAppData = new List<AppDataObject>(mainWindow.AppDatas);
+            //計測
+            Count();
 
+            //終了確認
+            CheckClosedApp();
+
+            //データを保存
+            mainWindow.SaveCsvData();
+
+            //listviewの更新
+            mainWindow.listView.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Refresh()));
+
+            //ファイルデータの重複防止フラグをリセット
+            ResetFileCount();
+        }
+
+
+
+        #region 計測メソッド
+
+        public void Count()
+        {
             //すべてのアプリをカウント
             if (!Properties.Settings.Default.isCountingNotMinimized &&
                 !Properties.Settings.Default.isCountingOnlyActive)
@@ -127,31 +122,11 @@ namespace WpfApp2
                 CountOnlyActiveApp();
             }
 
-            Test();
-
-
             foreach (FileViewWindow window in mainWindow.FileListWindows)
             {
                 window.Update();
             }
-
-            //Console.WriteLine(mainWindow.AppDatas);
-
-            //終了確認
-            CheckClosedApp();
-
-            //データを保存
-            mainWindow.SaveCsvData();
-
-            //listviewの更新
-            mainWindow.listView.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Refresh()));
-
-            //ファイルデータの重複防止フラグをリセット
-            ResetFileCount();
-
         }
-
-        #region 計測メソッド
 
         public void CountAllApps()
         {

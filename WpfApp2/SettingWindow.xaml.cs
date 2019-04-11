@@ -67,19 +67,6 @@ namespace WpfApp2
 
         public void InitComponents()
         {
-            //NotCountMinimized.IsChecked = Properties.Settings.Default.isCountingNotMinimized;
-            //OnlyCountActive.IsChecked = Properties.Settings.Default.isCountingOnlyActive;
-            //AdditionalCount.IsChecked = Properties.Settings.Default.isAdditionalFileName;
-
-            //apiKeyInput = FindName("APIKeyInput") as TextBox;
-            //apiKeyInput.Text = mainWindow.TogglManager.ApiKey;
-
-            //minCountStartTimeInput = FindName("MinCountTime") as TextBox;
-            //minCountStartTimeInput.Text = Properties.Settings.Default.MinCountStartTime.ToString();
-
-            //countIntervalInput = FindName("CountInterval") as TextBox;
-            //countIntervalInput.Text = Properties.Settings.Default.CountInterval.ToString();
-
             NotCountMinimized.IsChecked = Settings.IsCountingNotMinimized;
             OnlyCountActive.IsChecked = Settings.IsCountingOnlyActive;
             AdditionalCount.IsChecked = Settings.IsEnabledAdditionalFileNameSetting;
@@ -91,7 +78,7 @@ namespace WpfApp2
             MinCountTime.Text = Settings.MinCountStartTime.ToString();
             MaxFileNum.Text = Settings.MaxFileNum.ToString();
 
-            APIKeyInput.Text = Settings.APIKey;
+            APIKeyInput.Text = mainWindow.TogglManager.ApiKey;
         }
 
         public void InitTogglList()
@@ -102,38 +89,11 @@ namespace WpfApp2
         public void RefreshToggleList()
         {
             User.Text = "ユーザー：" + mainWindow.TogglManager.User;
-
-            //var projectNames = new List<string>();
-
-            //foreach ((string s, int i) in mainWindow.togglManager.ProjectIDs)
-            //{
-            //    projectNames.Add(s);
-            //}
-
-            //foreach (KeyValuePair<string, int> kvp in mainWindow.TogglManager.ProjectIDs)
-            //{
-            //    projectNames.Add(kvp.Key);
-            //}
-
-
             foreach (AppDataObject data in mainWindow.AppDatas)
             {
-                //data.ProjectNames = projectNames;
                 data.ProjectNames = mainWindow.TogglManager.ProjectIDs.Keys.ToList();
                 data.TagNames = mainWindow.TogglManager.Tags;
             }
-
-            //foreach ((string s, int i) in mainWindow.togglManager.ProjectIDs)
-            //{
-            //    var data = new ProjectData() { ProjectName = s, ProjectID = i };
-            //    ProjectDatas.Add(data);
-            //}
-
-            //foreach (KeyValuePair<string, int> kvp in mainWindow.TogglManager.ProjectIDs)
-            //{
-            //    var data = new ProjectData() { ProjectName = kvp.Key, ProjectID = kvp.Value };
-            //    ProjectDatas.Add(data);
-            //}
         }
 
         public void OnClickedOKButton(object sender, RoutedEventArgs e)
@@ -176,9 +136,6 @@ namespace WpfApp2
         /// </summary>
         private void Exit()
         {
-            //mainWindow.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
-            //mainWindow.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
-
             //アプリ終了時に呼ばれた場合は変更を加えない
             if (isFromWindow)
             {
@@ -187,9 +144,11 @@ namespace WpfApp2
                 Settings.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
                 Settings.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
                 Settings.IsEnabledAdditionalFileNameSetting = (bool)AdditionalCount.IsChecked;
-                Settings.CountInterval = int.Parse(CountInterval.Text);
-                Settings.MinCountStartTime = int.Parse(MinCountTime.Text);
-                Settings.MaxFileNum = int.Parse(MaxFileNum.Text);
+
+                if (int.Parse(CountInterval.Text) > 0) Settings.CountInterval = int.Parse(CountInterval.Text);
+                if (int.Parse(MinCountTime.Text) > 0) Settings.MinCountStartTime = int.Parse(MinCountTime.Text);
+                if (int.Parse(MaxFileNum.Text) > 0) Settings.MaxFileNum = int.Parse(MaxFileNum.Text);
+
                 Settings.Save();
 
                 mainWindow.SaveCsvData();

@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="600"
+        Title="MillionHoursTimer" Height="450" Width="600"
         AllowDrop="True"
         Drop="Window_Drop" PreviewDragOver="Window_PreviewDragOver"
         Closing="Window_Closing"
+        ResizeMode="NoResize"
         >
 
   <!--ListViewの設定-->
@@ -47,7 +48,7 @@
         <ColumnDefinition Width="1*" />
         <!--<ColumnDefinition Width="120" />-->
       </Grid.ColumnDefinitions>
-      <ListView Name="listView"  HorizontalAlignment="Center" Height="340" Margin="20,40,20,20" VerticalAlignment="Top" Width="540" SelectionChanged="listView_SelectionChanged">
+      <ListView Name="listView"  HorizontalAlignment="Center"  Height="340" Margin="20,40,20,20" VerticalAlignment="Top" Width="540" SelectionChanged="listView_SelectionChanged">
         <ListView.View>
           <GridView>
             <!--アプリ名表示列-->
@@ -62,14 +63,14 @@
               </GridViewColumn.CellTemplate>
             </GridViewColumn>
             <!---->
-            <GridViewColumn Header ="今日の起動時間" Width="100">
+            <GridViewColumn Header ="今日の起動時間" Width="150">
               <GridViewColumn.CellTemplate>
                 <DataTemplate>
                     <TextBlock HorizontalAlignment="Right" Text="{Binding Path=GetTodaysTime}"/>
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>
-            <GridViewColumn Header ="累積起動時間" Width="100">
+            <GridViewColumn Header ="累積起動時間" Width="150">
               <GridViewColumn.CellTemplate>
                 <DataTemplate>
                   <Grid>
@@ -78,7 +79,7 @@
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>
-              <GridViewColumn Header ="最終起動日時" Width="120">
+              <!--<GridViewColumn Header ="最終起動日時" Width="120">
               <GridViewColumn.CellTemplate>
                 <DataTemplate>
                   <Grid>
@@ -86,7 +87,7 @@
                   </Grid>
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
-            </GridViewColumn>
+            </GridViewColumn>-->
               
           </GridView>
         </ListView.View>
