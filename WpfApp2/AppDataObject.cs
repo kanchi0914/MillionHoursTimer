@@ -128,7 +128,7 @@ namespace WpfApp2
                 //{
                 //    return ($"{ts.Hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
                 //}
-                return SettingsAndUtilities.GetFormattedStringFromMinutes(TotalMinutes);
+                return GetFormattedStringFromMinutes(TotalMinutes);
             }
         }
 
@@ -148,7 +148,7 @@ namespace WpfApp2
             //}
             get
             {
-                return SettingsAndUtilities.GetFormattedStringFromMinutes(TodaysMinutes);
+                return GetFormattedStringFromMinutes(TodaysMinutes);
             }
         }
 
@@ -504,7 +504,7 @@ namespace WpfApp2
             {
                 get
                 {
-                    return SettingsAndUtilities.GetFormattedStringFromMinutes(TotalMinutes);
+                    return GetFormattedStringFromMinutes(TotalMinutes);
                     //TimeSpan ts = new TimeSpan(0, Minutes, 0);
                     //return ($"{ts.Hours.ToString()}時間　{ts.Minutes.ToString()}分");
                 }
@@ -551,6 +551,20 @@ namespace WpfApp2
             public override int GetHashCode()
             {
                 return Name.GetHashCode();
+            }
+        }
+
+        public static string GetFormattedStringFromMinutes(int minutes)
+        {
+            TimeSpan ts = new TimeSpan(0, minutes, 0);
+            if (ts.Hours == 0 && ts.Minutes == 0)
+            {
+                return ("-");
+            }
+            else
+            {
+                var hours = ts.Days * 24 + ts.Hours;
+                return ($"{hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
             }
         }
     }

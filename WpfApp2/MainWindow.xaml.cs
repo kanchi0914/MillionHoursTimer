@@ -42,7 +42,7 @@ namespace WpfApp2
             }
         }
 
-        public string Date { get; set; }
+        //public string Date { get; set; }
         public List<AppDataObject> AppDatas { get; set; } = new List<AppDataObject>();
         public List<FileViewWindow> FileListWindows { get; set; } = new List<FileViewWindow>();
         public SettingWindow SettingMenuWindow { get; set; }
@@ -60,21 +60,20 @@ namespace WpfApp2
 
             InitializeComponent();
 
-            LoadSettings();
+            Settings.Load();
+            
             LoadCsvData();
-
 
             //設定画面
             timeCounter = new TimeCounter(this);
             TogglManager = new TogglManager(this);
             SettingMenuWindow = new SettingWindow(this);
 
-            //日付の確認
+            //日付を確認し、今日の日付と違っていれば更新
             string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
-            if (Date != currentDate)
+            if (Settings.Date != currentDate)
             {
-                Date = currentDate;
-                Properties.Settings.Default.date = Date;
+                Settings.Date = currentDate;
                 foreach (AppDataObject apps in AppDatas)
                 {
                     apps.TodaysMinutes = 0;
@@ -97,6 +96,15 @@ namespace WpfApp2
             //右クリックメニューの作成
             CreateContextMenu();
 
+
+            Properties.Settings.Default.SettingsSaving += aaa;
+        }
+
+        private void aaa(object sender, EventArgs e)
+        {
+            //isClosingFromWindow = false;
+            //MessageBox.Show(Properties.Settings.Default.CountInterval.ToString());
+            Console.Write("");
         }
 
         /// <summary>
@@ -122,6 +130,11 @@ namespace WpfApp2
             _notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(_notifyIcon_MouseClick);
         }
 
+        /// <summary>
+        /// タスクトレイアイコンをクリック時に呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _notifyIcon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             try
@@ -129,8 +142,8 @@ namespace WpfApp2
                 if (e.Button == System.Windows.Forms.MouseButtons.Left)
                 {
                     //ウィンドウを可視化
-                    Visibility = System.Windows.Visibility.Visible;
-                    WindowState = System.Windows.WindowState.Normal;
+                    Visibility = Visibility.Visible;
+                    WindowState = WindowState.Normal;
                     Activate();
                 }
             }
@@ -144,9 +157,32 @@ namespace WpfApp2
        /// <param name="e"></param>
         private void exitItem_Click(object sender, EventArgs e)
         {
-            //isClosingFromWindow = false;
-            OnClickExit();
+            //OnClickExit();
+            string text = "";
+            text = "終了してよろしいですか？";
+            MessageBoxResult res = MessageBox.Show(text, "Confirmation", MessageBoxButton.OKCancel,
+                        MessageBoxImage.Question, MessageBoxResult.Cancel);
+            if (res == MessageBoxResult.Cancel)
+            {
+                return;
+            }
+
+            foreach (Window w in FileListWindows)
+            {
+                w.Close();
+            }
+
+            //アイコン表示を終了
+            _notifyIcon.Dispose();
+
+            Application.Current.Shutdown();
+
+            Settings.Save();
         }
+
+        //private void OnClickExit(bool isFromWindow = false)
+        //{
+        //}
 
         /// <summary>
         /// メインウィンドウを閉じたときに呼ばれ，閉じるのをキャンセルし最小化
@@ -161,42 +197,16 @@ namespace WpfApp2
                 e.Cancel = true;
 
                 //ウィンドウを非可視にする
-                Visibility = System.Windows.Visibility.Collapsed;
+                Visibility = Visibility.Collapsed;
             }
             catch { }
         }
 
-        private void OnClickExit(bool isFromWindow = false)
-        {
-            string text = "";
-            text = "終了してよろしいですか？";
-            MessageBoxResult res = MessageBox.Show(text, "Confirmation", MessageBoxButton.OKCancel,
-                        MessageBoxImage.Question, MessageBoxResult.Cancel);
-            if (res == MessageBoxResult.Cancel)
-            {
-                return;
-            }
+        #region メニューバー
 
-            SettingMenuWindow.Close();
-
-            foreach (Window w in FileListWindows)
-            {
-                w.Close();
-            }
-
-            //アイコン表示を終了
-            _notifyIcon.Dispose();
-
-            //isFromTask = true;
-
-            Application.Current.Shutdown();
-
-            //Properties.Settings.Default.Reload();
-            //Properties.Settings.Default.Save();
-            //Properties.Settings.Default.Reload();
-
-        }
-
+        /// <summary>
+        /// メニューバーを設定する
+        /// </summary>
         public void CreateMenu()
         {
             AddApp.Click += OnClickAddApp;
@@ -204,33 +214,101 @@ namespace WpfApp2
             Export.Click += OnClickExportData;
         }
 
-        private void LoadSettings()
+        /// <summary>
+        /// メニュー>計測するアプリケーションの追加　をクリック時に呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnClickAddApp(object sender, RoutedEventArgs e)
         {
-            Date = Properties.Settings.Default.date;
-            //IsCountingNotMinimized = Properties.Settings.Default.isCountingNotMinimized;
-            //IsCountingOnlyActive = Properties.Settings.Default.isCountingOnlyActive;
-        }
+            string path = GetFilePathByFileDialog();
 
-        private void InitListView()
-        {
-            foreach (AppDataObject data in AppDatas)
+            if (!string.IsNullOrEmpty(path))
             {
-                data.LoadIconImage();
-                listView.Items.Add(data);
-                AddFileListWindow(data);
+                AddListFromPath(path);
             }
         }
 
-        public void UpdateListView()
+        /// <summary>
+        /// メニュー>データのインポート　をクリック時に呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnClickImportData(object sender, RoutedEventArgs e)
         {
-            listView.Dispatcher.BeginInvoke(new Action(() => listView.Items.Refresh()));
+            string path = GetFolderPathByFileDialog();
+            if (!string.IsNullOrEmpty(path))
+            {
+                var splitted = path.Split('\\');
+                if (splitted.Last() != "data")
+                {
+                    MessageBox.Show("dataフォルダを選択してください",
+                        "エラー",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                DirectoryProcessor.CopyAndReplace(@path, "data");
+            }
         }
 
-        private void AddFileListWindow(AppDataObject data)
+        /// <summary>
+        /// メニュー>データのエクスポート　をクリック時に呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnClickExportData(object sender, RoutedEventArgs e)
         {
-            FileViewWindow fileListWindow = new FileViewWindow(data);
-            FileListWindows.Add(fileListWindow);
+            string path = GetFolderPathByFileDialog();
+
+            path += "\\data";
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                DirectoryProcessor.CopyAndReplace("data", @path);
+            }
         }
+
+        /// <summary>
+        /// ファイルダイアログを表示し、.exeファイルを選択させる
+        /// </summary>
+        /// <returns></returns>
+        private string GetFilePathByFileDialog()
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Title = "実行ファイル(.exe)を選択してください";
+            dialog.Filter = "実行ファイル(*.exe)|*.exe";
+            if (dialog.ShowDialog() == true)
+            {
+                return dialog.FileName;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// ファイルダイアログを表示し、フォルダを選択させる
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        private string GetFolderPathByFileDialog(string title = "フォルダを選択してください")
+        {
+            var dialog = new CommonOpenFileDialog(title);
+            dialog.IsFolderPicker = true;
+            var ret = dialog.ShowDialog();
+            if (ret == CommonFileDialogResult.Ok)
+            {
+                return dialog.FileName;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        #endregion
 
         #region 右クリックメニュー
 
@@ -331,86 +409,31 @@ namespace WpfApp2
         #endregion
 
 
+        #region リストビュー
 
-
-        //記録するアプリケーションの登録
-        private void OnClickAddApp(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// リストビューを初期化する
+        /// </summary>
+        private void InitListView()
         {
-            string path = GetFilePathByFileDialog();
-
-            if (!string.IsNullOrEmpty(path))
+            foreach (AppDataObject data in AppDatas)
             {
-                AddListFromPath(path);
+                data.LoadIconImage();
+                listView.Items.Add(data);
+                AddFileListWindow(data);
             }
         }
 
-        private string GetFilePathByFileDialog()
-        {
-            var dialog = new OpenFileDialog();
-            dialog.Title = "実行ファイル(.exe)を選択してください";
-            dialog.Filter = "実行ファイル(*.exe)|*.exe";
-            if (dialog.ShowDialog() == true)
-            {
-                return dialog.FileName;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        private string GetFolderPathByFileDialog(string title = "フォルダを選択してください")
-        {
-            var dialog = new CommonOpenFileDialog(title);
-            dialog.IsFolderPicker = true;
-            var ret = dialog.ShowDialog();
-            if (ret == CommonFileDialogResult.Ok)
-            {
-                return dialog.FileName;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public void OnClickImportData(object sender, RoutedEventArgs e)
-        {
-            string path = GetFolderPathByFileDialog();
-            if (!string.IsNullOrEmpty(path))
-            {
-                var splitted = path.Split('\\');
-                if (splitted.Last() != "data")
-                {
-                    MessageBox.Show("dataフォルダを選択してください",
-                        "エラー",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return;
-                }
-
-                DirectoryProcessor.CopyAndReplace(@path, "data");
-            }
-        }
-
-        public void OnClickExportData(object sender, RoutedEventArgs e)
-        {
-            string path = GetFolderPathByFileDialog();
-
-            path += "\\data";
-
-            if (!string.IsNullOrEmpty(path))
-            {
-                DirectoryProcessor.CopyAndReplace("data", @path);
-            }
-        }
-
+        /// <summary>
+        /// 実行ファイルのパスからアプリケーションを登録する
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="isFromDropped"></param>
         public void AddListFromPath(string filePath, bool isFromDropped = true)
         {
             string[] parsed = filePath.Split('\\');
             string name = parsed.Last().Replace(".exe", "");
 
-            //重複を確認し、なければ登録
             if (AppDatas.Any(a => a.ProcessName == name))
             {
                 if (!isFromDropped)
@@ -431,6 +454,28 @@ namespace WpfApp2
                 SaveCsvData();
             }
         }
+
+        /// <summary>
+        /// リストビューの表示を更新する
+        /// </summary>
+        public void UpdateListView()
+        {
+            listView.Dispatcher.BeginInvoke(new Action(() => listView.Items.Refresh()));
+        }
+
+        /// <summary>
+        /// リストビューにアイテムを追加する
+        /// </summary>
+        /// <param name="data"></param>
+        private void AddFileListWindow(AppDataObject data)
+        {
+            FileViewWindow fileListWindow = new FileViewWindow(data);
+            FileListWindows.Add(fileListWindow);
+        }
+
+        #endregion
+
+
 
         public void SaveCsvData(string path = "")
         {
@@ -500,6 +545,8 @@ namespace WpfApp2
                 appData.LoadFileData();
             }
         }
+
+
 
 
         private void topMenu_Click(object sender, RoutedEventArgs e)

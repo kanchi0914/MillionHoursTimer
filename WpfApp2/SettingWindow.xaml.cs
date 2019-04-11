@@ -22,6 +22,8 @@ namespace WpfApp2
     /// </summary>
     public partial class SettingWindow : Window
     {
+        //ウィンドウから終了したかの確認フラグ
+        private bool isFromWindow = false;
 
         public MainWindow mainWindow;
 
@@ -39,55 +41,62 @@ namespace WpfApp2
 
         public SettingWindow(MainWindow mainWindow)
         {
-            Properties.Settings.Default.Reload();
             InitializeComponent();
 
             ApplicationListInToggleSetting.ItemsSource = mainWindow.AppDatas;
 
             this.mainWindow = mainWindow;
 
+            //コンポーネントの初期化
             InitComponents();
 
-            //終了時に呼ばれるコールバックメソッド
-            Closed += (s, e) => Save();
+            //ウィンドウを開いた時の設定
+            Activated += (s, e) => SetWindowFlag();
 
+            //終了時に呼ばれる
+            Closed += (s, e) => Exit();
 
+            //togglリストを初期化
             InitTogglList();
-            //Closing += (s, e) => Closing();
+        }
+
+        public void SetWindowFlag()
+        {
+            isFromWindow = true;
         }
 
         public void InitComponents()
         {
-            NotCountMinimized.IsChecked = Properties.Settings.Default.isCountingNotMinimized;
-            OnlyCountActive.IsChecked = Properties.Settings.Default.isCountingOnlyActive;
-            AdditionalCount.IsChecked = Properties.Settings.Default.isAdditionalFileName;
+            //NotCountMinimized.IsChecked = Properties.Settings.Default.isCountingNotMinimized;
+            //OnlyCountActive.IsChecked = Properties.Settings.Default.isCountingOnlyActive;
+            //AdditionalCount.IsChecked = Properties.Settings.Default.isAdditionalFileName;
+
+            //apiKeyInput = FindName("APIKeyInput") as TextBox;
+            //apiKeyInput.Text = mainWindow.TogglManager.ApiKey;
+
+            //minCountStartTimeInput = FindName("MinCountTime") as TextBox;
+            //minCountStartTimeInput.Text = Properties.Settings.Default.MinCountStartTime.ToString();
+
+            //countIntervalInput = FindName("CountInterval") as TextBox;
+            //countIntervalInput.Text = Properties.Settings.Default.CountInterval.ToString();
+
+            NotCountMinimized.IsChecked = Settings.IsCountingNotMinimized;
+            OnlyCountActive.IsChecked = Settings.IsCountingOnlyActive;
+            AdditionalCount.IsChecked = Settings.IsEnabledAdditionalFileNameSetting;
 
             OKButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
                 new RoutedEventHandler(OnClickedOKButton));
 
-            apiKeyInput = FindName("APIKeyInput") as TextBox;
-            apiKeyInput.Text = mainWindow.TogglManager.ApiKey;
+            CountInterval.Text = Settings.CountInterval.ToString();
+            MinCountTime.Text = Settings.MinCountStartTime.ToString();
+            MaxFileNum.Text = Settings.MaxFileNum.ToString();
 
-            minCountStartTimeInput = FindName("MinCountTime") as TextBox;
-            minCountStartTimeInput.Text = Properties.Settings.Default.MinCountStartTime.ToString();
-
-            APIKeyInput.Text = mainWindow.TogglManager.ApiKey;
-
-            //CountInterval.Text = Properties.Settings.Default.CountInterval.ToString();
-            //MinCountTime.Text = Properties.Settings.Default.MinCountStartTime.ToString();
-            //MaxFileNum.Text = Properties.Settings.Default.MaxFileNum.ToString();
-
-            //MinCountTime.Text = "1000";
-
-            countIntervalInput = FindName("CountInterval") as TextBox;
-            countIntervalInput.Text = Properties.Settings.Default.CountInterval.ToString();
-
-
+            APIKeyInput.Text = Settings.APIKey;
         }
 
         public void InitTogglList()
         {
-            RefreshToggleList();
+             RefreshToggleList();
         }
 
         public void RefreshToggleList()
@@ -135,7 +144,6 @@ namespace WpfApp2
                 try
                 {
                     mainWindow.TogglManager.SetAPIKey(inputBox.Text);
-                    //InitTogglList();
                     RefreshToggleList();
                     ApplicationListInToggleSetting.Dispatcher.BeginInvoke(new Action(() => ApplicationListInToggleSetting.Items.Refresh()));
                     MessageBox.Show("認証が完了しました");
@@ -143,8 +151,7 @@ namespace WpfApp2
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
-                    MessageBox.Show(ex.ToString());
-                    //MessageBox.Show("API Keyの認証に失敗しました。正しく入力されているか確認してください");
+                    MessageBox.Show("API Keyの認証に失敗しました。正しく入力されているか確認してください");
                 }
             }
 
@@ -167,26 +174,29 @@ namespace WpfApp2
         /// <summary>
         /// ウィンドウを閉じたときに呼ばれる
         /// </summary>
-        private void Save()
+        private void Exit()
         {
             //mainWindow.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
             //mainWindow.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
 
-            Properties.Settings.Default.isCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
-            Properties.Settings.Default.isCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
-            Properties.Settings.Default.isAdditionalFileName = (bool)AdditionalCount.IsChecked;
+            //アプリ終了時に呼ばれた場合は変更を加えない
+            if (isFromWindow)
+            {
+                Settings.APIKey = mainWindow.TogglManager.ApiKey;
 
-            Properties.Settings.Default.CountInterval = int.Parse(countIntervalInput.Text);
-            Properties.Settings.Default.MinCountStartTime = int.Parse(minCountStartTimeInput.Text);
-            //Properties.Settings.Default.MaxFileNum = int.Parse(MaxFileNum.Text);
+                Settings.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
+                Settings.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
+                Settings.IsEnabledAdditionalFileNameSetting = (bool)AdditionalCount.IsChecked;
+                Settings.CountInterval = int.Parse(CountInterval.Text);
+                Settings.MinCountStartTime = int.Parse(MinCountTime.Text);
+                Settings.MaxFileNum = int.Parse(MaxFileNum.Text);
+                Settings.Save();
 
-            Properties.Settings.Default.APIKey = mainWindow.TogglManager.ApiKey;
+                mainWindow.SaveCsvData();
 
-            //Properties.Settings.Default.Upgrade();
-            Properties.Settings.Default.Save();
-
-            mainWindow.timeCounter.UpdateTimer();
-
+                mainWindow.timeCounter.UpdateTimer();
+                isFromWindow = false;
+            }
         }
 
     }

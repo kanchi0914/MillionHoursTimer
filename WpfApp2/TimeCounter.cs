@@ -95,14 +95,14 @@ namespace WpfApp2
             timer.Elapsed += new TM.ElapsedEventHandler(TimeDisp);
             //timer.Interval = (mainWindow.CountMinutes * 60) * (int)mainWindow.CountMinutes * 1000;
             //timer.Interval = (interval * Settings.CountSeconds) * 1000;
-            timer.Interval = (Properties.Settings.Default.CountInterval * SettingsAndUtilities.CountSeconds) * 1000;
+            timer.Interval = (Properties.Settings.Default.CountInterval * Settings.CountSeconds) * 1000;
             timer.AutoReset = true;
             timer.Enabled = true;
         }
 
         public void UpdateTimer()
         {
-            timer.Interval = (Properties.Settings.Default.CountInterval * SettingsAndUtilities.CountSeconds) * 1000;
+            timer.Interval = (Properties.Settings.Default.CountInterval * Settings.CountSeconds) * 1000;
         }
 
         private void TimeDisp(object sender, EventArgs e)

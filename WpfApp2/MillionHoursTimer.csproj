@@ -87,7 +87,7 @@
     </Compile>
     <Compile Include="DirectoryProcessor.cs" />
     <Compile Include="EnumWindowsClass.cs" />
-    <Compile Include="SettingsAndUtilities.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Components\NotifyIcon.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -18,7 +18,7 @@ namespace WpfApp2
     {
         private MainWindow mainWindow;
 
-        public string ApiKey { get; set; } = SettingsAndUtilities.DefaultAPIKey;
+        public string ApiKey { get; set; } = Settings.DefaultAPIKey;
         string PreApiKey { get; set; } = "";
         public string User{ get; set; } = "";
 
@@ -34,7 +34,8 @@ namespace WpfApp2
         {
             this.mainWindow = mainWindow;
 
-            ApiKey = Properties.Settings.Default.APIKey.ToString();
+            //ApiKey = Properties.Settings.Default.APIKey.ToString();
+            ApiKey = Settings.APIKey;
 
             try
             {
@@ -60,19 +61,12 @@ namespace WpfApp2
                 {
                     return;
                 }
-
-                //
+                
                 var userService = new UserService(ApiKey);
                 User = userService.GetCurrent().Email;
 
                 ProjectIDs = new Dictionary<string, int>();
                 Tags= new List<string>() { "" };
-
-                //if (!string.IsNullOrEmpty(ApiKey))
-                //{
-                //    var userService = new UserService(ApiKey);
-                //    User = userService.GetCurrent().Email;
-                //}
 
                 var projectService = new ProjectService(ApiKey);
                 List<Project> projects = projectService.List();
