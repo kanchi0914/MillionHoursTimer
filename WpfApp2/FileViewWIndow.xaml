@@ -42,11 +42,11 @@
 
             <Grid Grid.Row="1" HorizontalAlignment="Center">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100" />
+                    <!--<ColumnDefinition Width="100" />-->
                     <ColumnDefinition Width="100" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="エクスポート" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75"/>
-                <Button Grid.Column="1" Content="全て削除" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75"/>
+                <!--<Button Grid.Column="0" Name="ExportButton" Content="エクスポート" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75"/>-->
+                <Button Grid.Column="1" Name="DeleteAllButton" Content="全て削除" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75"/>
             </Grid>
         </Grid>
 

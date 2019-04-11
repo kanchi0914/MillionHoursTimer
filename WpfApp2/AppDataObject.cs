@@ -13,10 +13,10 @@ namespace WpfApp2
     public class AppDataObject
     {
 
-        private string currentDir;
+        //private string currentDir;
 
-        //アイコン画像の保存先ディレクトリ
-        private readonly string iconFileDir = "/data/icons/";
+        ////アイコン画像の保存先ディレクトリ
+        //private readonly string iconFileDir = "/data/icons/";
 
         private MainWindow mainWindow;
 
@@ -37,13 +37,16 @@ namespace WpfApp2
         //最後に起動を確認した時刻
         public DateTime LastTime { get; private set; }
 
+        //ファイル設定
         public string FileExtension { get; private set; } = "";
         public List<string> FileExtensions { get; private set; } = new List<string>();
         public List<FileData> Files { get; private set; } = new List<FileData>();
 
+        //アイコン画像
         public ImageSource ImageSource { get; private set; }
         public Image IconImage { get; private set; }
 
+        //時間データ
         public int TodaysMinutes { get; set; }
         public int TotalMinutes { get; set; }
         public int MinutesFromLaunched { get; set; }
@@ -57,7 +60,7 @@ namespace WpfApp2
         public string LinkedProjectName { get; set; } = "";
         public string LinkedTag { get; set; } = "";
 
-
+        //名前
         public List<string> ProjectNames { get; set; } = new List<string>() { "" };
         public List<string> TagNames { get; set; } = new List<string>() { "" };
 

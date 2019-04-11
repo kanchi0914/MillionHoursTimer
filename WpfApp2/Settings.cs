@@ -16,7 +16,7 @@ namespace WpfApp2
 
         //何秒ごとにカウントするか
         //デバッグ用
-        public static readonly int CountSeconds = 60;
+        public static readonly int CountSeconds = 1;
 
         public static readonly string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
 
