@@ -370,7 +370,7 @@ namespace WpfApp2
             if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
             {
                 string[] parsed0 = title.Split('-');
-                if (parsed0.Length > 2)
+                if (parsed0.Length > 1)
                 {
                     fileName = parsed0[0];
                 }

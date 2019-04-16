@@ -67,6 +67,9 @@ namespace WpfApp2
 
         public void InitComponents()
         {
+            AutoLaunch.IsChecked = Settings.IsAutoLauch;
+            NotCountOnSleep.IsChecked = Settings.IsNotCountingOnSleep;
+
             NotCountMinimized.IsChecked = Settings.IsCountingNotMinimized;
             OnlyCountActive.IsChecked = Settings.IsCountingOnlyActive;
             AdditionalCount.IsChecked = Settings.IsEnabledAdditionalFileNameSetting;

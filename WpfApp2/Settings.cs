@@ -85,6 +85,7 @@ namespace WpfApp2
             Properties.Settings.Default.APIKey = APIKey;
 
             Properties.Settings.Default.IsAutoLaunch = IsAutoLauch;
+
             Properties.Settings.Default.isCountingNotMinimized = IsCountingNotMinimized;
             Properties.Settings.Default.isCountingOnlyActive = IsCountingOnlyActive;
             Properties.Settings.Default.IsNotCountingOnSleep = IsNotCountingOnSleep;
