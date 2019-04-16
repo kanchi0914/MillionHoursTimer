@@ -50,7 +50,7 @@ namespace WpfApp2
         public int TodaysMinutes { get; set; }
         public int TotalMinutes { get; set; }
         public int MinutesFromLaunched { get; set; }
-        public bool IsCountStarted { get; set; } = false;
+        public bool IsRecordStarted { get; set; } = false;
 
         //Toggｌ記録用の終了確認フラグ
         public bool IsRunning { get; set; } = false;
@@ -158,6 +158,16 @@ namespace WpfApp2
                     FileExtensions.Add(s);
                 }
             }
+        }
+
+        /// <summary>
+        /// 記録情報を終了させる
+        /// </summary>
+        public void Exit()
+        {
+            IsRecordStarted = false;
+            IsRunning = false;
+            mainWindow.TogglManager.SetTimeEntry(this);
         }
 
         /// <summary>
@@ -296,10 +306,11 @@ namespace WpfApp2
 
             if (MinutesFromLaunched >= Properties.Settings.Default.MinCountStartTime)
             {
-                if (!IsCountStarted)
+                //一度だけ、時間の差分を足す
+                if (!IsRecordStarted)
                 {
                     AddMinutes(Properties.Settings.Default.MinCountStartTime);
-                    IsCountStarted = true;
+                    IsRecordStarted = true;
                 }
                 else
                 {
@@ -320,8 +331,9 @@ namespace WpfApp2
             string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
             if (currentDate != LastTime.ToString("yyyy/MM/dd"))
             {
-                var minute = DateTime.Now.Minute;
-                TodaysMinutes = minute;
+                //var minute = DateTime.Now.Minute;
+                TodaysMinutes = 0;
+                TodaysMinutes += minutes;
             }
             else
             {
@@ -358,7 +370,10 @@ namespace WpfApp2
             if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
             {
                 string[] parsed0 = title.Split('-');
-                fileName = parsed0[0];
+                if (parsed0.Length > 2)
+                {
+                    fileName = parsed0[0];
+                }
             }
 
             if (!string.IsNullOrEmpty(fileName))

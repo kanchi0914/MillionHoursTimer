@@ -141,6 +141,9 @@ namespace WpfApp2
             {
                 Settings.APIKey = mainWindow.TogglManager.ApiKey;
 
+                Settings.IsAutoLauch = (bool)AutoLaunch.IsChecked;
+                Settings.IsNotCountingOnSleep = (bool)NotCountOnSleep.IsChecked;
+
                 Settings.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
                 Settings.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
                 Settings.IsEnabledAdditionalFileNameSetting = (bool)AdditionalCount.IsChecked;
@@ -151,6 +154,8 @@ namespace WpfApp2
 
                 Settings.Save();
 
+                SetAutoLaunch(Settings.IsAutoLauch);
+
                 mainWindow.SaveCsvData();
 
                 mainWindow.timeCounter.UpdateTimer();
@@ -158,5 +163,43 @@ namespace WpfApp2
             }
         }
 
+        /// <summary>
+        /// 自動起動の設定
+        /// </summary>
+        /// <param name="isOn"></param>
+        private void SetAutoLaunch(bool isOn = true)
+        {
+            var Name = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+            var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            if (isOn)
+            {
+                try
+                {
+                    Microsoft.Win32.RegistryKey regkey =
+                        Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
+                        @"Software\Microsoft\Windows\CurrentVersion\RunOnce", true);
+                    regkey.SetValue(Name, path);
+                    regkey.Close();
+                }
+                catch { }
+            }
+            else
+            {
+                try
+                {
+                    Microsoft.Win32.RegistryKey regkey =
+                        Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
+                        @"Software\Microsoft\Windows\CurrentVersion\RunOnce", true);
+                    regkey.DeleteValue(Name, false);
+                    regkey.Close();
+                }
+                catch { }
+            }
+        }
+
+        private void Maintab_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

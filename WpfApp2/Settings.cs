@@ -16,7 +16,7 @@ namespace WpfApp2
 
         //何秒ごとにカウントするか
         //デバッグ用
-        public static readonly int CountSeconds = 1;
+        public static readonly int CountSeconds = 60;
 
         public static readonly string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
 
@@ -26,6 +26,8 @@ namespace WpfApp2
 
         public static readonly string AppDataFile = "data/appData.csv";
 
+        public static readonly string extentionSample =
+            ".gif/.jpg/.jpeg/.png/.bmp/.ico/.tif/.tiff/.tga/.psd/.psb";
 
         //============================================================
         //ユーザー設定
@@ -33,13 +35,16 @@ namespace WpfApp2
 
         public static string APIKey = "";
 
+        //自動で起動するか
+        public static bool IsAutoLauch = false;
+        //スリープ時にカウントしないか
+        public static bool IsNotCountingOnSleep = true;
         //最小化しているアプリを計測対象に含めないかどうか
         public static bool IsCountingNotMinimized = false;
         //アクティブなアプリのみを計測対象にするか
         public static bool IsCountingOnlyActive = false;
         //ファイル名の拡張設定を有効にするか
         public static bool IsEnabledAdditionalFileNameSetting = false;
-
         //ファイル名の最大保存件数
         public static int MaxFileNum = 100;
 
@@ -60,8 +65,11 @@ namespace WpfApp2
         public static void Load()
         {
             APIKey = Properties.Settings.Default.APIKey;
+
+            IsAutoLauch = Properties.Settings.Default.IsAutoLaunch;
             IsCountingNotMinimized = Properties.Settings.Default.isCountingNotMinimized;
             IsCountingOnlyActive = Properties.Settings.Default.isCountingOnlyActive;
+            IsNotCountingOnSleep = Properties.Settings.Default.IsNotCountingOnSleep;
             IsEnabledAdditionalFileNameSetting = Properties.Settings.Default.isAdditionalFileName;
             MaxFileNum = Properties.Settings.Default.MaxFileNum;
             CountInterval = Properties.Settings.Default.CountInterval;
@@ -75,8 +83,11 @@ namespace WpfApp2
         public static void Save()
         {
             Properties.Settings.Default.APIKey = APIKey;
+
+            Properties.Settings.Default.IsAutoLaunch = IsAutoLauch;
             Properties.Settings.Default.isCountingNotMinimized = IsCountingNotMinimized;
             Properties.Settings.Default.isCountingOnlyActive = IsCountingOnlyActive;
+            Properties.Settings.Default.IsNotCountingOnSleep = IsNotCountingOnSleep;
             Properties.Settings.Default.isAdditionalFileName = IsEnabledAdditionalFileNameSetting;
             Properties.Settings.Default.MaxFileNum = MaxFileNum;
             Properties.Settings.Default.CountInterval = CountInterval;

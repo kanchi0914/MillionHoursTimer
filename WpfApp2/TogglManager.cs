@@ -168,9 +168,17 @@ namespace WpfApp2
                 te.TagNames = new List<string>() { appData.LinkedTag };
             }
 
-            Console.Write(te);
+            try
+            {
+                if (te != null)
+                {
+                    timeEntryService.Add(te);
+                }
+            }
+            catch
+            {
 
-            timeEntryService.Add(te);
+            }
 
         }
 

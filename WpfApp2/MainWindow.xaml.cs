@@ -60,7 +60,7 @@ namespace WpfApp2
             InitializeComponent();
 
             //アプリ終了時のイベントを登録
-            Closed += (s, e) => Exit();
+            Closed += (s, e) => OnExit();
 
             //Windows終了時のイベントを追加
             SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding);
@@ -101,7 +101,7 @@ namespace WpfApp2
         /// <summary>
         /// 日付を確認し、今日の日付と違っていれば更新
         /// </summary>
-        private void UpdateDate()
+        public void UpdateDate()
         {
             string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
             if (Settings.Date != currentDate)
@@ -111,6 +111,17 @@ namespace WpfApp2
                 {
                     apps.TodaysMinutes = 0;
                 }
+            }
+        }
+
+        /// <summary>
+        /// 全ての記録情報を終了
+        /// </summary>
+        public void ExitAllApp()
+        {
+            foreach (AppDataObject data in AppDatas)
+            {
+                data.Exit();
             }
         }
 
@@ -149,8 +160,9 @@ namespace WpfApp2
         /// <summary>
         /// アプリ終了時に呼ばれ、データを保存
         /// </summary>
-        private void Exit()
+        private void OnExit()
         {
+            ExitAllApp();
             SaveCsvData();
         }
 
@@ -161,7 +173,7 @@ namespace WpfApp2
         /// <param name="e"></param>
         private void SystemEvents_SessionEnding(object sender, SessionEndingEventArgs e)
         {
-            SaveCsvData();
+            OnExit();
         }
 
         #region タスクトレイアイコン
@@ -407,7 +419,6 @@ namespace WpfApp2
             var fileExtension = new FileExtensionSettingWindow(appData);
             fileExtension.Show();
         }
-
 
         private void OnClickedCopy(object sender, RoutedEventArgs e)
         {

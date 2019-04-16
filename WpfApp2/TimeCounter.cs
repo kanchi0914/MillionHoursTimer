@@ -49,11 +49,30 @@ namespace WpfApp2
 
         private TM.Timer timer;
 
+        private bool isSuspending = false;
+
         private int interval = Properties.Settings.Default.CountInterval;
 
         public TimeCounter(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
+
+            //システムのスリープ時処理
+            SystemEvents.PowerModeChanged += (sender, e) =>
+            {
+                switch (e.Mode)
+                {
+                    //スリープ開始
+                    case PowerModes.Suspend:
+                        isSuspending = true;
+                        mainWindow.ExitAllApp();
+                        break;
+                    //復帰
+                    case PowerModes.Resume:
+                        isSuspending = false;
+                        break;
+                }
+            };
 
             interval = Properties.Settings.Default.CountInterval;
             CreateTimer();
@@ -81,43 +100,65 @@ namespace WpfApp2
 
         private void TimeDisp(object sender, EventArgs e)
         {
-            //List<AppDataObject> tempAppData = new List<AppDataObject>(mainWindow.AppDatas);
+            //日付を更新
+            mainWindow.UpdateDate();
 
-            //計測
-            Count();
+            //スリープ中でない
+            if (!isSuspending)
+            {
+                //計測
+                Count();
 
-            //終了確認
-            CheckClosedApp();
+                //終了確認
+                CheckClosedApp();
 
-            //データを保存
-            mainWindow.SaveCsvData();
+                //データを保存
+                mainWindow.SaveCsvData();
 
-            //listviewの更新
-            mainWindow.listView.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Refresh()));
+                //listviewの更新
+                mainWindow.listView.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Refresh()));
 
-            //ファイルデータの重複防止フラグをリセット
-            ResetFileCount();
+                //ファイルデータの重複防止フラグをリセット
+                ResetFileCount();
+            }
+
         }
-
 
 
         #region 計測メソッド
 
         public void Count()
         {
+            ////すべてのアプリをカウント
+            //if (!Properties.Settings.Default.isCountingNotMinimized &&
+            //    !Properties.Settings.Default.isCountingOnlyActive)
+            //{
+            //    CountAllApps();
+            //}
+            ////最小化しているときはカウントしない
+            //else if (Properties.Settings.Default.isCountingNotMinimized)
+            //{
+            //    CountNotMinimizedApp();
+            //}
+            ////アクティブウィンドウのみをカウント
+            //else if (Properties.Settings.Default.isCountingOnlyActive)
+            //{
+            //    CountOnlyActiveApp();
+            //}
+
             //すべてのアプリをカウント
-            if (!Properties.Settings.Default.isCountingNotMinimized &&
-                !Properties.Settings.Default.isCountingOnlyActive)
+            if (!Settings.IsCountingNotMinimized &&
+                !Settings.IsCountingOnlyActive)
             {
                 CountAllApps();
             }
             //最小化しているときはカウントしない
-            else if (Properties.Settings.Default.isCountingNotMinimized)
+            else if (Settings.IsCountingNotMinimized)
             {
                 CountNotMinimizedApp();
             }
             //アクティブウィンドウのみをカウント
-            else if (Properties.Settings.Default.isCountingOnlyActive)
+            else if (Settings.IsCountingOnlyActive)
             {
                 CountOnlyActiveApp();
             }
@@ -227,13 +268,12 @@ namespace WpfApp2
         {
             foreach (AppDataObject data in mainWindow.AppDatas)
             {
-                //記録していたアプリが終了した
-                if (data.IsCountStarted)
+                if (data.IsRecordStarted)
                 {
+                    //記録していたアプリが終了した
                     if (data.IsRunning && (DateTime.Now - data.LastTime).TotalMinutes > Properties.Settings.Default.CountInterval)
                     {
                         data.IsRunning = false;
-                        Console.WriteLine($"exit {data.DisplayedName}");
                         mainWindow.TogglManager.SetTimeEntry(data);
                     }
                 }

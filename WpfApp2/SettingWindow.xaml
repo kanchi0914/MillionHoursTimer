@@ -13,11 +13,26 @@
     </Window.Resources>
     <Grid>
         <StackPanel>
-            <TabControl Name="maintab">
+            <TabControl Name="maintab" SelectionChanged="Maintab_SelectionChanged">
+                <TabItem Header="基本設定" Height="30" Name="tab0" />
                 <TabItem Header="記録設定" Height="30" Name="tab1" />
                 <TabItem Header="拡張設定" Height="30" Name="tab2" />
                 <TabItem Header="Toggl連携設定" Height="30" Name="tab3" />
             </TabControl>
+            <Grid Margin="20" Visibility="{Binding ElementName=tab0, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+                <CheckBox Name="AutoLaunch" Grid.Row="0" Content="システム起動時に自動的に起動" MinWidth="50" IsChecked="False"/>
+                <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="システム起動時にMHTimerを自動的に起動します。"/>
+                <CheckBox Name="NotCountOnSleep" Grid.Row="3" Content="スリープ時に記録を停止" MinWidth="50"  IsChecked="False"/>
+                <TextBlock Grid.Row="4" TextWrapping="Wrap" Text="システムがスリープ時、記録を停止します。"/>
+            </Grid>
             <Grid Margin="20" Height="300" Visibility="{Binding ElementName=tab1, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
@@ -29,10 +44,11 @@
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="2*" />
                 </Grid.RowDefinitions>
-                <CheckBox Name="NotCountMinimized" Grid.Row="0" Content="最小化しているアプリケーションをカウントしない" MinWidth="50" IsChecked="False"/>
+                <CheckBox Name="NotCountMinimized" Grid.Row="0" Content="最小化しているアプリケーションを計測しない" MinWidth="50" IsChecked="False"/>
                 <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="ウィンドウが最小化しているアプリケーションを時間計測の対象に含めません。"/>
-                <CheckBox Name="OnlyCountActive" Grid.Row="2" Content="アクティブウィンドウのみをカウントする" MinWidth="50"  IsChecked="False"/>
+                <CheckBox Name="OnlyCountActive" Grid.Row="2" Content="アクティブウィンドウのみを計測する" MinWidth="50"  IsChecked="False"/>
                 <TextBlock Grid.Row="3" TextWrapping="Wrap" Text="現在アクティブになっているアプリケーションのみ時間を計測します。"/>
+
                 <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left">
                     <Label Content="カウント間隔" VerticalAlignment="Center"/>
                     <TextBox Name="CountInterval" 

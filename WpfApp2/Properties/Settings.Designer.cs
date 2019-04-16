@@ -118,5 +118,29 @@ namespace WpfApp2.Properties {
                 this["MaxFileNum"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsNotCountingOnSleep {
+            get {
+                return ((bool)(this["IsNotCountingOnSleep"]));
+            }
+            set {
+                this["IsNotCountingOnSleep"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsAutoLaunch {
+            get {
+                return ((bool)(this["IsAutoLaunch"]));
+            }
+            set {
+                this["IsAutoLaunch"] = value;
+            }
+        }
     }
 }
