@@ -44,7 +44,7 @@ namespace WpfApp2
         public DateTime LastTime { get; private set; }
 
         //ファイル設定
-        public string FileExtension { get; private set; } = "";
+        //public string FileExtension { get; private set; } = "";
         public List<string> FileExtensions { get; private set; } = new List<string>();
         public List<FileData> Files { get; private set; } = new List<FileData>();
 
@@ -58,7 +58,7 @@ namespace WpfApp2
         public int MinutesFromLaunched { get; set; }
         public bool IsRecordStarted { get; set; } = false;
 
-        //Toggｌ記録用の終了確認フラグ
+        //Toggl記録用の終了確認フラグ
         public bool IsRunning { get; set; } = false;
 
         //Toggl設定
@@ -105,7 +105,6 @@ namespace WpfApp2
         //        return LastTime.ToString("HH:mm"); ;
         //    }
         //}
-
 
         public int GetIndexOfTag
         {
@@ -161,7 +160,21 @@ namespace WpfApp2
         }
 
         /// <summary>
-        /// アプリ別のファイル拡張子を設定
+        /// ファイル拡張子の設定をstring型で返す(保存用)
+        /// </summary>
+        /// <returns></returns>
+        public string GetFileExtensionText()
+        {
+            var extentionText = "";
+            foreach (string s in FileExtensions)
+            {
+                extentionText += s + "/";
+            }
+            return extentionText;
+        }
+
+        /// <summary>
+        /// ファイル拡張子を設定
         /// </summary>
         /// <param name="extensionTexts">半角スラッシュ区切りの拡張子文字列</param>
         public void SetFileExtensions(string extensionTexts)
@@ -255,22 +268,6 @@ namespace WpfApp2
             System.Drawing.Icon icon;
             try
             {
-                //System.Drawing.Icon icon;
-                //IconImage = new Image();
-
-                //var path2 = @path;
-                //var a = ShellFile.FromFilePath(path2);
-                //using (var file = ShellFile.FromFilePath(@path))
-                //{
-                //    file.Thumbnail.FormatOption = ShellThumbnailFormatOption.IconOnly;
-                //    IconImage.Source = file.Thumbnail.BitmapSource; // 256x256
-                //    ImageSource = IconImage.Source;
-                // IconImage.Source = file.Thumbnail.SmallBitmapSource;      // 16x16
-                // IconImage.Source = file.Thumbnail.MediumBitmapSource;     // 32x32
-                // IconImage.Source = file.Thumbnail.LargeBitmapSource;      // 48x48
-                // IconImage.Source = file.Thumbnail.ExtraLargeBitmapSource; // 256x256
-                //}
-
                 icon = System.Drawing.Icon.ExtractAssociatedIcon(@path);
 
                 using (MemoryStream s = new MemoryStream())
@@ -278,12 +275,13 @@ namespace WpfApp2
                     icon.Save(s);
                     ImageSource = BitmapFrame.Create(s);
                 }
-                SaveIconImage(ImageSource);
+                var savePath = currentDir + iconFileDir + $"{ProcessName}.png";
+                SaveIconImage(ImageSource, savePath);
             }
             catch (FileNotFoundException e)
             {
-                var defaultIconImage = currentDir + iconFileDir + $"defaultIcon.png";
-                LoadIconImage(defaultIconImage);
+                var defaultIconImagePath = currentDir + iconFileDir + $"defaultIcon.png";
+                LoadIconImage(defaultIconImagePath);
             }
             catch (Exception e)
             {
@@ -294,13 +292,13 @@ namespace WpfApp2
         /// <summary>
         /// アイコンイメージの保存
         /// </summary>
-        /// <param name="source"></param>
-        public void SaveIconImage(ImageSource source)
+        /// <param name="source">Imagesourceオブジェクト</param>
+        /// <param name="path">保存先パス</param>
+        public void SaveIconImage(ImageSource source, string path)
         {
             //string uriPath = iconFileDir + $"{ProcessName}.png";
-            string uriPath = currentDir + iconFileDir + $"{ProcessName}.png";
-
-            using (var fileStream = new FileStream(@uriPath, FileMode.Create))
+            //string uriPath = currentDir + iconFileDir + $"{ProcessName}.png";
+            using (var fileStream = new FileStream(@path, FileMode.Create))
             {
                 BitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create((BitmapSource)source));
@@ -311,6 +309,7 @@ namespace WpfApp2
         /// <summary>
         /// アイコン画像の読み込み
         /// </summary>
+        /// <param name="path">読み込み先パス</param>
         public void LoadIconImage(string path)
         {
             var bmpImage = new BitmapImage();
@@ -323,6 +322,7 @@ namespace WpfApp2
                 bmpImage.EndInit();
                 ImageSource = bmpImage;
             }
+            //アイコン画像が存在しない場合、デフォルトのアイコン画像を使用
             catch (FileNotFoundException e)
             {
                 var defaultIconImage = currentDir + iconFileDir + $"defaultIcon.png";
@@ -465,7 +465,7 @@ namespace WpfApp2
         public void AddFileData(string fileName, int minutes = 0)
         {
             //最大件数をオーバーしている場合、先頭の要素を削除
-            if (Files.Count > Properties.Settings.Default.MaxFileNum)
+            if (Files.Count >= Properties.Settings.Default.MaxFileNum)
             {
                 Files.RemoveAt(0);
             }

@@ -16,15 +16,15 @@ namespace WpfApp2
 
         //何秒ごとにカウントするか
         //デバッグ用
-        public static readonly int CountSeconds = 1;
+        public static readonly int CountSeconds = 60;
 
-        public static readonly string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
+        //public static readonly string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
 
         public static readonly string IconFileDir = "/data/icons/";
 
-        public static readonly string DataDir = "data";
+        //public static readonly string DataDir = "data";
 
-        public static readonly string AppDataFile = "data/appData.csv";
+        //public static readonly string AppDataFile = "data/appData.csv";
 
         public static readonly string extentionSample =
             ".gif/.jpg/.jpeg/.png/.bmp/.ico/.tif/.tiff/.tga/.psd/.psb/.sai";
@@ -60,7 +60,7 @@ namespace WpfApp2
 
         static Settings()
         {
-
+            Load();
         }
 
         /// <summary>

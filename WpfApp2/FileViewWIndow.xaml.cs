@@ -46,6 +46,9 @@ namespace WpfApp2
             Closing += Window_Closing;
         }
 
+        /// <summary>
+        /// リストビューを更新
+        /// </summary>
         public void UpdateListView()
         {
             //削除を先に行う
@@ -66,7 +69,6 @@ namespace WpfApp2
                     Dispatcher.BeginInvoke(new Action(() => fileListView.Items.Add(file)));
                 }
             }
-
             Dispatcher.BeginInvoke(new Action(()=> fileListView.Items.Refresh()));
         }
 
@@ -200,15 +202,6 @@ namespace WpfApp2
             e.Cancel = true;
             this.Visibility = Visibility.Collapsed;
         }
-
-        //protected virtual void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        //{
-        //    if (MessageBoxResult.Yes != MessageBox.Show("終了してよろしいですか？", "終了確認", MessageBoxButton.YesNo, MessageBoxImage.Information))
-        //    {
-        //        e.Cancel = true;
-        //        return;
-        //    }
-        //}
 
     }
 

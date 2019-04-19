@@ -2,25 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Drawing;
 using System.Diagnostics;
 using Microsoft.Win32;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Path = System.IO.Path;
-using System.Windows.Interop;
 
 namespace WpfApp2
 {
@@ -66,7 +55,7 @@ namespace WpfApp2
             SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding);
 
             //設定の読み込み
-            Settings.Load();
+            //Settings.Load();
             
             //データの読み込み
             LoadCsvData();
@@ -385,11 +374,11 @@ namespace WpfApp2
             menuItem4.Header = "表示内容をコピー";
 
             //menuItem.Click += OnClickAddApp;
-            menuItem0.Click += OnClickedChangeNameOfDesplayedName;
-            menuItem1.Click += OnClickedConfirmTimeOfFiles;
-            menuItem2.Click += OnClickedSetFileExtension;
-            menuItem3.Click += OnClickedDelete;
-            menuItem4.Click += OnClickedCopy;
+            menuItem0.Click += menuItem_ChangeNameOfDesplayedName;
+            menuItem1.Click += menuItem_ConfirmTimeOfFiles;
+            menuItem2.Click += menuItem_SetFileExtension;
+            menuItem3.Click += menuIten_Delete;
+            menuItem4.Click += menuItem_Copy;
 
             ContextMenu contextMenu = new ContextMenu();
             //contextMenu.Items.Add(menuItem);
@@ -403,27 +392,47 @@ namespace WpfApp2
 
         }
 
-        private void OnClickedChangeNameOfDesplayedName(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 右クリックメニュー>表示アプリ名を変更 をクリック時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuItem_ChangeNameOfDesplayedName(object sender, RoutedEventArgs e)
         {
             AppDataObject appData = (AppDataObject)listView.SelectedItem;
             var appNameSettingWindow = new AppNameSettingWindow(this, appData);
             appNameSettingWindow.ShowDialog();
         }
 
-        private void OnClickedConfirmTimeOfFiles(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 右クリックメニュー>ファイル別作業時間を確認 をクリック時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuItem_ConfirmTimeOfFiles(object sender, RoutedEventArgs e)
         {
             Console.WriteLine(FileListWindows);
             FileListWindows.Find((x) => x.AppData == listView.SelectedItem).Show();
         }
 
-        private void OnClickedSetFileExtension(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 右クリックメニュー>ファイル拡張子を設定 をクリック時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuItem_SetFileExtension(object sender, RoutedEventArgs e)
         {
             AppDataObject appData = (AppDataObject)listView.SelectedItem;
             var fileExtension = new FileExtensionSettingWindow(appData);
             fileExtension.ShowDialog();
         }
 
-        private void OnClickedCopy(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 右クリックメニュー>表示内容をコピー をクリック時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuItem_Copy(object sender, RoutedEventArgs e)
         {
             string text = "";
             foreach (var item in listView.SelectedItems)
@@ -439,11 +448,11 @@ namespace WpfApp2
         }
 
         /// <summary>
-        /// 右クリックメニュー＞削除　をクリック時に呼ばれる
+        /// 右クリックメニュー>削除　をクリック時
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnClickedDelete(object sender, RoutedEventArgs e)
+        private void menuIten_Delete(object sender, RoutedEventArgs e)
         {
             if (listView.SelectedItems == null)
                 return;
@@ -600,7 +609,8 @@ namespace WpfApp2
 
                 using (var sw = new StreamWriter(filePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine($"アプリケーション名,今日の起動時間,累積起動時間,最終起動日時,toggle連携フラグ,連携プロジェクト名,連携タグ名");
+                    sw.WriteLine($"アプリケーション名,今日の起動時間(分),累積起動時間(分),最終起動日時," +
+                        $"toggle連携フラグ,連携プロジェクト名,連携タグ名, ファイル拡張子");
                     foreach (AppDataObject appData in AppDatas)
                     {
                         sw.WriteLine($"{appData.ProcessName}," +
@@ -609,7 +619,8 @@ namespace WpfApp2
                             $"{appData.GetLastLaunchedTime}," +
                             $"{appData.IsLinkedToToggle.ToString()}," +
                             $"{appData.LinkedProjectName}," +
-                            $"{appData.LinkedTag}");
+                            $"{appData.LinkedTag}," +
+                            $"{appData.GetFileExtensionText()}");
                     }
                 }
             }
@@ -655,6 +666,7 @@ namespace WpfApp2
                             LinkedTag = parsedLine[6]
                         };
                         data.SetLastLaunchedTime(parsedLine[3]);
+                        data.SetFileExtensions(parsedLine[7]);
                         AppDatas.Add(data);
                     }
                 }

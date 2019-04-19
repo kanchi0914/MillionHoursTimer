@@ -80,8 +80,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="BoolVisibilityConverter.cs" />
-    <Compile Include="CustomControl1.cs" />
-    <Compile Include="CustomControl2.cs" />
     <Compile Include="MergedNameSettingWindow.xaml.cs">
       <DependentUpon>MergedNameSettingWindow.xaml</DependentUpon>
     </Compile>
@@ -113,7 +111,6 @@
       <DependentUpon>AppNameSettingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="WindowHandles.cs" />
-    <Compile Include="WindowTitles.cs" />
     <Compile Include="WindowTitles2.cs" />
     <Page Include="MergedNameSettingWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -18,7 +18,7 @@ namespace WpfApp2
     {
         private MainWindow mainWindow;
 
-        public string ApiKey { get; set; } = Settings.DefaultAPIKey;
+        public string ApiKey { get; set; }
         string PreApiKey { get; set; } = "";
         public string User{ get; set; } = "";
 
