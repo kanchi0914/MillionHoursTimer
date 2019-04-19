@@ -411,14 +411,14 @@ namespace WpfApp2
         /// ファイルデータを追加
         /// </summary>
         /// <param name="fileName"></param>
-        private void AddFileData(string fileName)
+        public void AddFileData(string fileName, int minutes = 0)
         {
             //最大件数をオーバーしている場合、先頭の要素を削除
             if (Files.Count > Properties.Settings.Default.MaxFileNum)
             {
                 Files.RemoveAt(0);
             }
-            Files.Add(new FileData { Name = fileName });
+            Files.Add(new FileData { Name = fileName, TotalMinutes = minutes });
         }
 
         public class FileData

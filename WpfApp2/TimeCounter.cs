@@ -194,8 +194,7 @@ namespace WpfApp2
                     //Console.WriteLine(processes.Length);
                     foreach (Process p in processes)
                     {
-                        //  if (p.MainWindowHandle != IntPtr.Zero && !IsIconic(p.MainWindowHandle))
-                        if (true)
+                        if (p.MainWindowHandle != IntPtr.Zero && !IsIconic(p.MainWindowHandle))
                         {
                             if (!isCounted)
                             {
@@ -234,14 +233,12 @@ namespace WpfApp2
                     {
                         processName = p.ProcessName.ToString();
                     }
-                    //Console.WriteLine(processName);
                     AppDataObject data = mainWindow.AppDatas.Find(a => a.ProcessName == processName);
                     //found registerd app
                     if (data != null)
                     {
                         data.AccumulateMinutes();
                         data.AccumulateMinuteToFileData(sb.ToString());
-                        //data.AddMinuteToFiles(p.ProcessName);
                     }
                 }
             }

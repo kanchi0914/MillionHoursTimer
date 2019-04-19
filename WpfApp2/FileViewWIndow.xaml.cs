@@ -22,6 +22,11 @@ namespace WpfApp2
     {
 
         AppDataObject appData;
+        ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem menuItem0 = new MenuItem();
+        MenuItem menuItem1 = new MenuItem();
+        MenuItem menuItem2 = new MenuItem();
 
         public FileViewWindow(AppDataObject data)
         {
@@ -55,20 +60,45 @@ namespace WpfApp2
 
         private void CreateMenu()
         {
-            MenuItem menuItem0 = new MenuItem();
-            MenuItem menuItem1 = new MenuItem();
-            menuItem0.Header = "表示内容をコピー";
-            menuItem0.Click += menuitem_ClickCopy;
-            menuItem1.Header = "一覧から削除";
-            menuItem1.Click += menuitem_ClickDelete;
 
-            ContextMenu contextMenu = new ContextMenu();
+            menuItem0.Header = "選択項目をマージ";
+            menuItem0.Click += menuItem_ClickMergeItems;
+            menuItem1.Header = "表示内容をコピー";
+            menuItem1.Click += menuitem_ClickCopy;
+            menuItem2.Header = "一覧から削除";
+            menuItem2.Click += menuitem_ClickDelete;
+
+            fileListView.ContextMenuOpening += contextMenu_Click;
+
+            //contextMenu.ContextMenuOpening += contextMenu_Click;
             contextMenu.Items.Add(menuItem0);
             contextMenu.Items.Add(menuItem1);
+            contextMenu.Items.Add(menuItem2);
 
             fileListView.ContextMenu = contextMenu;
         }
 
+        /// <summary>
+        /// 右クリックメニュー表示前の処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void contextMenu_Click(object sender, RoutedEventArgs e)
+        {
+            //複数選択されている場合
+            menuItem0.IsEnabled = fileListView.SelectedItems.Count > 1;
+        }
+
+        private void menuItem_ClickMergeItems(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// 右クリック>表示内容をコピー　をクリック時に呼ばれる
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menuitem_ClickCopy(object sender, RoutedEventArgs e)
         {
             string text = "";
@@ -84,14 +114,6 @@ namespace WpfApp2
             }
         }
 
-        //private void menuitem_ClickDelete(object sender, RoutedEventArgs e)
-        //{
-        //    AppDataObject.FileData obj = (AppDataObject.FileData)fileListView.SelectedItem;
-        //    appData.Files.Remove(obj);
-        //    fileListView.Items.Remove(obj);
-        //    fileListView.Items.Refresh();
-        //    appData.SaveFileData();
-        //}
 
         /// <summary>
         /// 右クリックメニュー＞削除　をクリック時に呼ばれる
