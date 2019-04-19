@@ -20,7 +20,7 @@ namespace WpfApp2
 
         public static readonly string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
 
-        public static readonly string IconFileDir = "data/icons/";
+        public static readonly string IconFileDir = "/data/icons/";
 
         public static readonly string DataDir = "data";
 
@@ -58,6 +58,10 @@ namespace WpfApp2
         //============================================================
         public static string Date = "";
 
+        static Settings()
+        {
+
+        }
 
         /// <summary>
         /// アプリ起動時に呼ばれ、ファイルから設定を読み込む

@@ -19,11 +19,11 @@ namespace WpfApp2
     /// </summary>
     public partial class FileExtensionSettingWindow : Window
     {
-        AppDataObject appData;
+        public AppDataObject AppData { get; }
 
         public FileExtensionSettingWindow(AppDataObject appData)
         {
-            this.appData = appData;
+            this.AppData = appData;
             InitializeComponent();
             TextBox.Text = string.Join("/", appData.FileExtensions.ToArray());
             OKButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
@@ -32,7 +32,7 @@ namespace WpfApp2
         
         public void OnClicked(object sender, RoutedEventArgs e)
         {
-            appData.SetFileExtensions(TextBox.Text);
+            AppData.SetFileExtensions(TextBox.Text);
             Close();
         }
 

@@ -3,29 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using TM = System.Timers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Drawing;
 using System.Diagnostics;
-
-using System.IO;
-using System.Runtime.InteropServices;
 using Microsoft.Win32;
-using System.Runtime.InteropServices;
 
 namespace WpfApp2
 {
@@ -146,26 +126,43 @@ namespace WpfApp2
             //    CountOnlyActiveApp();
             //}
 
-            //すべてのアプリをカウント
-            if (!Settings.IsCountingNotMinimized &&
-                !Settings.IsCountingOnlyActive)
+
+            ////すべてのアプリをカウント
+            //if (!Settings.IsCountingNotMinimized &&
+            //    !Settings.IsCountingOnlyActive)
+            //{
+            //    CountAllApps();
+            //}
+            ////最小化しているときはカウントしない
+            //else if (Settings.IsCountingNotMinimized)
+            //{
+            //    CountNotMinimizedApp();
+            //}
+            ////アクティブウィンドウのみをカウント
+            //else if (Settings.IsCountingOnlyActive)
+            //{
+            //    CountOnlyActiveApp();
+            //}
+
+            //アクティブウィンドウのみをカウント
+            if (Settings.IsCountingOnlyActive)
             {
-                CountAllApps();
+                CountOnlyActiveApp();
             }
             //最小化しているときはカウントしない
             else if (Settings.IsCountingNotMinimized)
             {
                 CountNotMinimizedApp();
             }
-            //アクティブウィンドウのみをカウント
-            else if (Settings.IsCountingOnlyActive)
+            //すべてのアプリをカウント
+            else
             {
-                CountOnlyActiveApp();
+                CountAllApps();
             }
 
             foreach (FileViewWindow window in mainWindow.FileListWindows)
             {
-                window.Update();
+                window.UpdateListView();
             }
         }
 

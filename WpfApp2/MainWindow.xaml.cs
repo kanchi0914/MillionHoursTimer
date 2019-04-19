@@ -176,6 +176,9 @@ namespace WpfApp2
             OnExit();
         }
 
+
+
+
         #region タスクトレイアイコン
 
         /// <summary>
@@ -404,20 +407,20 @@ namespace WpfApp2
         {
             AppDataObject appData = (AppDataObject)listView.SelectedItem;
             var appNameSettingWindow = new AppNameSettingWindow(this, appData);
-            appNameSettingWindow.Show();
+            appNameSettingWindow.ShowDialog();
         }
 
         private void OnClickedConfirmTimeOfFiles(object sender, RoutedEventArgs e)
         {
             Console.WriteLine(FileListWindows);
-            FileListWindows[listView.SelectedIndex].Show();
+            FileListWindows.Find((x) => x.AppData == listView.SelectedItem).Show();
         }
 
         private void OnClickedSetFileExtension(object sender, RoutedEventArgs e)
         {
             AppDataObject appData = (AppDataObject)listView.SelectedItem;
             var fileExtension = new FileExtensionSettingWindow(appData);
-            fileExtension.Show();
+            fileExtension.ShowDialog();
         }
 
         private void OnClickedCopy(object sender, RoutedEventArgs e)
@@ -455,6 +458,8 @@ namespace WpfApp2
                     //選択された項目を削除
                     while (listView.SelectedItems.Count > 0)
                     {
+                        var fileListWindow = FileListWindows.Find((x) => x.AppData == listView.SelectedItem);
+                        FileListWindows.Remove(fileListWindow);
                         AppDataObject myobj;
                         myobj = (AppDataObject)listView.SelectedItems[0];
                         RemoveAppData(myobj);
@@ -464,6 +469,7 @@ namespace WpfApp2
                     // Cancelの処理
                     break;
             }
+            this.UpdateListView();
         }
 
         /// <summary>
@@ -490,10 +496,13 @@ namespace WpfApp2
         {
             foreach (AppDataObject data in AppDatas)
             {
-                data.LoadIconImage();
-                listView.Items.Add(data);
-                AddFileListWindow(data);
+                data.Init();
+                //var iconImagePath = Directory.GetCurrentDirectory() + "/data/icons/" + $"{data.ProcessName}.png";
+                //data.LoadIconImage(iconImagePath);
+                //listView.Items.Add(data);
+                //AddFileListWindow(data);
             }
+            UpdateListView();
         }
 
         /// <summary>
@@ -521,18 +530,47 @@ namespace WpfApp2
                 };
                 appData.SetIcon(filePath);
                 AppDatas.Add(appData);
-                listView.Items.Add(appData);
-                AddFileListWindow(appData);
+                //listView.Items.Add(appData);
+                //AddFileListWindow(appData);
                 SaveCsvData();
             }
+            UpdateListView();
         }
 
         /// <summary>
         /// リストビューの表示を更新する
         /// </summary>
+        //public void UpdateListView()
+        //{
+        //    listView.Dispatcher.BeginInvoke(new Action(() => listView.Items.Refresh()));
+        //}
         public void UpdateListView()
         {
-            listView.Dispatcher.BeginInvoke(new Action(() => listView.Items.Refresh()));
+            //削除を先に行う
+            foreach (var item in listView.Items)
+            {
+                //データが削除された
+                if (!AppDatas.Contains(item))
+                {
+                    Dispatcher.BeginInvoke(new Action(() => listView.Items.Remove(item)));
+                    var fileListWindow = FileListWindows.Find((x) => x.AppData == item);
+                    FileListWindows.Remove(fileListWindow);
+                }
+            }
+
+            foreach (var appData in AppDatas)
+            {
+                //新しいデータが見つかった
+                if (!listView.Items.Contains(appData))
+                {
+                    Dispatcher.BeginInvoke(new Action(() => listView.Items.Add(appData)));
+                    //listView.Items.Add(appData);
+                    AddFileListWindow(appData);
+                    //var fileListWindow = FileListWindows.Find((x) => x.AppData == appData);
+                    //FileListWindows.Add(fileListWindow);
+                }
+            }
+            Dispatcher.BeginInvoke(new Action(() => listView.Items.Refresh()));
         }
 
         /// <summary>
@@ -548,7 +586,10 @@ namespace WpfApp2
         #endregion
 
 
-
+        /// <summary>
+        /// アプリデータを保存
+        /// </summary>
+        /// <param name="path">保存先パス</param>
         public void SaveCsvData(string path = "")
         {
             try
@@ -557,13 +598,18 @@ namespace WpfApp2
                 //var uri = new Uri("data/appData.csv", UriKind.Relative);
                 //string csvData = uri.ToString();
 
-                using (var sw = new System.IO.StreamWriter(filePath, false, Encoding.UTF8))
+                using (var sw = new StreamWriter(filePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine($"アプリケーション名,今日の起動時間,累積起動時間,最終起動日時,toggleと連携するか,連携プロジェクト名");
+                    sw.WriteLine($"アプリケーション名,今日の起動時間,累積起動時間,最終起動日時,toggle連携フラグ,連携プロジェクト名,連携タグ名");
                     foreach (AppDataObject appData in AppDatas)
                     {
-                        sw.WriteLine($"{appData.ProcessName},{appData.TodaysMinutes},{appData.TotalMinutes}," +
-                            $"{appData.GetLastLaunchedTime}, {appData.IsLinkedToToggle.ToString()}, {appData.LinkedProjectName}");
+                        sw.WriteLine($"{appData.ProcessName}," +
+                            $"{appData.TodaysMinutes}," +
+                            $"{appData.TotalMinutes}," +
+                            $"{appData.GetLastLaunchedTime}," +
+                            $"{appData.IsLinkedToToggle.ToString()}," +
+                            $"{appData.LinkedProjectName}," +
+                            $"{appData.LinkedTag}");
                     }
                 }
             }
@@ -578,6 +624,10 @@ namespace WpfApp2
             }
         }
 
+        /// <summary>
+        /// アプリデータを読み込み
+        /// </summary>
+        /// <param name="path">保存先パス</param>
         private void LoadCsvData ()
         {
             try
@@ -601,7 +651,8 @@ namespace WpfApp2
                             TotalMinutes = int.Parse(parsedLine[2]),
                             //[3]
                             IsLinkedToToggle = bool.Parse(parsedLine[4]),
-                            LinkedProjectName = parsedLine[5]
+                            LinkedProjectName = parsedLine[5],
+                            LinkedTag = parsedLine[6]
                         };
                         data.SetLastLaunchedTime(parsedLine[3]);
                         AppDatas.Add(data);

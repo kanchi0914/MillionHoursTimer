@@ -16,15 +16,13 @@ namespace WpfApp2
 {
     public partial class MergedNameSettingWindow : Window
     {
-        AppDataObject appData;
-        List<AppDataObject.FileData> fileDatas;
+        FileViewWindow fileViewWindow;
 
-        public MergedNameSettingWindow(AppDataObject appData, List<AppDataObject.FileData> fileDatas)
+        public MergedNameSettingWindow(FileViewWindow fileViewWindow)
         {
             InitializeComponent();
-            this.appData = appData;
-            this.fileDatas = fileDatas;
-            TextBox.Text = fileDatas[0].Name;
+            this.fileViewWindow = fileViewWindow;
+            TextBox.Text = ((AppDataObject.FileData)fileViewWindow.fileListView.SelectedItems[0]).Name;
             OKButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
                 new RoutedEventHandler(OnClicked));
         }
@@ -32,13 +30,36 @@ namespace WpfApp2
         public void OnClicked(object sender, RoutedEventArgs e)
         {
             int sumTime = 0;
-            foreach (AppDataObject.FileData data in fileDatas)
+            var appData = fileViewWindow.AppData;
+
+            for (int i = appData.Files.Count - 1; i >= 0; i--)
             {
-                sumTime += data.TotalMinutes;
-                appData.Files.Remove(data);
+                if (fileViewWindow.fileListView.SelectedItems.Contains(appData.Files[i]))
+                {
+                    sumTime += appData.Files[i].TotalMinutes;
+                    appData.RemoveFileData(appData.Files[i]);
+                }
             }
 
-            appData.AddFileData(TextBox.Text, sumTime);
+            //foreach (AppDataObject.FileData data in fileViewWindow.AppData.Files)
+            //{
+            //    sumTime += data.TotalMinutes;
+            //    fileViewWindow.AppData.RemoveFileData(data);
+            //}
+
+            //while (fileViewWindow.AppData.Files.Count > 0)
+            //{
+            //    AppDataObject myobj;
+            //    myobj = (AppDataObject)listView.SelectedItems[0];
+            //    RemoveAppData(myobj);
+            //}
+
+            //マージ後のデータを追加
+            fileViewWindow.AppData.AddFileData(TextBox.Text, 9999);
+
+            //リストビューを更新
+            fileViewWindow.UpdateListView();
+
             Close();
         }
 

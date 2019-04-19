@@ -16,7 +16,7 @@
             <TabControl Name="maintab" SelectionChanged="Maintab_SelectionChanged">
                 <TabItem Header="基本設定" Height="30" Name="tab0" />
                 <TabItem Header="記録設定" Height="30" Name="tab1" />
-                <TabItem Header="拡張設定" Height="30" Name="tab2" />
+                <TabItem Header="ファイル設定" Height="30" Name="tab2" />
                 <TabItem Header="Toggl連携設定" Height="30" Name="tab3" />
             </TabControl>
             <Grid Margin="20" Visibility="{Binding ElementName=tab0, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">
@@ -88,7 +88,7 @@
                     <Label Content="件" VerticalAlignment="Center"/>
                 </StackPanel>
                 <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="アプリケーション毎に記録されるファイル名の最大記録件数を設定します。&#xa;最大件数をオーバーすると、古いものから順に削除されます。"/>
-                <CheckBox Name="AdditionalCount" Grid.Row="3" Content="拡張ファイル名設定をオンにする(試験的)" MinWidth="50" IsChecked="False"/>
+                <CheckBox Name="AdditionalCount" Grid.Row="3" Content="ハイフン区切りをファイル名の取得に利用する(試験的)" MinWidth="50" IsChecked="False"/>
                 <TextBlock Grid.Row="4" TextWrapping="Wrap" Text="オンにすると、タイトルバーにファイルの拡張子名が表示されない&#xa;アプリケーションでもファイル毎の作業時間を記録できる可能性があります。"/>
             </Grid>
             <Grid Margin="20" Height="300" Visibility="{Binding ElementName=tab3, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">

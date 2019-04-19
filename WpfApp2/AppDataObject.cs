@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Shell;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 //using System.Drawing;
 using System.Text;
 using System.Windows.Controls;
@@ -17,6 +19,10 @@ namespace WpfApp2
 
         ////アイコン画像の保存先ディレクトリ
         //private readonly string iconFileDir = "/data/icons/";
+
+        readonly string iconFileDir = Settings.IconFileDir;
+
+        string currentDir = "";
 
         private MainWindow mainWindow;
 
@@ -68,6 +74,7 @@ namespace WpfApp2
         {
             this.mainWindow = mainWindow;
             this.ProcessName = processName;
+            currentDir = Directory.GetCurrentDirectory();
         }
 
         public override bool Equals(object obj)
@@ -85,22 +92,20 @@ namespace WpfApp2
             return ProcessName.GetHashCode();
         }
 
-        public string GetLastTime
+        public void Init()
         {
-            get
-            {
-                return LastTime.ToString("HH:mm"); ;
-            }
+            var iconImagePath = currentDir + iconFileDir + $"{ProcessName}.png";
+            LoadIconImage(iconImagePath);
         }
 
+        //public string GetLastTime
+        //{
+        //    get
+        //    {
+        //        return LastTime.ToString("HH:mm"); ;
+        //    }
+        //}
 
-        public void SetLastLaunchedTime(string data)
-        {
-            if (!string.IsNullOrEmpty(data) && data != "-")
-            {
-                LastTime = DateTime.Parse(data);
-            }
-        }
 
         public int GetIndexOfTag
         {
@@ -147,9 +152,21 @@ namespace WpfApp2
             }
         }
 
-        public void SetFileExtensions(string input)
+        public void SetLastLaunchedTime(string data)
         {
-            string[] parsed = input.Split('/');
+            if (!string.IsNullOrEmpty(data) && data != "-")
+            {
+                LastTime = DateTime.Parse(data);
+            }
+        }
+
+        /// <summary>
+        /// アプリ別のファイル拡張子を設定
+        /// </summary>
+        /// <param name="extensionTexts">半角スラッシュ区切りの拡張子文字列</param>
+        public void SetFileExtensions(string extensionTexts)
+        {
+            string[] parsed = extensionTexts.Split('/');
             if (parsed.Length > 0)
             {
                 FileExtensions = new List<string>();
@@ -175,7 +192,7 @@ namespace WpfApp2
         /// </summary>
         public void LoadFileData()
         {
-            string path = Directory.GetCurrentDirectory() + "/data/fileData/" + ProcessName + "_files.csv";
+            string path = currentDir + iconFileDir + ProcessName + "_files.csv";
             //string path = "data/fileData\\" + ProcessName + "_files.csv";
             Console.WriteLine(path);
 
@@ -203,11 +220,12 @@ namespace WpfApp2
             }
         }
 
+        /// <summary>
+        /// ファイル別の作業時間データを保存
+        /// </summary>
         public void SaveFileData()
         {
-            //String path = "data/fileData/" + ProcessName + "_files.csv";
-            string path = Directory.GetCurrentDirectory() + "/data/fileData/" + ProcessName + "_files.csv";
-            //string path = "data/fileData\\" + ProcessName + "_files.csv";
+            string path = currentDir + iconFileDir + ProcessName + "_files.csv";
             if (Files.Count > 0)
             {
                 try
@@ -237,30 +255,50 @@ namespace WpfApp2
             System.Drawing.Icon icon;
             try
             {
+                //System.Drawing.Icon icon;
+                //IconImage = new Image();
+
+                //var path2 = @path;
+                //var a = ShellFile.FromFilePath(path2);
+                //using (var file = ShellFile.FromFilePath(@path))
+                //{
+                //    file.Thumbnail.FormatOption = ShellThumbnailFormatOption.IconOnly;
+                //    IconImage.Source = file.Thumbnail.BitmapSource; // 256x256
+                //    ImageSource = IconImage.Source;
+                // IconImage.Source = file.Thumbnail.SmallBitmapSource;      // 16x16
+                // IconImage.Source = file.Thumbnail.MediumBitmapSource;     // 32x32
+                // IconImage.Source = file.Thumbnail.LargeBitmapSource;      // 48x48
+                // IconImage.Source = file.Thumbnail.ExtraLargeBitmapSource; // 256x256
+                //}
+
                 icon = System.Drawing.Icon.ExtractAssociatedIcon(@path);
 
-                //SaveIconImage(ImageSource);
-                IconImage = new Image();
                 using (MemoryStream s = new MemoryStream())
                 {
                     icon.Save(s);
                     ImageSource = BitmapFrame.Create(s);
                 }
                 SaveIconImage(ImageSource);
-
+            }
+            catch (FileNotFoundException e)
+            {
+                var defaultIconImage = currentDir + iconFileDir + $"defaultIcon.png";
+                LoadIconImage(defaultIconImage);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-
-
         }
 
+        /// <summary>
+        /// アイコンイメージの保存
+        /// </summary>
+        /// <param name="source"></param>
         public void SaveIconImage(ImageSource source)
         {
             //string uriPath = iconFileDir + $"{ProcessName}.png";
-            string uriPath = Directory.GetCurrentDirectory() + "/data/icons/" + $"{ProcessName}.png";
+            string uriPath = currentDir + iconFileDir + $"{ProcessName}.png";
 
             using (var fileStream = new FileStream(@uriPath, FileMode.Create))
             {
@@ -268,20 +306,27 @@ namespace WpfApp2
                 encoder.Frames.Add(BitmapFrame.Create((BitmapSource)source));
                 encoder.Save(fileStream);
             }
-            Console.WriteLine();
         }
 
-        public void LoadIconImage()
+        /// <summary>
+        /// アイコン画像の読み込み
+        /// </summary>
+        public void LoadIconImage(string path)
         {
             var bmpImage = new BitmapImage();
-            string uriPath = Directory.GetCurrentDirectory() + "/data/icons/" + $"{ProcessName}.png";
+            //string uriPath = Directory.GetCurrentDirectory() + "/data/icons/" + $"{ProcessName}.png";
 
             try
             {
                 bmpImage.BeginInit();
-                bmpImage.UriSource = new Uri(@uriPath, UriKind.Absolute);
+                bmpImage.UriSource = new Uri(@path, UriKind.Absolute);
                 bmpImage.EndInit();
                 ImageSource = bmpImage;
+            }
+            catch (FileNotFoundException e)
+            {
+                var defaultIconImage = currentDir + iconFileDir + $"defaultIcon.png";
+                LoadIconImage(defaultIconImage);
             }
             catch (Exception ex)
             {
@@ -369,10 +414,16 @@ namespace WpfApp2
             //拡張機能
             if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
             {
-                string[] parsed0 = title.Split('-');
-                if (parsed0.Length > 1)
+                string[] parsedByHyphen = title.Split('-');
+                if (parsedByHyphen.Length > 1)
                 {
-                    fileName = parsed0[0];
+                    string[] parsedBySpace = title.Split(' ');
+                    //if (parsedBySpace.Length > 1)
+                    //{
+                    //    string[] parsedBySpace = title.Split(' ');
+                    //    fileName = parsedByHyphen[0];
+                    //}
+                    fileName = parsedBySpace[0];
                 }
             }
 
@@ -419,6 +470,16 @@ namespace WpfApp2
                 Files.RemoveAt(0);
             }
             Files.Add(new FileData { Name = fileName, TotalMinutes = minutes });
+        }
+
+        /// <summary>
+        /// ファイルデータを削除
+        /// </summary>
+        /// <param name="fileData"></param>
+        public void RemoveFileData(FileData fileData)
+        {
+            Files.Remove(fileData);
+            SaveFileData();
         }
 
         public class FileData

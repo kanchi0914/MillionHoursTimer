@@ -21,7 +21,7 @@ namespace WpfApp2
     public partial class FileViewWindow : Window
     {
 
-        AppDataObject appData;
+        public AppDataObject AppData { get; }
         ContextMenu contextMenu = new ContextMenu();
 
         MenuItem menuItem0 = new MenuItem();
@@ -31,9 +31,9 @@ namespace WpfApp2
         public FileViewWindow(AppDataObject data)
         {
             InitializeComponent();
-
-            this.appData = data;
-            foreach (AppDataObject.FileData file in appData.Files)
+            this.Title = data.DisplayedName + "のファイル別作業時間一覧";
+            this.AppData = data;
+            foreach (AppDataObject.FileData file in AppData.Files)
             {
                 fileListView.Items.Add(file);
             }
@@ -46,15 +46,27 @@ namespace WpfApp2
             Closing += Window_Closing;
         }
 
-        public void Update()
+        public void UpdateListView()
         {
-            foreach (AppDataObject.FileData file in appData.Files)
+            //削除を先に行う
+            foreach (var item in fileListView.Items)
             {
-                if (!fileListView.Items.Contains(file))
+                //ファイルデータが削除された
+                if (!AppData.Files.Contains(item))
                 {
-                    Dispatcher.BeginInvoke(new Action(()=> fileListView.Items.Add(file)));
+                    Dispatcher.BeginInvoke(new Action(() => fileListView.Items.Remove(item)));
                 }
             }
+
+            foreach (AppDataObject.FileData file in AppData.Files)
+            {
+                //新しいファイルが見つかった
+                if (!fileListView.Items.Contains(file))
+                {
+                    Dispatcher.BeginInvoke(new Action(() => fileListView.Items.Add(file)));
+                }
+            }
+
             Dispatcher.BeginInvoke(new Action(()=> fileListView.Items.Refresh()));
         }
 
@@ -91,11 +103,12 @@ namespace WpfApp2
 
         private void menuItem_ClickMergeItems(object sender, RoutedEventArgs e)
         {
-
+            var mergedNameSettingWindow = new MergedNameSettingWindow(this);
+            mergedNameSettingWindow.ShowDialog();
         }
 
         /// <summary>
-        /// 右クリック>表示内容をコピー　をクリック時に呼ばれる
+        /// 右クリック>表示内容をコピー　をクリック時
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -116,7 +129,7 @@ namespace WpfApp2
 
 
         /// <summary>
-        /// 右クリックメニュー＞削除　をクリック時に呼ばれる
+        /// 右クリックメニュー＞削除　をクリック時
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -134,15 +147,21 @@ namespace WpfApp2
                     while (fileListView.SelectedItems.Count > 0)
                     {
                         AppDataObject.FileData data = (AppDataObject.FileData)fileListView.SelectedItems[0];
-                        RemoveData(data);
+                        RemoveFileData(data);
                     }
                     break;
                 case MessageBoxResult.Cancel:
                     // Cancelの処理
                     break;
             }
+            UpdateListView();
         }
 
+        /// <summary>
+        /// ファイルデータを全て削除
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_ClickAllDelete(object sender, RoutedEventArgs e)
         {
             string msg = "記録されているデータを全て削除します。\nよろしいですか？";
@@ -155,21 +174,25 @@ namespace WpfApp2
                     while (fileListView.SelectedItems.Count > 0)
                     {
                         AppDataObject.FileData data = (AppDataObject.FileData)fileListView.SelectedItems[0];
-                        RemoveData(data);
+                        RemoveFileData(data);
                     }
                     break;
                 case MessageBoxResult.Cancel:
                     // Cancelの処理
                     break;
             }
+            UpdateListView();
         }
 
-        private void RemoveData(AppDataObject.FileData data)
+        /// <summary>
+        /// ファイルデータを削除し、リストビューを更新
+        /// </summary>
+        /// <param name="fileData"></param>
+        public void RemoveFileData(AppDataObject.FileData fileData)
         {
-            appData.Files.Remove(data);
-            fileListView.Items.Remove(data);
+            AppData.RemoveFileData(fileData);
+            fileListView.Items.Remove(fileData);
             fileListView.Items.Refresh();
-            appData.SaveFileData();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -178,14 +201,14 @@ namespace WpfApp2
             this.Visibility = Visibility.Collapsed;
         }
 
-        protected virtual void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (MessageBoxResult.Yes != MessageBox.Show("終了してよろしいですか？", "終了確認", MessageBoxButton.YesNo, MessageBoxImage.Information))
-            {
-                e.Cancel = true;
-                return;
-            }
-        }
+        //protected virtual void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        //{
+        //    if (MessageBoxResult.Yes != MessageBox.Show("終了してよろしいですか？", "終了確認", MessageBoxButton.YesNo, MessageBoxImage.Information))
+        //    {
+        //        e.Cancel = true;
+        //        return;
+        //    }
+        //}
 
     }
 
