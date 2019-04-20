@@ -39,7 +39,9 @@ namespace WpfApp2
 
         public MainWindow()
         {
-           
+
+
+
             //タスクバーに表示されないようにする
             ShowInTaskbar = false;
 
@@ -81,9 +83,14 @@ namespace WpfApp2
             }
             catch (Exception ex)
             {
+                //MessageBox.Show(ex.ToString());
                 Console.WriteLine(ex);
             }
 
+            if (Settings.IsLaunchedFromConsole)
+            {
+                WindowState = WindowState.Minimized;
+            }
 
         }
 
@@ -165,9 +172,6 @@ namespace WpfApp2
             OnExit();
         }
 
-
-
-
         #region タスクトレイアイコン
 
         /// <summary>
@@ -177,7 +181,16 @@ namespace WpfApp2
         {
             _notifyIcon = new System.Windows.Forms.NotifyIcon();
             _notifyIcon.Text = "MHTimer";
-            _notifyIcon.Icon = new Icon("Resources/clockIcon.ico");
+            var iconFilePath = AppDomain.CurrentDomain.SetupInformation.ApplicationBase
+                + "/Resources/clockIcon.ico";
+            
+            // TODO: need to fix?
+
+            //var iconFilePath = Settings.CurrentDir + "/Resources/clockIcon.ico";
+            //Console.WriteLine(a);
+            //Console.WriteLine(@iconFilePath);
+            //_notifyIcon.Icon = new Icon("Resources/clockIcon.ico");
+            _notifyIcon.Icon = new Icon(@iconFilePath);
             _notifyIcon.Visible = true;
 
             System.Windows.Forms.ContextMenuStrip menuStrip = new System.Windows.Forms.ContextMenuStrip();
@@ -603,7 +616,7 @@ namespace WpfApp2
         {
             try
             {
-                string filePath = Directory.GetCurrentDirectory() + "/data/appData.csv";
+                string filePath = Settings.CurrentDir + "/data/appData.csv";
                 //var uri = new Uri("data/appData.csv", UriKind.Relative);
                 //string csvData = uri.ToString();
 
@@ -626,6 +639,7 @@ namespace WpfApp2
             }
             catch (Exception ex)
             {
+                //MessageBox.Show(ex.ToString());
                 Console.WriteLine(ex.Message);
             }
 
@@ -645,7 +659,7 @@ namespace WpfApp2
             {
                 //Uri uri = new Uri(@"data/appData.csv", UriKind.Relative);
                 //string csvData = uri.ToString();
-                string filePath = Directory.GetCurrentDirectory() + "/data/appData.csv";
+                string filePath = Settings.CurrentDir + "/data/appData.csv";
 
                 //using (StreamReader reader = new StreamReader(@"data/data.csv", Encoding.UTF8))
                 using (StreamReader reader = new StreamReader(filePath, Encoding.UTF8))
@@ -673,6 +687,7 @@ namespace WpfApp2
             }
             catch (Exception ex)
             {
+                //MessageBox.Show(ex.ToString());
                 Console.WriteLine(ex.Message);
             }
 

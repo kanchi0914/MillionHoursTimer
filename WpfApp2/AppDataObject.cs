@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 //using System.Drawing;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -22,7 +23,7 @@ namespace WpfApp2
 
         readonly string iconFileDir = Settings.IconFileDir;
 
-        string currentDir = "";
+        string currentDir = Settings.CurrentDir;
 
         private MainWindow mainWindow;
 
@@ -74,7 +75,6 @@ namespace WpfApp2
         {
             this.mainWindow = mainWindow;
             this.ProcessName = processName;
-            currentDir = Directory.GetCurrentDirectory();
         }
 
         public override bool Equals(object obj)
@@ -229,6 +229,7 @@ namespace WpfApp2
             }
             catch (Exception ex)
             {
+                //MessageBox.Show(ex.ToString());
                 Console.WriteLine(ex.Message);
             }
         }
@@ -254,6 +255,7 @@ namespace WpfApp2
                 }
                 catch (Exception ex)
                 {
+                    //MessageBox.Show(ex.ToString());
                     Console.WriteLine(ex.Message);
                 }
             }
@@ -280,6 +282,7 @@ namespace WpfApp2
             }
             catch (FileNotFoundException e)
             {
+                //MessageBox.Show(e.ToString());
                 var defaultIconImagePath = currentDir + iconFileDir + $"defaultIcon.png";
                 LoadIconImage(defaultIconImagePath);
             }
@@ -325,11 +328,13 @@ namespace WpfApp2
             //アイコン画像が存在しない場合、デフォルトのアイコン画像を使用
             catch (FileNotFoundException e)
             {
+                //MessageBox.Show(e.ToString());
                 var defaultIconImage = currentDir + iconFileDir + $"defaultIcon.png";
                 LoadIconImage(defaultIconImage);
             }
             catch (Exception ex)
             {
+                //MessageBox.Show(ex.ToString());
                 Console.WriteLine(ex.Message);
             }
         }

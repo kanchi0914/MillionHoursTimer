@@ -113,7 +113,7 @@ namespace WpfApp2
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    //Console.WriteLine(ex);
                     MessageBox.Show("API Keyの認証に失敗しました。正しく入力されているか確認してください");
                 }
             }
@@ -172,18 +172,21 @@ namespace WpfApp2
         private void SetAutoLaunch(bool isOn = true)
         {
             var Name = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-            var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var path = System.Reflection.Assembly.GetExecutingAssembly().Location.ToString();
             if (isOn)
             {
                 try
                 {
                     Microsoft.Win32.RegistryKey regkey =
                         Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
-                        @"Software\Microsoft\Windows\CurrentVersion\RunOnce", true);
-                    regkey.SetValue(Name, path);
+                        @"Software\Microsoft\Windows\CurrentVersion\Run", true);
+                    regkey.SetValue(Name, path + " -v");
                     regkey.Close();
                 }
-                catch { }
+                catch
+                {
+                    Console.WriteLine("");
+                }
             }
             else
             {
@@ -191,7 +194,7 @@ namespace WpfApp2
                 {
                     Microsoft.Win32.RegistryKey regkey =
                         Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
-                        @"Software\Microsoft\Windows\CurrentVersion\RunOnce", true);
+                        @"Software\Microsoft\Windows\CurrentVersion\Run", true);
                     regkey.DeleteValue(Name, false);
                     regkey.Close();
                 }

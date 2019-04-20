@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,8 +59,14 @@ namespace WpfApp2
         //============================================================
         public static string Date = "";
 
+        public static string CurrentDir = "";
+
+        public static bool IsLaunchedFromConsole = false;
+
         static Settings()
         {
+            //CurrentDir = Directory.GetCurrentDirectory();
+            CurrentDir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             Load();
         }
 
