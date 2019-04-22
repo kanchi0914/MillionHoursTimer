@@ -147,6 +147,7 @@ namespace WpfApp2
                 Settings.IsAutoLauch = (bool)AutoLaunch.IsChecked;
                 Settings.IsNotCountingOnSleep = (bool)NotCountOnSleep.IsChecked;
 
+                Settings.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
                 Settings.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
                 Settings.IsEnabledAdditionalFileNameSetting = (bool)AdditionalCount.IsChecked;
 
