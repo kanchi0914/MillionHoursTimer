@@ -73,6 +73,7 @@ namespace WpfApp2
             NotCountMinimized.IsChecked = Settings.IsCountingNotMinimized;
             OnlyCountActive.IsChecked = Settings.IsCountingOnlyActive;
             AdditionalCount.IsChecked = Settings.IsEnabledAdditionalFileNameSetting;
+            DividingBySpace.IsChecked = Settings.IsDividingBySpace;
 
             OKButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
                 new RoutedEventHandler(OnClickedOKButton));
@@ -92,10 +93,10 @@ namespace WpfApp2
         public void RefreshToggleList()
         {
             User.Text = "ユーザー：" + mainWindow.TogglManager.User;
-            foreach (AppDataObject data in mainWindow.AppDatas)
+            foreach (AppDataObject appData in mainWindow.AppDatas)
             {
-                data.ProjectNames = mainWindow.TogglManager.ProjectIDs.Keys.ToList();
-                data.TagNames = mainWindow.TogglManager.Tags;
+                appData.ProjectNames = mainWindow.TogglManager.ProjectIDs.Keys.ToList();
+                appData.TagNames = mainWindow.TogglManager.Tags;
             }
         }
 
@@ -117,7 +118,6 @@ namespace WpfApp2
                     MessageBox.Show("API Keyの認証に失敗しました。正しく入力されているか確認してください");
                 }
             }
-
         }
 
         private void textBoxPrice_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -150,6 +150,7 @@ namespace WpfApp2
                 Settings.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
                 Settings.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
                 Settings.IsEnabledAdditionalFileNameSetting = (bool)AdditionalCount.IsChecked;
+                Settings.IsDividingBySpace = (bool)DividingBySpace.IsChecked;
 
                 if (int.Parse(CountInterval.Text) > 0) Settings.CountInterval = int.Parse(CountInterval.Text);
                 if (int.Parse(MinCountTime.Text) > 0) Settings.MinCountStartTime = int.Parse(MinCountTime.Text);

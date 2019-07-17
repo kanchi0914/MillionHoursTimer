@@ -109,40 +109,6 @@ namespace WpfApp2
 
         public void Count()
         {
-            ////すべてのアプリをカウント
-            //if (!Properties.Settings.Default.isCountingNotMinimized &&
-            //    !Properties.Settings.Default.isCountingOnlyActive)
-            //{
-            //    CountAllApps();
-            //}
-            ////最小化しているときはカウントしない
-            //else if (Properties.Settings.Default.isCountingNotMinimized)
-            //{
-            //    CountNotMinimizedApp();
-            //}
-            ////アクティブウィンドウのみをカウント
-            //else if (Properties.Settings.Default.isCountingOnlyActive)
-            //{
-            //    CountOnlyActiveApp();
-            //}
-
-
-            ////すべてのアプリをカウント
-            //if (!Settings.IsCountingNotMinimized &&
-            //    !Settings.IsCountingOnlyActive)
-            //{
-            //    CountAllApps();
-            //}
-            ////最小化しているときはカウントしない
-            //else if (Settings.IsCountingNotMinimized)
-            //{
-            //    CountNotMinimizedApp();
-            //}
-            ////アクティブウィンドウのみをカウント
-            //else if (Settings.IsCountingOnlyActive)
-            //{
-            //    CountOnlyActiveApp();
-            //}
 
             //アクティブウィンドウのみをカウント
             if (Settings.IsCountingOnlyActive)
@@ -249,9 +215,9 @@ namespace WpfApp2
 
         public void ResetFileCount()
         {
-            foreach (AppDataObject appDataObject in mainWindow.AppDatas)
+            foreach (AppDataObject appData in mainWindow.AppDatas)
             {
-                foreach (AppDataObject.FileData fileData in appDataObject.Files)
+                foreach (AppDataObject.FileData fileData in appData.Files)
                 {
                     fileData.IsCounted = false;
                 }
@@ -260,15 +226,15 @@ namespace WpfApp2
 
         public void CheckClosedApp()
         {
-            foreach (AppDataObject data in mainWindow.AppDatas)
+            foreach (AppDataObject appData in mainWindow.AppDatas)
             {
-                if (data.IsRecordStarted)
+                if (appData.IsRecordStarted)
                 {
                     //記録していたアプリが終了した
-                    if (data.IsRunning && (DateTime.Now - data.LastTime).TotalMinutes > Properties.Settings.Default.CountInterval)
+                    if (appData.IsRunning && (DateTime.Now - appData.LastTime).TotalMinutes > Properties.Settings.Default.CountInterval)
                     {
-                        data.IsRunning = false;
-                        mainWindow.TogglManager.SetTimeEntry(data);
+                        appData.IsRunning = false;
+                        mainWindow.TogglManager.SetTimeEntry(appData);
                     }
                 }
             }

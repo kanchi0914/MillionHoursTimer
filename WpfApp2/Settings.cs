@@ -46,6 +46,8 @@ namespace WpfApp2
         public static bool IsCountingOnlyActive = false;
         //ファイル名の拡張設定を有効にするか
         public static bool IsEnabledAdditionalFileNameSetting = false;
+        //ファイル名をスペースで区切るか
+        public static bool IsDividingBySpace = false;
         //ファイル名の最大保存件数
         public static int MaxFileNum = 100;
 
@@ -82,10 +84,12 @@ namespace WpfApp2
             IsCountingOnlyActive = Properties.Settings.Default.isCountingOnlyActive;
             IsNotCountingOnSleep = Properties.Settings.Default.IsNotCountingOnSleep;
             IsEnabledAdditionalFileNameSetting = Properties.Settings.Default.isAdditionalFileName;
+            IsDividingBySpace = Properties.Settings.Default.IsDividingBySpace;
             MaxFileNum = Properties.Settings.Default.MaxFileNum;
             CountInterval = Properties.Settings.Default.CountInterval;
             MinCountStartTime = Properties.Settings.Default.MinCountStartTime;
             Date = Properties.Settings.Default.date;
+
         }
 
         /// <summary>
@@ -101,6 +105,7 @@ namespace WpfApp2
             Properties.Settings.Default.isCountingOnlyActive = IsCountingOnlyActive;
             Properties.Settings.Default.IsNotCountingOnSleep = IsNotCountingOnSleep;
             Properties.Settings.Default.isAdditionalFileName = IsEnabledAdditionalFileNameSetting;
+            Properties.Settings.Default.IsDividingBySpace = IsDividingBySpace;
             Properties.Settings.Default.MaxFileNum = MaxFileNum;
             Properties.Settings.Default.CountInterval = CountInterval;
             Properties.Settings.Default.MinCountStartTime = MinCountStartTime;

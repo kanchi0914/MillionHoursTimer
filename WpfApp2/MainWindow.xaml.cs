@@ -40,8 +40,6 @@ namespace WpfApp2
         public MainWindow()
         {
 
-
-
             //タスクバーに表示されないようにする
             ShowInTaskbar = false;
 
@@ -103,9 +101,9 @@ namespace WpfApp2
             if (Settings.Date != currentDate)
             {
                 Settings.Date = currentDate;
-                foreach (AppDataObject apps in AppDatas)
+                foreach (AppDataObject appData in AppDatas)
                 {
-                    apps.TodaysMinutes = 0;
+                    appData.TodaysMinutes = 0;
                 }
             }
         }
@@ -115,9 +113,9 @@ namespace WpfApp2
         /// </summary>
         public void ExitAllApp()
         {
-            foreach (AppDataObject data in AppDatas)
+            foreach (AppDataObject appData in AppDatas)
             {
-                data.Exit();
+                appData.Exit();
             }
         }
 
@@ -267,7 +265,7 @@ namespace WpfApp2
         public void CreateMenu()
         {
             AddApp.Click += OnClickAddApp;
-            Import.Click += OnClickImportData;
+            //Import.Click += OnClickImportData;
             Export.Click += OnClickExportData;
         }
 
@@ -291,24 +289,24 @@ namespace WpfApp2
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnClickImportData(object sender, RoutedEventArgs e)
-        {
-            string path = GetFolderPathByFileDialog();
-            if (!string.IsNullOrEmpty(path))
-            {
-                var splitted = path.Split('\\');
-                if (splitted.Last() != "data")
-                {
-                    MessageBox.Show("dataフォルダを選択してください",
-                        "エラー",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return;
-                }
+        //public void OnClickImportData(object sender, RoutedEventArgs e)
+        //{
+        //    string path = GetFolderPathByFileDialog();
+        //    if (!string.IsNullOrEmpty(path))
+        //    {
+        //        var splitted = path.Split('\\');
+        //        if (splitted.Last() != "data")
+        //        {
+        //            MessageBox.Show("dataフォルダを選択してください",
+        //                "エラー",
+        //                MessageBoxButton.OK,
+        //                MessageBoxImage.Error);
+        //            return;
+        //        }
 
-                DirectoryProcessor.CopyAndReplace(@path, "data");
-            }
-        }
+        //        DirectoryProcessor.CopyAndReplace(@path, "data");
+        //    }
+        //}
 
         /// <summary>
         /// メニュー>データのエクスポート　をクリック時に呼ばれる
@@ -516,9 +514,9 @@ namespace WpfApp2
         /// </summary>
         private void InitListView()
         {
-            foreach (AppDataObject data in AppDatas)
+            foreach (AppDataObject appData in AppDatas)
             {
-                data.Init();
+                appData.Init();
                 //var iconImagePath = Directory.GetCurrentDirectory() + "/data/icons/" + $"{data.ProcessName}.png";
                 //data.LoadIconImage(iconImagePath);
                 //listView.Items.Add(data);
@@ -562,10 +560,6 @@ namespace WpfApp2
         /// <summary>
         /// リストビューの表示を更新する
         /// </summary>
-        //public void UpdateListView()
-        //{
-        //    listView.Dispatcher.BeginInvoke(new Action(() => listView.Items.Refresh()));
-        //}
         public void UpdateListView()
         {
             //削除を先に行う

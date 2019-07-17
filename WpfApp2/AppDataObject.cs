@@ -416,19 +416,21 @@ namespace WpfApp2
                 }
             }
 
-            //拡張機能
+            //ハイフン区切り
             if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
             {
                 string[] parsedByHyphen = title.Split('-');
                 if (parsedByHyphen.Length > 1)
                 {
-                    string[] parsedBySpace = title.Split(' ');
-                    //if (parsedBySpace.Length > 1)
-                    //{
-                    //    string[] parsedBySpace = title.Split(' ');
-                    //    fileName = parsedByHyphen[0];
-                    //}
-                    fileName = parsedBySpace[0];
+                    if (Settings.IsDividingBySpace)
+                    {
+                        string[] parsedBySpace = title.Split(' ');
+                        fileName = parsedBySpace[0];
+                    }
+                    else
+                    {
+                        fileName = parsedByHyphen[0];
+                    }
                 }
             }
 
@@ -486,6 +488,7 @@ namespace WpfApp2
             Files.Remove(fileData);
             SaveFileData();
         }
+
 
         public class FileData
         {

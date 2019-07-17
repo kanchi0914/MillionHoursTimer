@@ -36,7 +36,7 @@
     <Menu VerticalAlignment="Top">
       <MenuItem Header="ファイル">
                 <MenuItem Name="AddApp" Header="アプリケーションを追加"/>
-                <MenuItem Name="Import" Header="データのインポート"/>
+                <!--<MenuItem Name="Import" Header="データのインポート"/>-->
                 <MenuItem Name="Export" Header="データのエクスポート"/>
             </MenuItem>
       <MenuItem Header="設定">

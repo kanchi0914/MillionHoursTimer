@@ -140,18 +140,14 @@ namespace WpfApp2
         public void SetTimeEntry(AppDataObject appData)
         {
 
-            DateTime d = DateTime.Now.AddHours(-3);
+            //DateTime d = DateTime.Now.AddHours(-3);
 
             int duration = (int)(appData.LastTime - appData.LaunchedTime).TotalSeconds;
-            //int duration = (int)(appData.LastTime - d).TotalSeconds;
             TimeEntry te = new TimeEntry()
             {
                 IsBillable = true,
                 CreatedWith = "TogglAPI.Net",
                 Description = appData.DisplayedName,
-                //ProjectId = projectID,
-                //ProjectId = 150055033,
-                //TagNames = new List<string>() { appData.LinkedTag },
                 Duration = duration,
                 Start = appData.LaunchedTime.ToIsoDateStr(),
                 Stop = appData.LastTime.ToIsoDateStr(),

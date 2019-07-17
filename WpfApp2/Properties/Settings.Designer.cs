@@ -73,7 +73,7 @@ namespace WpfApp2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1610b6739c0904ad6774df3ddcf460ea")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string APIKey {
             get {
                 return ((string)(this["APIKey"]));
@@ -140,6 +140,18 @@ namespace WpfApp2.Properties {
             }
             set {
                 this["IsAutoLaunch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsDividingBySpace {
+            get {
+                return ((bool)(this["IsDividingBySpace"]));
+            }
+            set {
+                this["IsDividingBySpace"] = value;
             }
         }
     }
