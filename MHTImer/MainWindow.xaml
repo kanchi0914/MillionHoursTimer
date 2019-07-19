@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:MHTimer"
         mc:Ignorable="d"
         Title="MillionHoursTimer" Height="450" Width="600"
+        Icon="Resources\clockIcon.ico"
         AllowDrop="True"
         Drop="Window_Drop" PreviewDragOver="Window_PreviewDragOver"
         Closing="Window_Closing"

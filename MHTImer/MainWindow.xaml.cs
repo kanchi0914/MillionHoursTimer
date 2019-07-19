@@ -53,9 +53,6 @@ namespace MHTimer
 
             //Windows終了時のイベントを追加
             SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding);
-
-            //設定の読み込み
-            //Settings.Load();
             
             //データの読み込み
             LoadCsvData();
@@ -81,8 +78,7 @@ namespace MHTimer
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.ToString());
-                Console.WriteLine(ex);
+                MessageBox.Show("エラー:\n" + ex.ToString());
             }
 
             if (Settings.IsLaunchedFromConsole)

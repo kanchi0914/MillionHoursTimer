@@ -210,16 +210,6 @@ namespace MHTimer
         }
 
         /// <summary>
-        /// 記録情報を終了させる
-        /// </summary>
-        //public void Exit()
-        //{
-        //    IsRecordStarted = false;
-        //    IsRunning = false;
-        //    mainWindow.TogglManager.SetTimeEntry(this);
-        //}
-
-        /// <summary>
         /// ファイル別の作業時間を読み込み
         /// </summary>
         public void LoadFileData()

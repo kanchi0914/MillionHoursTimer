@@ -27,10 +27,6 @@ namespace MHTimer
 
         public MainWindow mainWindow;
 
-        //private TextBox apiKeyInput;
-        //private TextBox minCountStartTimeInput;
-        //private TextBox countIntervalInput;
-
         public class ProjectData
         {
             public string ProjectName { get; set; }
@@ -115,8 +111,8 @@ namespace MHTimer
                 }
                 catch (Exception ex)
                 {
-                    //Console.WriteLine(ex);
-                    MessageBox.Show("認証に失敗しました。API Keyが正しく入力されているか確認してください");
+                    MessageBox.Show("認証に失敗しました。API Keyが正しく入力されているか確認してください。\nエラー詳細:\n" 
+                        + ex.ToString());
                 }
             }
         }
@@ -187,10 +183,7 @@ namespace MHTimer
                     regkey.SetValue(Name, path + " -v");
                     regkey.Close();
                 }
-                catch
-                {
-                    Console.WriteLine("");
-                }
+                catch { }
             }
             else
             {
