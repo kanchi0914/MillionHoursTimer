@@ -142,7 +142,7 @@
                                         <ComboBox
                                             x:Name="ProjectList"
                                             ItemsSource="{Binding  Path=ProjectNames}"
-                                            SelectedIndex="{Binding GetIndexOfProject, Mode=TwoWay}"
+                                            SelectedItem="{Binding GetNameOfProject, Mode=TwoWay}"
                                             Width="120"
                                         />
                                     </DataTemplate>
@@ -152,9 +152,9 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate DataType="wpf:Entry">
                                         <ComboBox
-                                            x:Name="ProjectList"
+                                            x:Name="TagList"
                                             ItemsSource="{Binding  Path=TagNames}"
-                                            SelectedIndex="{Binding GetIndexOfTag, Mode=TwoWay}"
+                                            SelectedItem="{Binding GetNameOfTag, Mode=TwoWay}"
                                             Width="60"
                                         />
                                     </DataTemplate>

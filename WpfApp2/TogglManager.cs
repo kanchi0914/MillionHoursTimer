@@ -26,9 +26,8 @@ namespace WpfApp2
 
         private int defaultWorkspaceID;
 
-        public Dictionary<string, int> ProjectIDs { get; private set; } =
-            new Dictionary<string, int>();
-        public List<string> Tags { get; set; } = new List<string>() { "" };
+        public Dictionary<string, int> ProjectIDs { get; private set; }
+        public List<string> Tags { get; set; }
 
         public TogglManager(MainWindow mainWindow)
         {
@@ -65,8 +64,8 @@ namespace WpfApp2
                 var userService = new UserService(ApiKey);
                 User = userService.GetCurrent().Email;
 
-                ProjectIDs = new Dictionary<string, int>();
-                Tags= new List<string>() { "" };
+                ProjectIDs = new Dictionary<string, int>() { { "", 0 } };
+                Tags = new List<string>() { "" };
 
                 var projectService = new ProjectService(ApiKey);
                 List<Project> projects = projectService.List();

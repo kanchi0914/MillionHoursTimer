@@ -115,7 +115,7 @@ namespace WpfApp2
                 catch (Exception ex)
                 {
                     //Console.WriteLine(ex);
-                    MessageBox.Show("API Keyの認証に失敗しました。正しく入力されているか確認してください");
+                    MessageBox.Show("認証に失敗しました。API Keyが正しく入力されているか確認してください");
                 }
             }
         }

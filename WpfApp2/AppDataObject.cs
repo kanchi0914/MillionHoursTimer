@@ -98,26 +98,42 @@ namespace WpfApp2
             LoadIconImage(iconImagePath);
         }
 
-        //public string GetLastTime
-        //{
-        //    get
-        //    {
-        //        return LastTime.ToString("HH:mm"); ;
-        //    }
-        //}
-
-        public int GetIndexOfTag
+        public string GetNameOfProject
         {
             get
             {
-                int index = mainWindow.TogglManager.Tags.IndexOf(LinkedTag);
-                return index;
+                return LinkedProjectName;
             }
             set
             {
-                LinkedTag = mainWindow.TogglManager.Tags[value];
+                LinkedProjectName = value;
             }
         }
+
+        public string GetNameOfTag
+        {
+            get
+            {
+                return LinkedTag;
+            }
+            set
+            {
+                LinkedTag = value;
+            }
+        }
+
+        //public int GetIndexOfTag
+        //{
+        //    get
+        //    {
+        //        int index = mainWindow.TogglManager.Tags.IndexOf(LinkedTag);
+        //        return index;
+        //    }
+        //    set
+        //    {
+        //        LinkedTag = mainWindow.TogglManager.Tags[value];
+        //    }
+        //}
 
         public string GetTotalTime
         {
