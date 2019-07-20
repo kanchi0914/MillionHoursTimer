@@ -3,14 +3,7 @@
 MillionHoursTimerは、指定したアプリケーションの起動時間を自動で記録してくれるWindows向け常駐アプリです。
 アプリケーションによっては、各ファイル別に作業時間を確認することも可能です。
 時間管理や、モチベーションの維持等にお役立てください。
-
-<table>
-  <tr>
-    <td><img src="./mainwindow.png?raw=true" width="400"></td>
-    <td><img src="./toggle_summary.png?raw=true" width="400"></td>
-  </tr>
-</table>
-
+![image](./mainwindow.png?raw=true "clip_cmc")
 
 ##### 実行環境
 .NET Framework 4.6
