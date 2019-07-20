@@ -23,7 +23,7 @@ namespace MHTimer
 
         public static readonly string IconFileDir = "/data/icons/";
 
-        //public static readonly string DataDir = "data";
+        public static readonly string FileDataDir = "/data/fileData/";
 
         //public static readonly string AppDataFile = "data/appData.csv";
 

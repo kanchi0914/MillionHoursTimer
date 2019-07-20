@@ -30,6 +30,7 @@ namespace MHTimer
         private TM.Timer timer;
 
         private bool isSuspending = false;
+        private bool isNoInputing = false;
 
         private int interval = Properties.Settings.Default.CountInterval;
 
@@ -83,15 +84,17 @@ namespace MHTimer
             //日付を更新
             mainWindow.UpdateDate();
 
-            //スリープ中でない
-            if (!isSuspending)
+            //無操作を確認
+            CheckNoInput();
+
+            //スリープ中、無操作時でない
+            if (!isSuspending && !isNoInputing)
             {
                 //計測
                 Count();
 
                 //終了確認
                 CheckClosedApp();
-                CheckNoInput();
 
                 //データを保存
                 mainWindow.SaveCsvData();
@@ -233,9 +236,14 @@ namespace MHTimer
         /// </summary>
         public void CheckNoInput()
         {
-            if (LastInputCounter.GetLastInputMinutes() > Settings.NoInputTime)
+            if (LastInputCounter.GetLastInputMinutes() >= Settings.NoInputTime)
             {
-                mainWindow.AppDatas.ForEach(a => a.Exit());
+                mainWindow.ExitAllApp();
+                isNoInputing = true;
+            }
+            else
+            {
+                isNoInputing = false;
             }
         }
 

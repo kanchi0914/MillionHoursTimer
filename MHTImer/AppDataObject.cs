@@ -22,6 +22,7 @@ namespace MHTimer
         //private readonly string iconFileDir = "/data/icons/";
 
         readonly string iconFileDir = Settings.IconFileDir;
+        readonly string fileDataDir = Settings.FileDataDir;
 
         string currentDir = Settings.CurrentDir;
 
@@ -184,11 +185,13 @@ namespace MHTimer
         /// <returns></returns>
         public string GetFileExtensionText()
         {
-            var extentionText = "";
-            foreach (string s in FileExtensions)
-            {
-                extentionText += s + "/";
-            }
+            //var extentionText = "";
+            //foreach (string s in FileExtensions)
+            //{
+            //    extentionText += s + "/";
+
+            //}
+            var extentionText = string.Join("/", FileExtensions.ToArray());
             return extentionText;
         }
 
@@ -214,8 +217,7 @@ namespace MHTimer
         /// </summary>
         public void LoadFileData()
         {
-            string path = currentDir + iconFileDir + ProcessName + "_files.csv";
-            //string path = "data/fileData\\" + ProcessName + "_files.csv";
+            string path = currentDir + fileDataDir + ProcessName + "_files.csv";
             Console.WriteLine(path);
 
             try
@@ -248,7 +250,7 @@ namespace MHTimer
         /// </summary>
         public void SaveFileData()
         {
-            string path = currentDir + iconFileDir + ProcessName + "_files.csv";
+            string path = currentDir + fileDataDir + ProcessName + "_files.csv";
             if (Files.Count > 0)
             {
                 try
@@ -360,9 +362,11 @@ namespace MHTimer
                 LaunchedTime = DateTime.Now;
                 IsRunning = true;
             }
-            
-            MinutesFromLaunched += Properties.Settings.Default.CountInterval;
-
+            else
+            {
+                MinutesFromLaunched += Properties.Settings.Default.CountInterval;
+            }
+ 
             if (MinutesFromLaunched >= Properties.Settings.Default.MinCountStartTime)
             {
                 //一度だけ、時間の差分を足す

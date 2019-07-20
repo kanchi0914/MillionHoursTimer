@@ -25,7 +25,7 @@ namespace MHTimer
         {
             this.AppData = appData;
             InitializeComponent();
-            TextBox.Text = string.Join("/", appData.FileExtensions.ToArray());
+            TextBox.Text = appData.GetFileExtensionText();
             OKButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
                 new RoutedEventHandler(OnClicked));
         }
