@@ -4,6 +4,14 @@ MillionHoursTimerは、指定したアプリケーションの起動時間を自
 アプリケーションによっては、各ファイル別に作業時間を確認することも可能です。
 時間管理や、モチベーションの維持等にお役立てください。
 
+<table>
+  <tr>
+    <td><img src="./mainwindow.png?raw=true" width="400"></td>
+    <td><img src="./toggle_summary.png?raw=true" width="400"></td>
+  </tr>
+</table>
+
+
 ##### 実行環境
 .NET Framework 4.6
 
