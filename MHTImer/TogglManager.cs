@@ -169,6 +169,8 @@ namespace MHTimer
                 if (te != null)
                 {
                     timeEntryService.Add(te);
+                    Console.WriteLine("sended:");
+                    Console.WriteLine(te);
                 }
             }
             catch
