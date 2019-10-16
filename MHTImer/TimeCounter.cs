@@ -97,7 +97,7 @@ namespace MHTimer
                 CheckClosedApp();
 
                 //データを保存
-                mainWindow.SaveCsvData();
+                mainWindow.SaveAndLoader.SaveCsvData();
 
                 //listviewの更新
                 mainWindow.listView.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Refresh()));
@@ -128,7 +128,7 @@ namespace MHTimer
                 CountAllApps();
             }
 
-            mainWindow.FileListWindows.ForEach(w => w.UpdateListView());
+            mainWindow.FileViewWindows.ForEach(w => w.UpdateListView());
 
             //foreach (FileViewWindow window in mainWindow.FileListWindows)
             //{

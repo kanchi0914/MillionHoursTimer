@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System;
 using System.ComponentModel;
 using System.Windows;
 
@@ -22,7 +15,6 @@ namespace MHTimer.Components
 
         private void toolStripMenuItem_OpenApp(object sender, EventArgs e)
         {
-            // MainWindow を生成、表示
             var wnd = new MainWindow();
             wnd.Show();
         }

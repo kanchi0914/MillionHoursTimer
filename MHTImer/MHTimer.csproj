@@ -95,10 +95,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="aaaClass2.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="BoolVisibilityConverter.cs" />
+    <Compile Include="ContextMenuSetter.cs" />
+    <Compile Include="NotifyIconSetter.cs" />
     <Compile Include="LastInputCounter.cs" />
     <Compile Include="MergedNameSettingWindow.xaml.cs">
       <DependentUpon>MergedNameSettingWindow.xaml</DependentUpon>
@@ -108,6 +107,7 @@
     </Compile>
     <Compile Include="DirectoryProcessor.cs" />
     <Compile Include="EnumWindowsClass.cs" />
+    <Compile Include="SaveAndLoader.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Components\NotifyIcon.cs">
       <SubType>Component</SubType>
@@ -125,7 +125,6 @@
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="TimeCounter.cs" />
-    <Compile Include="ToggleTest.cs" />
     <Compile Include="TogglManager.cs" />
     <Compile Include=".xaml.cs">
       <DependentUpon>AppNameSettingWindow.xaml</DependentUpon>
@@ -149,7 +148,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AppDataObject.cs" />
-    <Compile Include="Sample.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -201,6 +199,7 @@
     <Content Include="data\fileData\.gitignore">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="ListViewSetter.cs" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -158,9 +158,9 @@ namespace MHTimer
 
                 SetAutoLaunch(Settings.IsAutoLauch);
 
-                mainWindow.SaveCsvData();
+                mainWindow.SaveAndLoader.SaveCsvData();
 
-                mainWindow.timeCounter.UpdateTimer();
+                mainWindow.TimeCounter.UpdateTimer();
                 isFromWindow = false;
             }
         }

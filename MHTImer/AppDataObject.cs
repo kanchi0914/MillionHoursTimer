@@ -16,18 +16,13 @@ namespace MHTimer
     public class AppDataObject
     {
 
-        //private string currentDir;
-
-        ////アイコン画像の保存先ディレクトリ
-        //private readonly string iconFileDir = "/data/icons/";
+        private MainWindow mainWindow;
 
         readonly string iconFileDir = Settings.IconFileDir;
         readonly string fileDataDir = Settings.FileDataDir;
 
         string currentDir = Settings.CurrentDir;
-
-        private MainWindow mainWindow;
-
+        
         //プロセスの名前（不変）
         public string ProcessName { get; } = "";
 
@@ -46,7 +41,6 @@ namespace MHTimer
         public DateTime LastTime { get; private set; }
 
         //ファイル設定
-        //public string FileExtension { get; private set; } = "";
         public List<string> FileExtensions { get; private set; } = new List<string>();
         public List<FileData> Files { get; private set; } = new List<FileData>();
 
@@ -115,7 +109,7 @@ namespace MHTimer
             LoadIconImage(iconImagePath);
         }
 
-        public string GetNameOfProject
+        public string NameOfProject
         {
             get
             {
@@ -127,7 +121,7 @@ namespace MHTimer
             }
         }
 
-        public string GetNameOfTag
+        public string NameOfTag
         {
             get
             {
@@ -139,7 +133,7 @@ namespace MHTimer
             }
         }
 
-        public string GetTotalTime
+        public string TotalTime
         {
             get
             {
@@ -147,7 +141,7 @@ namespace MHTimer
             }
         }
 
-        public string GetTodaysTime
+        public string TodaysTime
         {
             get
             {
@@ -185,12 +179,6 @@ namespace MHTimer
         /// <returns></returns>
         public string GetFileExtensionText()
         {
-            //var extentionText = "";
-            //foreach (string s in FileExtensions)
-            //{
-            //    extentionText += s + "/";
-
-            //}
             var extentionText = string.Join("/", FileExtensions.ToArray());
             return extentionText;
         }
@@ -240,7 +228,6 @@ namespace MHTimer
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.ToString());
                 Console.WriteLine(ex.Message);
             }
         }
@@ -248,7 +235,7 @@ namespace MHTimer
         /// <summary>
         /// ファイル別の作業時間データを保存
         /// </summary>
-        public void SaveFileData()
+        public void SaveFileDatas()
         {
             string path = currentDir + fileDataDir + ProcessName + "_files.csv";
             if (Files.Count > 0)
@@ -266,7 +253,6 @@ namespace MHTimer
                 }
                 catch (Exception ex)
                 {
-                    //MessageBox.Show(ex.ToString());
                     Console.WriteLine(ex.Message);
                 }
             }
@@ -327,7 +313,6 @@ namespace MHTimer
         public void LoadIconImage(string path)
         {
             var bmpImage = new BitmapImage();
-            //string uriPath = Directory.GetCurrentDirectory() + "/data/icons/" + $"{ProcessName}.png";
 
             try
             {
@@ -339,13 +324,11 @@ namespace MHTimer
             //アイコン画像が存在しない場合、デフォルトのアイコン画像を使用
             catch (FileNotFoundException e)
             {
-                //MessageBox.Show(e.ToString());
                 var defaultIconImage = currentDir + iconFileDir + $"defaultIcon.png";
                 LoadIconImage(defaultIconImage);
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.ToString());
                 Console.WriteLine(ex.Message);
             }
         }
@@ -499,7 +482,7 @@ namespace MHTimer
         public void RemoveFileData(FileData fileData)
         {
             Files.Remove(fileData);
-            SaveFileData();
+            SaveFileDatas();
         }
 
 

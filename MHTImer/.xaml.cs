@@ -41,7 +41,7 @@ namespace MHTimer
         public void OnClickedOK(object sender, RoutedEventArgs e)
         {
             appData.DisplayedName = AppNameInput.Text;
-            mainWindow.UpdateListView();
+            mainWindow.ListViewSetter.UpdateListView();
             Close();
         }
 
