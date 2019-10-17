@@ -32,7 +32,7 @@ namespace MHTimer
         private bool isSleeping = false;
         private bool isNoInputing = false;
 
-        private int interval = Properties.Settings.Default.CountInterval;
+        private int interval = Properties.Settings.Default.CountingSecondsInterval;
 
         public TimeCounter(MainWindow mainWindow)
         {
@@ -46,7 +46,7 @@ namespace MHTimer
                     //スリープ開始
                     case PowerModes.Suspend:
                         isSleeping = true;
-                        mainWindow.ExitAllApp();
+                        mainWindow.ExitAllApps();
                         break;
                     //復帰
                     case PowerModes.Resume:
@@ -55,7 +55,7 @@ namespace MHTimer
                 }
             };
 
-            interval = Properties.Settings.Default.CountInterval;
+            interval = Properties.Settings.Default.CountingSecondsInterval;
             CreateTimer();
         }
 
@@ -66,7 +66,7 @@ namespace MHTimer
         {
             timer = new TM.Timer();
             timer.Elapsed += new TM.ElapsedEventHandler(TimeDisp);
-            timer.Interval = (Properties.Settings.Default.CountInterval * Settings.CountSeconds) * 1000;
+            timer.Interval = (Settings.CountingSecondsInterval) * 1000;
             timer.AutoReset = true;
             timer.Enabled = true;
         }
@@ -76,13 +76,13 @@ namespace MHTimer
         /// </summary>
         public void UpdateTimer()
         {
-            timer.Interval = (Properties.Settings.Default.CountInterval * Settings.CountSeconds) * 1000;
+            timer.Interval = (Settings.CountingSecondsInterval) * 1000;
         }
 
         private void TimeDisp(object sender, EventArgs e)
         {
             //日付を更新
-            mainWindow.UpdateDate();
+            mainWindow.UpdateDateOfAppDatas();
 
             //無操作を確認
             CheckNoInput();
@@ -93,10 +93,13 @@ namespace MHTimer
             if (!isSleeping && !isNoInputing)
             {
                 //計測
-                Count();
+                lock (mainWindow.AppDatas)
+                {
+                    Count();
+                }
 
                 //終了確認
-                CheckClosedApp();
+                ExitClosedApp();
 
                 //データを保存
                 mainWindow.SaveAndLoader.SaveCsvData();
@@ -106,13 +109,17 @@ namespace MHTimer
 
                 //ファイルデータの重複防止フラグをリセット
                 ResetFileCount();
+
+                mainWindow.ListViewSetter.UpdateListView();
             }
         }
 
         #region 計測メソッド
+        object lockObj = new object();
 
         public void Count()
         {
+
 
             //アクティブウィンドウのみをカウント
             if (Settings.IsCountingOnlyActive)
@@ -141,8 +148,8 @@ namespace MHTimer
                 Process[] processes = Process.GetProcessesByName(data.ProcessName);
                 if (processes.Length > 0)
                 {
-                    data.AccumulateMinutes();
-                    data.AccumulateMinuteToFileDatas();
+                    data.AccumulateTimes();
+                    //data.AccumulateTimeToFileDatas();
                 }
             }
         }
@@ -163,8 +170,8 @@ namespace MHTimer
                         {
                             if (!isCounted)
                             {
-                                data.AccumulateMinutes();
-                                data.AccumulateMinuteToFileDatas();
+                                data.AccumulateTimes();
+                                //data.AccumulateTimeToFileDatas();
                                 isCounted = true;
                             }
                         }
@@ -198,12 +205,12 @@ namespace MHTimer
                     {
                         processName = p.ProcessName.ToString();
                     }
-                    AppDataObject data = mainWindow.AppDatas.Find(a => a.ProcessName == processName);
+                    AppDataObject data = mainWindow.AppDatas.ToList().Find(a => a.ProcessName == processName);
                     //found registerd app
                     if (data != null)
                     {
-                        data.AccumulateMinutes();
-                        data.AccumulateMinuteToFileData(sb.ToString());
+                        data.AccumulateTimes();
+                        //data.AccumulateTimeToFileData(sb.ToString());
                     }
                 }
             }
@@ -220,13 +227,7 @@ namespace MHTimer
         /// </summary>
         public void ResetFileCount()
         {
-            foreach (AppDataObject appData in mainWindow.AppDatas)
-            {
-                foreach (AppDataObject.FileData fileData in appData.Files)
-                {
-                    fileData.IsCounted = false;
-                }
-            }
+            mainWindow.AppDatas.ToList().ForEach(a => a.Files.ToList().ForEach(f => f.IsCounted = false));
         }
 
         /// <summary>
@@ -236,7 +237,7 @@ namespace MHTimer
         {
             if (LastInputCounter.GetLastInputMinutes() >= Settings.NoInputTime)
             {
-                mainWindow.ExitAllApp();
+                mainWindow.ExitAllApps();
                 isNoInputing = true;
             }
             else
@@ -248,21 +249,12 @@ namespace MHTimer
         /// <summary>
         /// 計測中のアプリで、終了したものがないか確認
         /// </summary>
-        public void CheckClosedApp()
+        public void ExitClosedApp()
         {
-            foreach (AppDataObject appData in mainWindow.AppDatas)
-            {
-                if (appData.IsRecordStarted)
-                {
-                    //記録していたアプリが終了した
-                    if (appData.IsRunning && (DateTime.Now - appData.LastTime).TotalMinutes > Properties.Settings.Default.CountInterval)
-                    {
-                        appData.Exit();
-                    }
-                }
-            }
+            var sec = Properties.Settings.Default.CountingSecondsInterval;
+            mainWindow.AppDatas.Where(a => a.IsRecordStarted && a.IsRunning)
+                .Where(a => (DateTime.Now - a.LastTime).Seconds > sec)
+                .ToList().ForEach(a => a.Exit());
         }
-
-
     }
 }

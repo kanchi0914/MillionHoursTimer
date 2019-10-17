@@ -1,5 +1,6 @@
 ﻿<Window x:Class="MHTimer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -49,16 +50,30 @@
         <ColumnDefinition Width="1*" />
         <!--<ColumnDefinition Width="120" />-->
       </Grid.ColumnDefinitions>
-      <ListView Name="listView"  HorizontalAlignment="Center"  Height="340" Margin="20,40,20,20" VerticalAlignment="Top" Width="540" SelectionChanged="listView_SelectionChanged">
-        <ListView.View>
+      <ListView 
+          Name="listView"  
+          HorizontalAlignment="Center"  
+          Height="340" Margin="20,40,20,20" 
+          VerticalAlignment="Top" 
+          Width="540" 
+          SelectionChanged="listView_SelectionChanged"
+          GridViewColumnHeader.Click="listHeader_Click">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Background" Value="{Binding Path=Color}"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListView.View>
           <GridView>
             <!--アプリ名表示列-->
             <GridViewColumn Header ="アプリケーション名" Width="200">
               <GridViewColumn.CellTemplate>
+                  
                 <DataTemplate>
+                    
                   <StackPanel Orientation="Horizontal">
-                    <Image x:Name="_icon" Width="16" Height="16" Source="{Binding ImageSource}"/>
-                    <TextBlock HorizontalAlignment="Right" Text="{Binding Path=DisplayedName}"/>
+                                        <Image x:Name="_icon" Width="16" Height="16" Source="{Binding IconImageSource}"/>
+                    <TextBlock HorizontalAlignment="Right" Text="{Binding Path=DisplayedName}" />
                   </StackPanel>
                 </DataTemplate>
               </GridViewColumn.CellTemplate>

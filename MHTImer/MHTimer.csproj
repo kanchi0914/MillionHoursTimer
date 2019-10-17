@@ -97,6 +97,7 @@
     </ApplicationDefinition>
     <Compile Include="BoolVisibilityConverter.cs" />
     <Compile Include="ContextMenuSetter.cs" />
+    <Compile Include="FileDataObject.cs" />
     <Compile Include="NotifyIconSetter.cs" />
     <Compile Include="LastInputCounter.cs" />
     <Compile Include="MergedNameSettingWindow.xaml.cs">
@@ -125,6 +126,7 @@
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="TimeCounter.cs" />
+    <Compile Include="TimeSpanExtensions.cs" />
     <Compile Include="TogglManager.cs" />
     <Compile Include=".xaml.cs">
       <DependentUpon>AppNameSettingWindow.xaml</DependentUpon>

@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace MHTimer
 {
@@ -25,7 +27,7 @@ namespace MHTimer
             }
         }
 
-        public List<AppDataObject> AppDatas { get; set; } = new List<AppDataObject>();
+        public ObservableCollection<AppDataObject> AppDatas { get; set; } = new ObservableCollection<AppDataObject>();
         public List<FileViewWindow> FileViewWindows { get; set; } = new List<FileViewWindow>();
         public SettingWindow SettingMenuWindow { get; set; }
 
@@ -34,6 +36,7 @@ namespace MHTimer
         public NotifyIconSetter NotifyIconSetter { get; set; }
         public ListViewSetter ListViewSetter { get; set; }
         public SaveAndLoader SaveAndLoader { get; set; }
+        public ContextMenuSetter ContextMenuSetter { get; set; }
 
         public MainWindow()
         {
@@ -50,9 +53,10 @@ namespace MHTimer
             SettingMenuWindow = new SettingWindow(this);
             NotifyIconSetter = new NotifyIconSetter(this);
             ListViewSetter = new ListViewSetter(this);
+            ContextMenuSetter = new ContextMenuSetter(this);
 
             //日付を確認し、今日の日付と違っていれば更新
-            UpdateDate();
+            UpdateDateOfAppDatas();
 
             //メニューの作成
             CreateMenu();
@@ -85,7 +89,7 @@ namespace MHTimer
         /// <summary>
         /// 日付を確認し、今日の日付と違っていれば更新
         /// </summary>
-        public void UpdateDate()
+        public void UpdateDateOfAppDatas()
         {
             string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
             if (Settings.Date != currentDate)
@@ -93,7 +97,7 @@ namespace MHTimer
                 Settings.Date = currentDate;
                 foreach (AppDataObject appData in AppDatas)
                 {
-                    appData.TodaysMinutes = 0;
+                    appData.TodaysTime = new TimeSpan(0,0,0);
                 }
             }
         }
@@ -101,7 +105,7 @@ namespace MHTimer
         /// <summary>
         /// 全ての記録情報を終了
         /// </summary>
-        public void ExitAllApp()
+        public void ExitAllApps()
         {
             foreach (AppDataObject appData in AppDatas)
             {
@@ -121,6 +125,33 @@ namespace MHTimer
                 SettingMenuWindow = new SettingWindow(this);
                 SettingMenuWindow.ShowDialog();
             }
+        }
+
+        private void listHeader_Click(object sender, RoutedEventArgs e)
+        {
+
+            //fnLvSort.SetColumn(e.Column);
+            //lvList.Sort();
+            var header = (GridViewColumnHeader)e.OriginalSource;
+
+            // 列の外部分は無視
+            if (header.Column == null)
+            {
+                return;
+            }
+
+            //var aaa = (ObservableCollection<AppDataObject>)AppDatas.OrderBy(a => a.DisplayedName);
+            
+            AppDatas = new ObservableCollection<AppDataObject>(AppDatas.OrderBy(a => a.DisplayedName));
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                listView.ItemsSource = null;
+                listView.ItemsSource = AppDatas;
+            }));
+
+
+            ListViewSetter.UpdateListView();
+
         }
 
         /// <summary>
@@ -146,7 +177,7 @@ namespace MHTimer
         /// </summary>
         private void OnExit()
         {
-            ExitAllApp();
+            ExitAllApps();
             SaveAndLoader.SaveCsvData();
         }
 
@@ -186,30 +217,6 @@ namespace MHTimer
                 ListViewSetter.AddListFromPath(path);
             }
         }
-
-        /// <summary>
-        /// メニュー>データのインポート　をクリック時に呼ばれる
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        //public void OnClickImportData(object sender, RoutedEventArgs e)
-        //{
-        //    string path = GetFolderPathByFileDialog();
-        //    if (!string.IsNullOrEmpty(path))
-        //    {
-        //        var splitted = path.Split('\\');
-        //        if (splitted.Last() != "data")
-        //        {
-        //            MessageBox.Show("dataフォルダを選択してください",
-        //                "エラー",
-        //                MessageBoxButton.OK,
-        //                MessageBoxImage.Error);
-        //            return;
-        //        }
-
-        //        DirectoryProcessor.CopyAndReplace(@path, "data");
-        //    }
-        //}
 
         /// <summary>
         /// メニュー>データのエクスポート　をクリック時に呼ばれる
@@ -274,15 +281,17 @@ namespace MHTimer
         /// <param name="obj"></param>
         public void RemoveAppData(AppDataObject obj)
         {
-            AppDatas.Remove(obj);
-            listView.Items.Remove(obj);
-            listView.Items.Refresh();
+            lock (AppDatas)
+            {
+                AppDatas.Remove(obj);
+            }
+            ListViewSetter.UpdateListView();
             SaveAndLoader.SaveCsvData();
         }
 
         private void InitAppDatas()
         {
-            AppDatas.ForEach(a => a.Init());
+            AppDatas.ToList().ForEach(a => a.Init());
         }
 
         private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)

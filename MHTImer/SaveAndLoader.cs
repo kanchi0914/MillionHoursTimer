@@ -34,8 +34,8 @@ namespace MHTimer
                     foreach (AppDataObject appData in mainWindow.AppDatas)
                     {
                         sw.WriteLine($"{appData.ProcessName}," +
-                            $"{appData.TodaysMinutes}," +
-                            $"{appData.TotalMinutes}," +
+                            $"{appData.TodaysTime}," +
+                            $"{appData.TotalTime}," +
                             $"{appData.GetLastLaunchedTime}," +
                             $"{appData.IsLinkedToToggle.ToString()}," +
                             $"{appData.LinkedProjectName}," +
@@ -49,7 +49,7 @@ namespace MHTimer
                 Console.WriteLine(ex.Message);
             }
 
-            mainWindow.AppDatas.ForEach(a => a.SaveFileDatas());
+            mainWindow.AppDatas.ToList().ForEach(a => a.SaveFileDatas());
 
         }
 
@@ -72,8 +72,8 @@ namespace MHTimer
                         AppDataObject data = new AppDataObject(mainWindow, parsedLine[0])
                         {
                             DisplayedName = parsedLine[0],
-                            TodaysMinutes = int.Parse(parsedLine[1]),
-                            TotalMinutes = int.Parse(parsedLine[2]),
+                            TodaysTime = TimeSpan.Parse(parsedLine[1]),
+                            TotalTime = TimeSpan.Parse(parsedLine[2]),
                             //[3]
                             IsLinkedToToggle = bool.Parse(parsedLine[4]),
                             LinkedProjectName = parsedLine[5],
@@ -90,7 +90,7 @@ namespace MHTimer
                 Console.WriteLine(ex.Message);
             }
 
-            mainWindow.AppDatas.ForEach(a => a.LoadFileData());
+            mainWindow.AppDatas.ToList().ForEach(a => a.LoadFileDatas());
 
         }
     }

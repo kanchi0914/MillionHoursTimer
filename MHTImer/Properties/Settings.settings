@@ -18,9 +18,9 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="MinCountStartTime" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="CountInterval" Type="System.Int32" Scope="User">
+    <Setting Name="CountingSecondsInterval" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="MaxFileNum" Type="System.Int32" Scope="User">

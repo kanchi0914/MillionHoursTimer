@@ -22,43 +22,40 @@ namespace MHTimer
         {
             InitializeComponent();
             this.fileViewWindow = fileViewWindow;
-            TextBox.Text = ((AppDataObject.FileData)fileViewWindow.fileListView.SelectedItems[0]).Name;
+            TextBox.Text = ((FileDataObject)fileViewWindow.fileListView.SelectedItems[0]).Name;
             OKButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
-                new RoutedEventHandler(OnClicked));
+                new RoutedEventHandler(okButton_OnClicked));
         }
         
-        public void OnClicked(object sender, RoutedEventArgs e)
+        public void okButton_OnClicked(object sender, RoutedEventArgs e)
         {
-            int sumTime = 0;
+            var sumTime = new TimeSpan(0, 0, 0);
             var appData = fileViewWindow.AppData;
+
+            //var selectedItems = (List<FileDataObject>)fileViewWindow.fileListView.SelectedItems;
+
+            //for (int i = selectedItems.Count -1; i >= 0; i--)
+            //{
+            //    sumTime += selectedItems[i].TotalTime;
+            //    appData.RemoveFileDataFromList(selectedItems[i]);
+            //}
 
             for (int i = appData.Files.Count - 1; i >= 0; i--)
             {
                 if (fileViewWindow.fileListView.SelectedItems.Contains(appData.Files[i]))
                 {
-                    sumTime += appData.Files[i].TotalMinutes;
-                    appData.RemoveFileData(appData.Files[i]);
+                    sumTime += appData.Files[i].TotalTime;
+                    appData.RemoveFileDataFromList(appData.Files[i]);
                 }
             }
 
-            //foreach (AppDataObject.FileData data in fileViewWindow.AppData.Files)
-            //{
-            //    sumTime += data.TotalMinutes;
-            //    fileViewWindow.AppData.RemoveFileData(data);
-            //}
-
-            //while (fileViewWindow.AppData.Files.Count > 0)
-            //{
-            //    AppDataObject myobj;
-            //    myobj = (AppDataObject)listView.SelectedItems[0];
-            //    RemoveAppData(myobj);
-            //}
+            var fileData = AppDataObject.CreateFileDate(TextBox.Text, sumTime);
 
             //マージ後のデータを追加
-            fileViewWindow.AppData.AddFileData(TextBox.Text, 9999);
+            fileViewWindow.AppData.AddFileDataToList(fileData);
 
-            //リストビューを更新
-            fileViewWindow.UpdateListView();
+            ////リストビューを更新
+            //fileViewWindow.UpdateListView();
 
             Close();
         }

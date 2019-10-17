@@ -75,7 +75,7 @@ namespace MHTimer
             OKButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
                 new RoutedEventHandler(okButton_OnClicked));
 
-            CountInterval.Text = Settings.CountInterval.ToString();
+            CountInterval.Text = Settings.CountingSecondsInterval.ToString();
             MinCountTime.Text = Settings.MinCountStartTime.ToString();
             NoInputTime.Text = Settings.NoInputTime.ToString();
             MaxFileNum.Text = Settings.MaxFileNum.ToString();
@@ -150,10 +150,10 @@ namespace MHTimer
                 Settings.IsEnabledAdditionalFileNameSetting = (bool)AdditionalCount.IsChecked;
                 Settings.IsDividingBySpace = (bool)DividingBySpace.IsChecked;
 
-                if (int.Parse(CountInterval.Text) > 0) Settings.CountInterval = int.Parse(CountInterval.Text);
-                if (int.Parse(MinCountTime.Text) > 0) Settings.MinCountStartTime = int.Parse(MinCountTime.Text);
+                if (int.Parse(CountInterval.Text) > 0) Settings.CountingSecondsInterval = int.Parse(CountInterval.Text);
+                Settings.MinCountStartTime = int.Parse(MinCountTime.Text);
                 if (int.Parse(MaxFileNum.Text) > 0) Settings.MaxFileNum = int.Parse(MaxFileNum.Text);
-                if (int.Parse(NoInputTime.Text) > 0) Settings.NoInputTime = int.Parse(NoInputTime.Text);
+                Settings.NoInputTime = int.Parse(NoInputTime.Text);
 
                 Settings.Save();
 

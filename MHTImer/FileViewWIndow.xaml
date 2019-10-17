@@ -16,7 +16,8 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="380" />
             </Grid.ColumnDefinitions>
-            <ListView Name="fileListView" HorizontalAlignment="Center" Grid.Row="0" Height="300" Width="350" Margin="10,10,10,10" VerticalAlignment="Top">
+            <ListView Name="fileListView" HorizontalAlignment="Center" Grid.Row="0" Height="300" Width="350" 
+                      Margin="10,10,10,10" VerticalAlignment="Top">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />

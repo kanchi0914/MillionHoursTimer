@@ -1,8 +1,10 @@
 ﻿using Microsoft.WindowsAPICodePack.Shell;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 //using System.Drawing;
 using System.Text;
@@ -39,16 +41,16 @@ namespace MHTimer
 
         //ファイル設定
         public List<string> FileExtensions { get; private set; } = new List<string>();
-        public List<FileData> Files { get; private set; } = new List<FileData>();
+        public ObservableCollection<FileDataObject> Files { get; private set; } = new ObservableCollection<FileDataObject>();
 
         //アイコン画像
-        public ImageSource ImageSource { get; private set; }
-        public Image IconImage { get; private set; }
+        public ImageSource IconImageSource { get; private set; }
+        //public Image IconImage { get; private set; }
 
         //時間データ
-        public int TodaysMinutes { get; set; }
-        public int TotalMinutes { get; set; }
-        public int MinutesFromLaunched { get; set; }
+        public TimeSpan TodaysTime { get; set; }
+        public TimeSpan TotalTime { get; set; }
+        public TimeSpan TimeFromLastLaunched { get; set; }
         public bool IsRecordStarted { get; set; } = false;
 
         //Toggl記録用の終了確認フラグ
@@ -63,47 +65,13 @@ namespace MHTimer
         public List<string> ProjectNames { get; set; } = new List<string>() { "" };
         public List<string> TagNames { get; set; } = new List<string>() { "" };
 
-        public AppDataObject(MainWindow mainWindow, string processName)
+        public string Color
         {
-            this.mainWindow = mainWindow;
-            this.ProcessName = processName;
-        }
-
-        /// <summary>
-        /// 計測を終了し、TimeEntryを送信
-        /// </summary>
-        public void Exit()
-        {
-            if (IsRecordStarted)
+            get
             {
-                IsRunning = false;
-                if (IsLinkedToToggle)
-                {
-                    mainWindow.TogglManager.SetTimeEntry(this);
-                }
+                if (IsRecordStarted) return "#ffc0cb";
+                return "White";
             }
-            IsRecordStarted = false;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null || this.GetType() != obj.GetType())
-            {
-                return false;
-            }
-            AppDataObject data = (AppDataObject)obj;
-            return (data.ProcessName == this.ProcessName);
-        }
-
-        public override int GetHashCode()
-        {
-            return ProcessName.GetHashCode();
-        }
-
-        public void Init()
-        {
-            var iconImagePath = currentDir + iconFileDir + $"{ProcessName}.png";
-            LoadIconImage(iconImagePath);
         }
 
         public string NameOfProject
@@ -134,7 +102,7 @@ namespace MHTimer
         {
             get
             {
-                return GetFormattedStringFromMinutes(TotalMinutes);
+                return GetFormattedStringFromTimeSpan(TotalTime);
             }
         }
 
@@ -142,9 +110,10 @@ namespace MHTimer
         {
             get
             {
-                return GetFormattedStringFromMinutes(TodaysMinutes);
+                return GetFormattedStringFromTimeSpan(TodaysTime);
             }
         }
+
 
         public string GetLastLaunchedTime
         {
@@ -168,6 +137,35 @@ namespace MHTimer
             {
                 LastTime = DateTime.Parse(data);
             }
+        }
+
+        public AppDataObject(MainWindow mainWindow, string processName)
+        {
+            this.mainWindow = mainWindow;
+            this.ProcessName = processName;
+            Init();
+        }
+
+        public void Init()
+        {
+            var iconImagePath = currentDir + iconFileDir + $"{ProcessName}.png";
+            LoadIconImage(iconImagePath);
+        }
+
+        /// <summary>
+        /// 計測を終了し、TimeEntryを送信
+        /// </summary>
+        public void Exit()
+        {
+            if (IsRecordStarted)
+            {
+                IsRunning = false;
+                if (IsLinkedToToggle)
+                {
+                    mainWindow.TogglManager.SetTimeEntry(this);
+                }
+            }
+            IsRecordStarted = false;
         }
 
         /// <summary>
@@ -200,7 +198,7 @@ namespace MHTimer
         /// <summary>
         /// ファイル別の作業時間を読み込み
         /// </summary>
-        public void LoadFileData()
+        public void LoadFileDatas()
         {
             string path = currentDir + fileDataDir + ProcessName + "_files.csv";
             Console.WriteLine(path);
@@ -214,10 +212,10 @@ namespace MHTimer
                     {
                         string line = reader.ReadLine();
                         string[] parsedLine = line.Split(',');
-                        FileData file = new FileData()
+                        FileDataObject file = new FileDataObject()
                         {
                             Name = parsedLine[0],
-                            TotalMinutes = int.Parse(parsedLine[1])
+                            TotalTime = TimeSpan.Parse(parsedLine[1])
                         };
                         Files.Add(file);
                     }
@@ -242,9 +240,9 @@ namespace MHTimer
                     using (var sw = new System.IO.StreamWriter(@path, false, Encoding.UTF8))
                     {
                         sw.WriteLine($"ファイル名,累積作業時間");
-                        foreach (FileData file in Files)
+                        foreach (FileDataObject file in Files)
                         {
-                            sw.WriteLine($"{file.Name},{file.TotalMinutes}");
+                            sw.WriteLine($"{file.Name},{file.TotalTime}");
                         }
                     }
                 }
@@ -269,14 +267,13 @@ namespace MHTimer
                 using (MemoryStream s = new MemoryStream())
                 {
                     icon.Save(s);
-                    ImageSource = BitmapFrame.Create(s);
+                    IconImageSource = BitmapFrame.Create(s);
                 }
                 var savePath = currentDir + iconFileDir + $"{ProcessName}.png";
-                SaveIconImage(ImageSource, savePath);
+                SaveIconImage(IconImageSource, savePath);
             }
             catch (FileNotFoundException e)
             {
-                //MessageBox.Show(e.ToString());
                 var defaultIconImagePath = currentDir + iconFileDir + $"defaultIcon.png";
                 LoadIconImage(defaultIconImagePath);
             }
@@ -315,8 +312,9 @@ namespace MHTimer
             {
                 bmpImage.BeginInit();
                 bmpImage.UriSource = new Uri(@path, UriKind.Absolute);
+                //bmpImage.UriSource = new Uri(@path);
                 bmpImage.EndInit();
-                ImageSource = bmpImage;
+                IconImageSource = bmpImage;
             }
             //アイコン画像が存在しない場合、デフォルトのアイコン画像を使用
             catch (FileNotFoundException e)
@@ -335,7 +333,7 @@ namespace MHTimer
         /// 実際に記録されるのは一定時間が経ってから
         /// </summary>
         /// <param name="filename"></param>
-        public void AccumulateMinutes()
+        public void AccumulateTimes()
         {
             if (!IsRunning)
             {
@@ -344,221 +342,173 @@ namespace MHTimer
             }
             else
             {
-                MinutesFromLaunched += Properties.Settings.Default.CountInterval;
+                var pre = TimeFromLastLaunched;
+                var second = pre.Seconds + Settings.CountingSecondsInterval;
+                TimeFromLastLaunched = new TimeSpan(pre.Hours, pre.Minutes, second);
             }
  
-            if (MinutesFromLaunched >= Properties.Settings.Default.MinCountStartTime)
+            if (TimeFromLastLaunched.Minutes >= Settings.MinCountStartTime)
             {
                 //一度だけ、時間の差分を足す
                 if (!IsRecordStarted)
                 {
-                    AddMinutes(Properties.Settings.Default.MinCountStartTime);
+                    AccumulateTime(Settings.MinCountStartTime);
                     IsRecordStarted = true;
                 }
                 else
                 {
-
-                    AddMinutes(Properties.Settings.Default.CountInterval);
+                    AccumulateTime(Settings.CountingSecondsInterval);
                 }
             }
+
+            AccumulateTimeToFileDatas();
 
         }
 
         /// <summary>
         /// データの時間を更新
         /// </summary>
-        /// <param name="minutes"></param>
-        public void AddMinutes(int minutes)
+        /// <param name="seconds"></param>
+        public void AccumulateTime(int seconds)
         {
-            TotalMinutes += minutes;
-            string currentDate = DateTime.Now.ToString("yyyy/MM/dd");
-            if (currentDate != LastTime.ToString("yyyy/MM/dd"))
+            TotalTime = TotalTime.Add(TimeSpan.FromSeconds(seconds));
+            if (IsDayChanged()) TodaysTime = new TimeSpan(0, 0, 0);
+            TodaysTime = TodaysTime.Add(TimeSpan.FromSeconds(seconds));
+            LastTime = DateTime.Now;
+        }
+
+        /// <summary>
+        /// 全てのファイルデータに対し、時間を累積
+        /// </summary>
+        public void AccumulateTimeToFileDatas()
+        {
+            //ウィンドウタイトルを取得
+            WindowTitles2 windowTitles2 = new WindowTitles2();
+            var titles = windowTitles2.Get(ProcessName);
+
+            var isCounteds = new List<string>();
+            foreach (string title in titles)
             {
-                //var minute = DateTime.Now.Minute;
-                TodaysMinutes = 0;
-                TodaysMinutes += minutes;
+                if (isCounteds.Contains(title)) continue;
+                else isCounteds.Add(title);
+                var fileName = GetFileNameByTitle(title);
+                AccumulateTimeToFileData(fileName);
             }
-            else
+        }
+
+        public string GetFileNameByTitle(string title)
+        {
+            var fileName = "";
+            var parsed = title.Split(' ');
+
+            foreach (string s in parsed)
             {
-                TodaysMinutes += minutes;
+                if (FileExtensions.Count > 0 && FileExtensions.Any(f => s.Contains(f)))
+                    fileName = s;
             }
 
-            LastTime = DateTime.Now;
+            if (Properties.Settings.Default.IsEnableAdditionalFileName &&
+                string.IsNullOrEmpty(fileName))
+            {
+                fileName = GetAdditionalFileNameByTitle(title);
+            }
+
+            return fileName;
+        }
+
+        public string GetAdditionalFileNameByTitle(string title)
+        {
+            var fileName = "";
+            var parsedByHyphen = title.Split('-');
+            if (parsedByHyphen.Length > 1)
+            {
+                if (Settings.IsDividingBySpace)
+                {
+                    var parsedBySpace = title.Split(' ');
+                    fileName = parsedBySpace[0];
+                }
+                else
+                {
+                    fileName = parsedByHyphen[0];
+                }
+            }
+            return fileName;
         }
 
         /// <summary>
         /// ファイルデータに対し、時間を累積
         /// </summary>
         /// <param name="windowTitle"></param>
-        public void AccumulateMinuteToFileData(string windowTitle)
+        public void AccumulateTimeToFileData(string fileName)
         {
-            string fileName = "";
-            string title = windowTitle;
-            string[] parsed = title.Split(' ');
-
-            foreach (string s in parsed)
-            {
-                foreach (string f in FileExtensions)
-                {
-                    //登録した拡張子に合致するものがあった
-                    if (s.Contains(f))
-                    {
-                        fileName = s;
-                        break;
-                    }
-                }
-            }
-
-            //ハイフン区切り
-            if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.IsEnableAdditionalFileName)
-            {
-                string[] parsedByHyphen = title.Split('-');
-                if (parsedByHyphen.Length > 1)
-                {
-                    if (Settings.IsDividingBySpace)
-                    {
-                        string[] parsedBySpace = title.Split(' ');
-                        fileName = parsedBySpace[0];
-                    }
-                    else
-                    {
-                        fileName = parsedByHyphen[0];
-                    }
-                }
-            }
-
             if (!string.IsNullOrEmpty(fileName))
             {
-                FileData file = Files.Find(f => f.Name == fileName);
-                //ファイルが既に存在すれば時間を追加し、なければ作成
-                if (file != null)
+                FileDataObject file = Files.ToList().Find(f => f.Name == fileName);
+                if (file == null)
                 {
-                    file.AccumulateMinute();
+                    file = CreateFileDate(fileName, new TimeSpan(0, 0, 0));
+                    AddFileDataToList(file);
                 }
-                else
-                {
-                    AddFileData(fileName);
-                }
+                file.AccumulateTime();
             }
         }
 
-        /// <summary>
-        /// 全てのファイルデータに対し、時間を累積
-        /// </summary>
-        public void AccumulateMinuteToFileDatas()
-        {
-            //ウィンドウタイトルを取得
-            WindowTitles2 windowTitles2 = new WindowTitles2();
-            var titles = windowTitles2.Get(ProcessName);
 
-            foreach (string t in titles)
-            {
-                AccumulateMinuteToFileData(t);
-            }
-
-        }
-
-        /// <summary>
-        /// ファイルデータを追加
-        /// </summary>
-        /// <param name="fileName"></param>
-        public void AddFileData(string fileName, int minutes = 0)
+        public void AddFileDataToList(FileDataObject fileData)
         {
             //最大件数をオーバーしている場合、先頭の要素を削除
             if (Files.Count >= Properties.Settings.Default.MaxFileNum)
             {
                 Files.RemoveAt(0);
             }
-            Files.Add(new FileData { Name = fileName, TotalMinutes = minutes });
+            //Files.Add(fileData);
+            mainWindow.Dispatcher.BeginInvoke(new Action(() => Files.Add(fileData)));
+                //.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Add(appData)));
         }
 
         /// <summary>
         /// ファイルデータを削除
         /// </summary>
         /// <param name="fileData"></param>
-        public void RemoveFileData(FileData fileData)
+        public void RemoveFileDataFromList(FileDataObject fileData)
         {
             Files.Remove(fileData);
             SaveFileDatas();
         }
 
-
-        public class FileData
+        private bool IsDayChanged()
         {
-            public string Name { get; set; } = "";
-            public int TotalMinutes { get; set; }
-            public int MinutesFromLaunched { get; set; }
-            public bool IsCountStarted { get; set; } = false;
-            public bool IsCounted { get; set; } = false;
-
-            public string GetTime
-            {
-                get
-                {
-                    return GetFormattedStringFromMinutes(TotalMinutes);
-                }
-            }
-
-            public void AccumulateMinute()
-            {
-                //同名ファイルが複数回計測されるのをを防ぐ
-                if (IsCounted) return;
-
-                MinutesFromLaunched += Settings.CountInterval;
-
-                //指定した時間が経過していたら、データの記録を開始
-                if (MinutesFromLaunched >= Settings.MinCountStartTime)
-                {
-                    if (!IsCountStarted)
-                    {
-                        AddMinutes(Settings.MinCountStartTime);
-                        IsCountStarted = true;
-                    }
-                    else
-                    {
-                        AddMinutes(Settings.CountInterval);
-                    }
-                }
-            }
-
-            public void AddMinutes(int minutes)
-            {
-                TotalMinutes += minutes;
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (obj == null || this.GetType() != obj.GetType())
-                {
-                    return false;
-                }
-                FileData data = (FileData)obj;
-                return (data.Name == this.Name);
-            }
-
-            public override int GetHashCode()
-            {
-                return Name.GetHashCode();
-            }
+            var currentDate = DateTime.Now.ToString("yyyy/MM/dd");
+            return currentDate != LastTime.ToString("yyyy/MM/dd");
         }
 
-        /// <summary>
-        /// 分のデータを、指定の形式に変換して返す
-        /// </summary>
-        /// <param name="minutes"></param>
-        /// <returns></returns>
-        public static string GetFormattedStringFromMinutes(int minutes)
+        public static FileDataObject CreateFileDate(string fileName, TimeSpan totalTime)
         {
-            TimeSpan ts = new TimeSpan(0, minutes, 0);
-            if (ts.Hours == 0 && ts.Minutes == 0)
-            {
-                return ("-");
-            }
-            else
-            {
-                var hours = ts.Days * 24 + ts.Hours;
-                return ($"{hours.ToString().PadLeft(2)}時間　{ts.Minutes.ToString().PadLeft(2)}分");
-            }
+            return new FileDataObject { Name = fileName, TotalTime = totalTime };
         }
+
+        public static string GetFormattedStringFromTimeSpan(TimeSpan timeSpan)
+        {
+            var hours = string.Format("{0, 4}", timeSpan.Hours);
+            var minutes = string.Format("{0, 2}", timeSpan.Minutes);
+            var seconds = string.Format("{0, 2}", timeSpan.Seconds);
+            return $"{hours}時間{minutes}分{seconds}秒";
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || this.GetType() != obj.GetType())
+            {
+                return false;
+            }
+            AppDataObject data = (AppDataObject)obj;
+            return (data.ProcessName == this.ProcessName);
+        }
+
+        public override int GetHashCode()
+        {
+            return ProcessName.GetHashCode();
+        }
+
     }
 }

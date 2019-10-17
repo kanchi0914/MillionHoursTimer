@@ -52,11 +52,11 @@ namespace MHTimer
         public static int MaxFileNum = 100;
 
         //計測間隔
-        public static int CountInterval = 1;
+        public static int CountingSecondsInterval = 1;
         //無操作判定時間
         public static int NoInputTime = 30;
         //何分立ってから記録を開始するか
-        public static int MinCountStartTime = 1;
+        public static int MinCountStartTime = 0;
 
         //============================================================
         //その他保存用データ
@@ -88,7 +88,7 @@ namespace MHTimer
             IsEnabledAdditionalFileNameSetting = Properties.Settings.Default.IsEnableAdditionalFileName;
             IsDividingBySpace = Properties.Settings.Default.IsDividingBySpace;
             MaxFileNum = Properties.Settings.Default.MaxFileNum;
-            CountInterval = Properties.Settings.Default.CountInterval;
+            CountingSecondsInterval = Properties.Settings.Default.CountingSecondsInterval;
             NoInputTime = Properties.Settings.Default.NoInputTime;
             MinCountStartTime = Properties.Settings.Default.MinCountStartTime;
             Date = Properties.Settings.Default.Date;
@@ -110,7 +110,7 @@ namespace MHTimer
             Properties.Settings.Default.IsEnableAdditionalFileName = IsEnabledAdditionalFileNameSetting;
             Properties.Settings.Default.IsDividingBySpace = IsDividingBySpace;
             Properties.Settings.Default.MaxFileNum = MaxFileNum;
-            Properties.Settings.Default.CountInterval = CountInterval;
+            Properties.Settings.Default.CountingSecondsInterval = CountingSecondsInterval;
             Properties.Settings.Default.MinCountStartTime = MinCountStartTime;
             Properties.Settings.Default.NoInputTime = NoInputTime;
             Properties.Settings.Default.Date = Date;

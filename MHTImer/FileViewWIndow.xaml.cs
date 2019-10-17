@@ -33,10 +33,8 @@ namespace MHTimer
             InitializeComponent();
             this.Title = data.DisplayedName + "のファイル別作業時間一覧";
             this.AppData = data;
-            foreach (AppDataObject.FileData file in AppData.Files)
-            {
-                fileListView.Items.Add(file);
-            }
+
+            fileListView.ItemsSource = AppData.Files;
 
             DeleteAllButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
                 new RoutedEventHandler(Button_ClickAllDelete));
@@ -51,25 +49,7 @@ namespace MHTimer
         /// </summary>
         public void UpdateListView()
         {
-            //削除を先に行う
-            foreach (var item in fileListView.Items)
-            {
-                //ファイルデータが削除された
-                if (!AppData.Files.Contains(item))
-                {
-                    Dispatcher.BeginInvoke(new Action(() => fileListView.Items.Remove(item)));
-                }
-            }
-
-            foreach (AppDataObject.FileData file in AppData.Files)
-            {
-                //新しいファイルが見つかった
-                if (!fileListView.Items.Contains(file))
-                {
-                    Dispatcher.BeginInvoke(new Action(() => fileListView.Items.Add(file)));
-                }
-            }
-            Dispatcher.BeginInvoke(new Action(()=> fileListView.Items.Refresh()));
+            Dispatcher.BeginInvoke(new Action(() => fileListView.Items.Refresh()));
         }
 
         private void CreateMenu()
@@ -84,7 +64,6 @@ namespace MHTimer
 
             fileListView.ContextMenuOpening += contextMenu_Click;
 
-            //contextMenu.ContextMenuOpening += contextMenu_Click;
             contextMenu.Items.Add(menuItem0);
             contextMenu.Items.Add(menuItem1);
             contextMenu.Items.Add(menuItem2);
@@ -119,7 +98,7 @@ namespace MHTimer
             string text = "";
             foreach (var item in fileListView.SelectedItems)
             {
-                AppDataObject.FileData fileData = (AppDataObject.FileData)item;
+                var fileData = (FileDataObject)item;
                 text += $"{fileData.Name}の作業時間 {fileData.GetTime}\n";
             }
 
@@ -148,7 +127,7 @@ namespace MHTimer
                 case MessageBoxResult.OK:
                     while (fileListView.SelectedItems.Count > 0)
                     {
-                        AppDataObject.FileData data = (AppDataObject.FileData)fileListView.SelectedItems[0];
+                        var data = (FileDataObject)fileListView.SelectedItems[0];
                         RemoveFileData(data);
                     }
                     break;
@@ -175,7 +154,7 @@ namespace MHTimer
                     fileListView.SelectAll();
                     while (fileListView.SelectedItems.Count > 0)
                     {
-                        AppDataObject.FileData data = (AppDataObject.FileData)fileListView.SelectedItems[0];
+                        var data = (FileDataObject)fileListView.SelectedItems[0];
                         RemoveFileData(data);
                     }
                     break;
@@ -190,9 +169,9 @@ namespace MHTimer
         /// ファイルデータを削除し、リストビューを更新
         /// </summary>
         /// <param name="fileData"></param>
-        public void RemoveFileData(AppDataObject.FileData fileData)
+        public void RemoveFileData(FileDataObject fileData)
         {
-            AppData.RemoveFileData(fileData);
+            AppData.RemoveFileDataFromList(fileData);
             fileListView.Items.Remove(fileData);
             fileListView.Items.Refresh();
         }

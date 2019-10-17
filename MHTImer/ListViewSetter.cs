@@ -23,7 +23,6 @@ namespace MHTimer
             {
                 MessageBox.Show("エラー:\n" + ex.ToString());
             }
-
         }
 
         /// <summary>
@@ -31,6 +30,8 @@ namespace MHTimer
         /// </summary>
         private void InitListView()
         {
+            mainWindow.listView.ItemsSource = mainWindow.AppDatas;
+            mainWindow.AppDatas.ToList().ForEach(a => AddFileListWindow(a));
             UpdateListView();
         }
 
@@ -57,7 +58,13 @@ namespace MHTimer
                     DisplayedName = name
                 };
                 appData.SetIcon(filePath);
-                mainWindow.AppDatas.Add(appData);
+                AddFileListWindow(appData);
+                lock (mainWindow.AppDatas)
+                {
+                    mainWindow.Dispatcher.BeginInvoke(new Action(() => mainWindow.AppDatas.Add(appData)));
+                }
+
+                //mainWindow.AppDatas.Add(appData);
                 mainWindow.SaveAndLoader.SaveCsvData();
             }
             UpdateListView();
@@ -68,28 +75,16 @@ namespace MHTimer
         /// </summary>
         public void UpdateListView()
         {
-            //削除を先に行う
-            foreach (var item in mainWindow.listView.Items)
+            mainWindow.FileViewWindows.ForEach(f =>
             {
-                //データが削除された
-                if (!mainWindow.AppDatas.Contains(item))
-                {
-                    mainWindow.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Remove(item)));
-                    var fileListWindow = mainWindow.FileViewWindows.Find((x) => x.AppData == item);
-                    mainWindow.FileViewWindows.Remove(fileListWindow);
-                }
-            }
+                f.Dispatcher.BeginInvoke(new Action(() => f.fileListView.Items.Refresh()));
+            });
 
-            foreach (var appData in mainWindow.AppDatas)
+            mainWindow.Dispatcher.BeginInvoke(new Action(() =>
             {
-                //新しいデータが見つかった
-                if (!mainWindow.listView.Items.Contains(appData))
-                {
-                    mainWindow.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Add(appData)));
-                    AddFileListWindow(appData);
-                }
-            }
-            mainWindow.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Refresh()));
+                mainWindow.listView.Items.Refresh();
+            }));
+
         }
 
         /// <summary>

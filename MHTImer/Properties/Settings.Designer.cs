@@ -85,7 +85,7 @@ namespace MHTimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int MinCountStartTime {
             get {
                 return ((int)(this["MinCountStartTime"]));
@@ -98,12 +98,12 @@ namespace MHTimer.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int CountInterval {
+        public int CountingSecondsInterval {
             get {
-                return ((int)(this["CountInterval"]));
+                return ((int)(this["CountingSecondsInterval"]));
             }
             set {
-                this["CountInterval"] = value;
+                this["CountingSecondsInterval"] = value;
             }
         }
         

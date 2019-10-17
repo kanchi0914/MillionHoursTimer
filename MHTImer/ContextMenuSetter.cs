@@ -26,8 +26,8 @@ namespace MHTimer
 
         public ContextMenuSetter(MainWindow mainWindow)
         {
-            CreateContextMenu();
             this.mainWindow = mainWindow;
+            CreateContextMenu();
         }
 
 
