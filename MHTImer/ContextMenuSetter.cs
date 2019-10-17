@@ -112,7 +112,7 @@ namespace MHTimer
             foreach (var item in mainWindow.listView.SelectedItems)
             {
                 AppDataObject data = (AppDataObject)item;
-                text += $"{data.DisplayedName}の起動時間 今日:{data.TodaysTime} 累積:{data.TotalTime}\n";
+                text += $"{data.DisplayedName}の起動時間 今日:{data.GetTodaysTime} 累積:{data.GetTotalTime}\n";
             }
 
             if (text != "")

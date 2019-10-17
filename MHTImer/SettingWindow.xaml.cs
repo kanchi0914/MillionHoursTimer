@@ -64,15 +64,16 @@ namespace MHTimer
         public void InitComponents()
         {
             AutoLaunch.IsChecked = Settings.IsAutoLauch;
-            NotCountOnSleep.IsChecked = Settings.IsNotCountingOnSleep;
+            StopCountOnSleep.IsChecked = Settings.StopsOnSleep;
 
-            NotCountMinimized.IsChecked = Settings.IsCountingNotMinimized;
+            CountNotMinimized.IsChecked = Settings.IsCountingNotMinimized;
             OnlyCountActive.IsChecked = Settings.IsCountingOnlyActive;
+
             AdditionalCount.IsChecked = Settings.IsEnabledAdditionalFileNameSetting;
             DividingBySpace.IsChecked = Settings.IsDividingBySpace;
 
             OKButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
-                new RoutedEventHandler(OnClickedOKButton));
+                new RoutedEventHandler(okButton_OnClicked));
 
             CountInterval.Text = Settings.CountInterval.ToString();
             MinCountTime.Text = Settings.MinCountStartTime.ToString();
@@ -97,7 +98,7 @@ namespace MHTimer
             }
         }
 
-        public void OnClickedOKButton(object sender, RoutedEventArgs e)
+        public void okButton_OnClicked(object sender, RoutedEventArgs e)
         {
             var inputBox = FindName("APIKeyInput") as TextBox;
             if (!string.IsNullOrEmpty(inputBox.Text))
@@ -142,9 +143,9 @@ namespace MHTimer
                 Settings.APIKey = mainWindow.TogglManager.ApiKey;
 
                 Settings.IsAutoLauch = (bool)AutoLaunch.IsChecked;
-                Settings.IsNotCountingOnSleep = (bool)NotCountOnSleep.IsChecked;
+                Settings.StopsOnSleep = (bool)StopCountOnSleep.IsChecked;
 
-                Settings.IsCountingNotMinimized = (bool)NotCountMinimized.IsChecked;
+                Settings.IsCountingNotMinimized = (bool)CountNotMinimized.IsChecked;
                 Settings.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
                 Settings.IsEnabledAdditionalFileNameSetting = (bool)AdditionalCount.IsChecked;
                 Settings.IsDividingBySpace = (bool)DividingBySpace.IsChecked;

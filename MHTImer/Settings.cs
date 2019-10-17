@@ -17,7 +17,7 @@ namespace MHTimer
 
         //何秒ごとにカウントするか
         //デバッグ用
-        public static readonly int CountSeconds = 60;
+        public static readonly int CountSeconds = 1;
 
         //public static readonly string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
 
@@ -39,7 +39,7 @@ namespace MHTimer
         //自動で起動するか
         public static bool IsAutoLauch = false;
         //スリープ時にカウントしないか
-        public static bool IsNotCountingOnSleep = true;
+        public static bool StopsOnSleep = true;
         //最小化しているアプリを計測対象に含めないかどうか
         public static bool IsCountingNotMinimized = false;
         //アクティブなアプリのみを計測対象にするか
@@ -82,16 +82,16 @@ namespace MHTimer
             APIKey = Properties.Settings.Default.APIKey;
 
             IsAutoLauch = Properties.Settings.Default.IsAutoLaunch;
-            IsCountingNotMinimized = Properties.Settings.Default.isCountingNotMinimized;
-            IsCountingOnlyActive = Properties.Settings.Default.isCountingOnlyActive;
-            IsNotCountingOnSleep = Properties.Settings.Default.IsNotCountingOnSleep;
-            IsEnabledAdditionalFileNameSetting = Properties.Settings.Default.isAdditionalFileName;
+            IsCountingNotMinimized = Properties.Settings.Default.IsCountingNotMinimized;
+            IsCountingOnlyActive = Properties.Settings.Default.IsCountingOnlyActive;
+            StopsOnSleep = Properties.Settings.Default.IsCountingOnSleep;
+            IsEnabledAdditionalFileNameSetting = Properties.Settings.Default.IsEnableAdditionalFileName;
             IsDividingBySpace = Properties.Settings.Default.IsDividingBySpace;
             MaxFileNum = Properties.Settings.Default.MaxFileNum;
             CountInterval = Properties.Settings.Default.CountInterval;
             NoInputTime = Properties.Settings.Default.NoInputTime;
             MinCountStartTime = Properties.Settings.Default.MinCountStartTime;
-            Date = Properties.Settings.Default.date;
+            Date = Properties.Settings.Default.Date;
 
         }
 
@@ -104,16 +104,16 @@ namespace MHTimer
 
             Properties.Settings.Default.IsAutoLaunch = IsAutoLauch;
 
-            Properties.Settings.Default.isCountingNotMinimized = IsCountingNotMinimized;
-            Properties.Settings.Default.isCountingOnlyActive = IsCountingOnlyActive;
-            Properties.Settings.Default.IsNotCountingOnSleep = IsNotCountingOnSleep;
-            Properties.Settings.Default.isAdditionalFileName = IsEnabledAdditionalFileNameSetting;
+            Properties.Settings.Default.IsCountingNotMinimized = IsCountingNotMinimized;
+            Properties.Settings.Default.IsCountingOnlyActive = IsCountingOnlyActive;
+            Properties.Settings.Default.IsCountingOnSleep = StopsOnSleep;
+            Properties.Settings.Default.IsEnableAdditionalFileName = IsEnabledAdditionalFileNameSetting;
             Properties.Settings.Default.IsDividingBySpace = IsDividingBySpace;
             Properties.Settings.Default.MaxFileNum = MaxFileNum;
             Properties.Settings.Default.CountInterval = CountInterval;
             Properties.Settings.Default.MinCountStartTime = MinCountStartTime;
             Properties.Settings.Default.NoInputTime = NoInputTime;
-            Properties.Settings.Default.date = Date;
+            Properties.Settings.Default.Date = Date;
 
             Properties.Settings.Default.Save();
         }

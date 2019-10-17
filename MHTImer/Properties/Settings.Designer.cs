@@ -26,48 +26,48 @@ namespace MHTimer.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isCountingNotMinimized {
+        public bool IsCountingNotMinimized {
             get {
-                return ((bool)(this["isCountingNotMinimized"]));
+                return ((bool)(this["IsCountingNotMinimized"]));
             }
             set {
-                this["isCountingNotMinimized"] = value;
+                this["IsCountingNotMinimized"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isCountingOnlyActive {
+        public bool IsCountingOnlyActive {
             get {
-                return ((bool)(this["isCountingOnlyActive"]));
+                return ((bool)(this["IsCountingOnlyActive"]));
             }
             set {
-                this["isCountingOnlyActive"] = value;
+                this["IsCountingOnlyActive"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isAdditionalFileName {
+        public bool IsEnableAdditionalFileName {
             get {
-                return ((bool)(this["isAdditionalFileName"]));
+                return ((bool)(this["IsEnableAdditionalFileName"]));
             }
             set {
-                this["isAdditionalFileName"] = value;
+                this["IsEnableAdditionalFileName"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("2000/01/01")]
-        public string date {
+        public string Date {
             get {
-                return ((string)(this["date"]));
+                return ((string)(this["Date"]));
             }
             set {
-                this["date"] = value;
+                this["Date"] = value;
             }
         }
         
@@ -122,12 +122,12 @@ namespace MHTimer.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IsNotCountingOnSleep {
+        public bool IsCountingOnSleep {
             get {
-                return ((bool)(this["IsNotCountingOnSleep"]));
+                return ((bool)(this["IsCountingOnSleep"]));
             }
             set {
-                this["IsNotCountingOnSleep"] = value;
+                this["IsCountingOnSleep"] = value;
             }
         }
         

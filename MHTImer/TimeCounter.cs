@@ -29,7 +29,7 @@ namespace MHTimer
 
         private TM.Timer timer;
 
-        private bool isSuspending = false;
+        private bool isSleeping = false;
         private bool isNoInputing = false;
 
         private int interval = Properties.Settings.Default.CountInterval;
@@ -45,12 +45,12 @@ namespace MHTimer
                 {
                     //スリープ開始
                     case PowerModes.Suspend:
-                        isSuspending = true;
+                        isSleeping = true;
                         mainWindow.ExitAllApp();
                         break;
                     //復帰
                     case PowerModes.Resume:
-                        isSuspending = false;
+                        isSleeping = false;
                         break;
                 }
             };
@@ -87,8 +87,10 @@ namespace MHTimer
             //無操作を確認
             CheckNoInput();
 
+            if (isSleeping && Settings.StopsOnSleep) return;
+
             //スリープ中、無操作時でない
-            if (!isSuspending && !isNoInputing)
+            if (!isSleeping && !isNoInputing)
             {
                 //計測
                 Count();
@@ -120,7 +122,7 @@ namespace MHTimer
             //最小化しているときはカウントしない
             else if (Settings.IsCountingNotMinimized)
             {
-                CountNotMinimizedApp();
+                CountNotMinimizedApps();
             }
             //すべてのアプリをカウント
             else
@@ -130,10 +132,6 @@ namespace MHTimer
 
             mainWindow.FileViewWindows.ForEach(w => w.UpdateListView());
 
-            //foreach (FileViewWindow window in mainWindow.FileListWindows)
-            //{
-            //    window.UpdateListView();
-            //}
         }
 
         public void CountAllApps()
@@ -149,7 +147,7 @@ namespace MHTimer
             }
         }
 
-        public void CountNotMinimizedApp()
+        public void CountNotMinimizedApps()
         {
             foreach (AppDataObject data in mainWindow.AppDatas)
             {
@@ -189,7 +187,7 @@ namespace MHTimer
                 if (0 != processid)
                 {
                     Process p = Process.GetProcessById(processid);
-                    if (Properties.Settings.Default.isCountingNotMinimized)
+                    if (Properties.Settings.Default.IsCountingNotMinimized)
                     {
                         if (p.MainWindowHandle != IntPtr.Zero && !IsIconic(p.MainWindowHandle))
                         {

@@ -34,9 +34,6 @@ namespace MHTimer
         //起動した時間
         public DateTime LaunchedTime { get; set; }
 
-        //最後に起動した日
-        //public string LastDate { get; private set; } = "";
-
         //最後に起動を確認した時刻
         public DateTime LastTime { get; private set; }
 
@@ -133,7 +130,7 @@ namespace MHTimer
             }
         }
 
-        public string TotalTime
+        public string GetTotalTime
         {
             get
             {
@@ -141,7 +138,7 @@ namespace MHTimer
             }
         }
 
-        public string TodaysTime
+        public string GetTodaysTime
         {
             get
             {
@@ -413,7 +410,7 @@ namespace MHTimer
             }
 
             //ハイフン区切り
-            if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.isAdditionalFileName)
+            if (string.IsNullOrEmpty(fileName) && Properties.Settings.Default.IsEnableAdditionalFileName)
             {
                 string[] parsedByHyphen = title.Split('-');
                 if (parsedByHyphen.Length > 1)
