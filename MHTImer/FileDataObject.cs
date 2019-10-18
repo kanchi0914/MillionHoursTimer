@@ -30,9 +30,8 @@ namespace MHTimer
 
             TimeFromLaunched = TimeFromLaunched.Add(TimeSpan.FromSeconds(Settings.CountingSecondsInterval));
 
-
             //指定した時間が経過していたら、データの記録を開始
-            if (TimeFromLaunched.Minutes >= Settings.MinCountStartTime)
+            if (TimeFromLaunched.Seconds >= Settings.MinCountStartTime)
             {
                 if (!IsCountStarted)
                 {

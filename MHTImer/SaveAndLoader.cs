@@ -36,7 +36,7 @@ namespace MHTimer
                         sw.WriteLine($"{appData.ProcessName}," +
                             $"{appData.TodaysTime}," +
                             $"{appData.TotalTime}," +
-                            $"{appData.GetLastLaunchedTime}," +
+                            $"{appData.GetLastLaunchedTimeText}," +
                             $"{appData.IsLinkedToToggl.ToString()}," +
                             $"{appData.LinkedProjectName}," +
                             $"{appData.LinkedTag}," +
@@ -79,7 +79,7 @@ namespace MHTimer
                             LinkedProjectName = parsedLine[5],
                             LinkedTag = parsedLine[6]
                         };
-                        data.SetLastLaunchedTime(parsedLine[3]);
+                        data.SetLastRunningTIme(parsedLine[3]);
                         data.SetFileExtensions(parsedLine[7]);
                         mainWindow.AppDatas.Add(data);
                     }

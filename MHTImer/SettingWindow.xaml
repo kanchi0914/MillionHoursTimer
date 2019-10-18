@@ -61,15 +61,15 @@
                              Width="50" Text="1" TextAlignment="Right" VerticalAlignment="Center"/>
                     <Label Content="秒" VerticalAlignment="Center"/>
                 </StackPanel>
-                <TextBlock Grid.Row="5" TextWrapping="Wrap" Text="設定した時間(秒)ごとに計測します。"/>
+                <TextBlock Grid.Row="5" TextWrapping="Wrap" Text="指定した時間ごとに計測します。"/>
                 <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Left">
                     <Label Content="無操作判定時間" VerticalAlignment="Center"/>
-                    <TextBox Name="NoInputTime" Width="50" Text="30" 
+                    <TextBox Name="NoInputTime" Width="50" Text="900" 
                                InputMethod.IsInputMethodEnabled="False"
                                 PreviewTextInput="textBoxPrice_PreviewTextInput"
                                  CommandManager.PreviewExecuted="textBoxPrice_PreviewExecuted"
                              TextAlignment="Right" VerticalAlignment="Center"/>
-                    <Label Content="分" VerticalAlignment="Center"/>
+                    <Label Content="秒" VerticalAlignment="Center"/>
                 </StackPanel>
                 <TextBlock Grid.Row="7" TextWrapping="Wrap" Text="指定した時間PCに操作がない場合、計測を停止します。"/>
                 <StackPanel Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Left">
@@ -79,9 +79,9 @@
                                 PreviewTextInput="textBoxPrice_PreviewTextInput"
                                  CommandManager.PreviewExecuted="textBoxPrice_PreviewExecuted"
                              TextAlignment="Right" VerticalAlignment="Center"/>
-                    <Label Content="分" VerticalAlignment="Center"/>
+                    <Label Content="秒" VerticalAlignment="Center"/>
                 </StackPanel>
-                <TextBlock Grid.Row="9" TextWrapping="Wrap" Text="アプリケーションの起動を確認後、設定した時間が経過してから計測を開始します。"/>
+                <TextBlock Grid.Row="9" TextWrapping="Wrap" Text="アプリケーションの起動を確認後、指定した時間が経過してから計測を開始します。"/>
             </Grid>
             <Grid Margin="20" Visibility="{Binding ElementName=tab2, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">
                 <Grid.RowDefinitions>
@@ -126,8 +126,8 @@
                                InputMethod.IsInputMethodEnabled="False"
                                 PreviewTextInput="textBoxPrice_PreviewTextInput"
                                  CommandManager.PreviewExecuted="textBoxPrice_PreviewExecuted"
-                             Width="50" Text="1" TextAlignment="Right" VerticalAlignment="Center"/>
-                    <Label Content="分" VerticalAlignment="Center"/>
+                             Width="50" Text="60" TextAlignment="Right" VerticalAlignment="Center"/>
+                    <Label Content="秒" VerticalAlignment="Center"/>
                 </StackPanel>
                 <TextBlock Grid.Row="1" Name="MinSendTimeDesctiption" TextWrapping="Wrap" 
                            Text="指定した時間以内に終了したアプリはTogglに記録しません。"/>
@@ -143,7 +143,7 @@
                             <GridViewColumn Header ="連携オン" Width="60">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate DataType="wpf:Entry">
-                                        <CheckBox Name="IsOn" IsChecked="{Binding IsLinkedToToggle, Mode=TwoWay}" HorizontalAlignment = "Center"/>
+                                        <CheckBox Name="IsOn" IsChecked="{Binding IsLinkedToToggl, Mode=TwoWay}" HorizontalAlignment = "Center"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -163,7 +163,7 @@
                                         <ComboBox
                                             x:Name="ProjectList"
                                             ItemsSource="{Binding  Path=ProjectNames}"
-                                            SelectedItem="{Binding GetNameOfProject, Mode=TwoWay}"
+                                            SelectedItem="{Binding NameOfProject, Mode=TwoWay}"
                                             Width="120"
                                         />
                                     </DataTemplate>
@@ -175,7 +175,7 @@
                                         <ComboBox
                                             x:Name="TagList"
                                             ItemsSource="{Binding  Path=TagNames}"
-                                            SelectedItem="{Binding GetNameOfTag, Mode=TwoWay}"
+                                            SelectedItem="{Binding NameOfTag, Mode=TwoWay}"
                                             Width="60"
                                         />
                                     </DataTemplate>

@@ -48,11 +48,13 @@ namespace MHTimer
             //データの読み込み
             SaveAndLoader.LoadData();
 
+            ListViewSetter = new ListViewSetter(this);
+
             TimeCounter = new TimeCounter(this);
             TogglManager = new TogglManager(this);
             SettingMenuWindow = new SettingWindow(this);
             NotifyIconSetter = new NotifyIconSetter(this);
-            ListViewSetter = new ListViewSetter(this);
+
             ContextMenuSetter = new ContextMenuSetter(this);
 
             //日付を確認し、今日の日付と違っていれば更新

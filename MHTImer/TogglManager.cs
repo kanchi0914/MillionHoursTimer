@@ -1,15 +1,9 @@
 ﻿using Toggl.Services;
 using Toggl;
 using Toggl.Extensions;
-using Toggl.Interfaces;
 using System.Collections.Generic;
-using Toggl.Services;
-using Toggl;
-using Toggl.Extensions;
-using Toggl.Interfaces;
 using System;
 using System.Linq;
-using System.Windows;
 
 namespace MHTimer
 {
@@ -139,9 +133,7 @@ namespace MHTimer
         public void SetTimeEntry(AppDataObject appData)
         {
 
-            //DateTime d = DateTime.Now.AddHours(-3);
-
-            int duration = (int)(appData.LastTime - appData.LaunchedTime).TotalSeconds;
+            int duration = (int)(appData.LastRunningTime - appData.LaunchedTime).TotalSeconds;
             TimeEntry te = new TimeEntry()
             {
                 IsBillable = true,
@@ -149,7 +141,7 @@ namespace MHTimer
                 Description = appData.DisplayedName,
                 Duration = duration,
                 Start = appData.LaunchedTime.ToIsoDateStr(),
-                Stop = appData.LastTime.ToIsoDateStr(),
+                Stop = appData.LastRunningTime.ToIsoDateStr(),
 
                 WorkspaceId = defaultWorkspaceID
             };

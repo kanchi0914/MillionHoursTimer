@@ -99,15 +99,6 @@ namespace MHTimer
             }
         }
 
-        public void SaveTogglList()
-        {
-            //foreach (Grid item in ApplicationListInToggleSetting.Items)
-            //{
-            //    Console.WriteLine(item);
-            //    Console.WriteLine(item);
-            //}
-        }
-
         public void okButton_OnClicked(object sender, RoutedEventArgs e)
         {
             var inputBox = FindName("APIKeyInput") as TextBox;
@@ -168,8 +159,8 @@ namespace MHTimer
                 Settings.MinSendTime = int.Parse(MinSendTime.Text);
 
                 Settings.Save();
-
-                SaveTogglList();
+                
+                SetAutoLaunch(Settings.IsAutoLauch);
 
                 mainWindow.SaveAndLoader.SaveCsvData();
 

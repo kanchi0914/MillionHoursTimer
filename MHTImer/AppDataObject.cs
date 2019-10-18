@@ -40,7 +40,7 @@ namespace MHTimer
         public DateTime LaunchedTime { get; set; }
 
         //最後に起動を確認した時刻
-        public DateTime LastTime { get; private set; }
+        public DateTime LastRunningTime { get; private set; }
 
         //ファイル設定
         public List<string> FileExtensions { get; private set; } = new List<string>();
@@ -52,7 +52,11 @@ namespace MHTimer
         //時間データ
         public TimeSpan TodaysTime { get; set; }
         public TimeSpan TotalTime { get; set; }
-        public TimeSpan TimeFromLastLaunched { get; set; }
+        public TimeSpan TimeFromLastLaunched
+        {
+            get => LastRunningTime - LaunchedTime;
+        }
+
         public bool IsRecoding { get; set; } = false;
 
         //Toggl記録用の終了確認フラグ
@@ -79,12 +83,7 @@ namespace MHTimer
         public string NameOfProject
         {
             get => LinkedProjectName;
-            set
-            {
-                LinkedProjectName = value;
-                OnPropertyChanged(nameof(NameOfProject));
-                return;
-            }
+            set => LinkedProjectName = value;
         }
 
         public string NameOfTag
@@ -104,14 +103,14 @@ namespace MHTimer
         }
 
 
-        public string GetLastLaunchedTime
+        public string GetLastLaunchedTimeText
         {
             get
             {
-                string lastDate = LastTime.ToString("yyyy");
+                string lastDate = LastRunningTime.ToString("yyyy");
                 if (lastDate != "0001")
                 {
-                    return LastTime.ToString("yyyy/MM/dd hh:mm");
+                    return LastRunningTime.ToString("yyyy/MM/dd hh:mm");
                 }
                 else
                 {
@@ -148,11 +147,11 @@ namespace MHTimer
             }
         }
 
-        public void SetLastLaunchedTime(string data)
+        public void SetLastRunningTIme(string data)
         {
             if (!string.IsNullOrEmpty(data) && data != "-")
             {
-                LastTime = DateTime.Parse(data);
+                LastRunningTime = DateTime.Parse(data);
             }
         }
 
@@ -169,6 +168,71 @@ namespace MHTimer
             LoadIconImage(iconImagePath);
         }
 
+
+        /// <summary>
+        /// 設定した分毎に呼ばれ、時間を追加
+        /// 実際に記録されるのは一定時間が経ってから
+        /// </summary>
+        /// <param name="filename"></param>
+        public void AccumulateTimes()
+        {
+            if (!IsRunning)
+            {
+                LaunchedTime = DateTime.Now;
+                IsRunning = true;
+            }
+
+            LastRunningTime = DateTime.Now;
+
+            if (TimeFromLastLaunched.Seconds >= Settings.MinCountStartTime)
+            {
+                //一度だけ、時間の差分を足す
+                if (!IsRecoding)
+                {
+                    AccumulateTime(Settings.MinCountStartTime);
+                    IsRecoding = true;
+                }
+                else
+                {
+                    AccumulateTime(Settings.CountingSecondsInterval);
+                }
+            }
+
+            AccumulateTimeToFileDatas();
+
+        }
+
+        /// <summary>
+        /// データの時間を更新
+        /// </summary>
+        /// <param name="seconds"></param>
+        public void AccumulateTime(int seconds)
+        {
+            if (IsDayChanged()) TodaysTime = new TimeSpan(0, 0, 0);
+            TotalTime = TotalTime.Add(TimeSpan.FromSeconds(seconds));
+            TodaysTime = TodaysTime.Add(TimeSpan.FromSeconds(seconds));
+        }
+
+        /// <summary>
+        /// 全てのファイルデータに対し、時間を累積
+        /// </summary>
+        public void AccumulateTimeToFileDatas()
+        {
+            //ウィンドウタイトルを取得
+            WindowTitlesGetter windowTitlesGetter = new WindowTitlesGetter();
+            var titles = windowTitlesGetter.Get(ProcessName);
+
+            var countedTitles = new List<string>();
+            foreach (string title in titles)
+            {
+                if (countedTitles.Contains(title)) continue;
+                else countedTitles.Add(title);
+                var fileName = GetFileNameByTitle(title);
+                if (string.IsNullOrEmpty(fileName)) continue;
+                AccumulateTimeToFileData(fileName);
+            }
+        }
+
         /// <summary>
         /// 計測を終了し、TimeEntryを送信
         /// </summary>
@@ -176,12 +240,13 @@ namespace MHTimer
         {
             if (IsRecoding)
             {
-                IsRunning = false;
-                if (IsLinkedToToggl && TimeFromLastLaunched.Minutes > Settings.MinSendTime)
+                if (IsLinkedToToggl && TimeFromLastLaunched.Seconds > Settings.MinSendTime)
                 {
                     mainWindow.TogglManager.SetTimeEntry(this);
                 }
             }
+            LastRunningTime = DateTime.Now;
+            IsRunning = false;
             IsRecoding = false;
         }
 
@@ -327,74 +392,6 @@ namespace MHTimer
             }
         }
 
-        /// <summary>
-        /// 設定した分毎に呼ばれ、時間を追加
-        /// 実際に記録されるのは一定時間が経ってから
-        /// </summary>
-        /// <param name="filename"></param>
-        public void AccumulateTimes()
-        {
-            if (!IsRunning)
-            {
-                LaunchedTime = DateTime.Now;
-                IsRunning = true;
-            }
-            else
-            {
-                var pre = TimeFromLastLaunched;
-                var second = pre.Seconds + Settings.CountingSecondsInterval;
-                TimeFromLastLaunched = new TimeSpan(pre.Hours, pre.Minutes, second);
-            }
- 
-            if (TimeFromLastLaunched.Minutes >= Settings.MinCountStartTime)
-            {
-                //一度だけ、時間の差分を足す
-                if (!IsRecoding)
-                {
-                    AccumulateTime(Settings.MinCountStartTime);
-                    IsRecoding = true;
-                }
-                else
-                {
-                    AccumulateTime(Settings.CountingSecondsInterval);
-                }
-            }
-
-            AccumulateTimeToFileDatas();
-
-        }
-
-        /// <summary>
-        /// データの時間を更新
-        /// </summary>
-        /// <param name="seconds"></param>
-        public void AccumulateTime(int seconds)
-        {
-            TotalTime = TotalTime.Add(TimeSpan.FromSeconds(seconds));
-            if (IsDayChanged()) TodaysTime = new TimeSpan(0, 0, 0);
-            TodaysTime = TodaysTime.Add(TimeSpan.FromSeconds(seconds));
-            LastTime = DateTime.Now;
-        }
-
-        /// <summary>
-        /// 全てのファイルデータに対し、時間を累積
-        /// </summary>
-        public void AccumulateTimeToFileDatas()
-        {
-            //ウィンドウタイトルを取得
-            WindowTitlesGetter windowTitlesGetter = new WindowTitlesGetter();
-            var titles = windowTitlesGetter.Get(ProcessName);
-
-            var countedTitles = new List<string>();
-            foreach (string title in titles)
-            {
-                if (countedTitles.Contains(title)) continue;
-                else countedTitles.Add(title);
-                var fileName = GetFileNameByTitle(title);
-                if (string.IsNullOrEmpty(fileName)) continue;
-                AccumulateTimeToFileData(fileName);
-            }
-        }
 
         public string GetFileNameByTitle(string title)
         {
@@ -488,7 +485,7 @@ namespace MHTimer
         private bool IsDayChanged()
         {
             var currentDate = DateTime.Now.ToString("yyyy/MM/dd");
-            return currentDate != LastTime.ToString("yyyy/MM/dd");
+            return currentDate != LastRunningTime.ToString("yyyy/MM/dd");
         }
 
         public static FileDataObject CreateFileDate(string fileName, TimeSpan totalTime)
@@ -498,6 +495,7 @@ namespace MHTimer
 
         public static string GetFormattedStringFromTimeSpan(TimeSpan timeSpan)
         {
+            if (timeSpan < TimeSpan.FromSeconds(1)) return "-";
             var hours = string.Format("{0, 4}", timeSpan.Hours);
             var minutes = string.Format("{0, 2}", timeSpan.Minutes);
             var seconds = string.Format("{0, 2}", timeSpan.Seconds);

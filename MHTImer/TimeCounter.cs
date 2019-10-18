@@ -104,14 +104,11 @@ namespace MHTimer
                 //データを保存
                 mainWindow.SaveAndLoader.SaveCsvData();
 
-                //listviewの更新
-                mainWindow.listView.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Refresh()));
-
                 //ファイルデータの重複防止フラグをリセット
                 ResetFileCount();
 
-                mainWindow.ListViewSetter.UpdateListView();
             }
+            mainWindow.ListViewSetter.UpdateListView();
         }
 
         #region 計測メソッド
@@ -146,7 +143,6 @@ namespace MHTimer
                 if (processes.Length > 0)
                 {
                     data.AccumulateTimes();
-                    //data.AccumulateTimeToFileDatas();
                 }
             }
         }
@@ -160,7 +156,6 @@ namespace MHTimer
 
                 if (processes.Length > 0)
                 {
-                    //Console.WriteLine(processes.Length);
                     foreach (Process p in processes)
                     {
                         if (p.MainWindowHandle != IntPtr.Zero && !IsIconic(p.MainWindowHandle))
@@ -168,7 +163,6 @@ namespace MHTimer
                             if (!isCounted)
                             {
                                 data.AccumulateTimes();
-                                //data.AccumulateTimeToFileDatas();
                                 isCounted = true;
                             }
                         }
@@ -203,11 +197,9 @@ namespace MHTimer
                         processName = p.ProcessName.ToString();
                     }
                     AppDataObject data = mainWindow.AppDatas.ToList().Find(a => a.ProcessName == processName);
-                    //found registerd app
                     if (data != null)
                     {
                         data.AccumulateTimes();
-                        //data.AccumulateTimeToFileData(sb.ToString());
                     }
                 }
             }
@@ -232,7 +224,7 @@ namespace MHTimer
         /// </summary>
         public void CheckNoInput()
         {
-            if (LastInputCounter.GetLastInputMinutes() >= Settings.NoInputTime)
+            if (LastInputCounter.GetLastInputSeconds() >= Settings.NoInputTime)
             {
                 mainWindow.ExitAllApps();
                 isNoInputing = true;
@@ -250,7 +242,7 @@ namespace MHTimer
         {
             var sec = Properties.Settings.Default.CountingSecondsInterval;
             mainWindow.AppDatas.Where(a => a.IsRecoding && a.IsRunning)
-                .Where(a => (DateTime.Now - a.LastTime).Seconds > sec)
+                .Where(a => (DateTime.Now - a.LastRunningTime).Seconds > sec)
                 .ToList().ForEach(a => a.Exit());
         }
     }

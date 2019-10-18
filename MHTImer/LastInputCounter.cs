@@ -3,12 +3,12 @@ using System.Runtime.InteropServices;
 
 public static class LastInputCounter
 {
-    public static int GetLastInputMinutes()
+    public static int GetLastInputSeconds()
     {
         var plii = new LASTINPUTINFO();
         plii.cbSize = (uint)Marshal.SizeOf(plii);
         if (GetLastInputInfo(ref plii))
-            return TimeSpan.FromMilliseconds(Environment.TickCount - plii.dwTime).Minutes;
+            return TimeSpan.FromMilliseconds(Environment.TickCount - plii.dwTime).Seconds;
         else
             throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
     }

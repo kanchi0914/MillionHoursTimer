@@ -53,12 +53,12 @@ namespace MHTimer
 
         //計測間隔(秒)
         public static int CountingSecondsInterval = 1;
-        //無操作判定時間(分)
-        public static int NoInputTime = 30;
-        //何分立ってから記録を開始するか
+        //無操作判定時間(秒)
+        public static int NoInputTime = 900;
+        //何秒経ってから記録を開始するか
         public static int MinCountStartTime = 0;
-        //何分経過してからTogglに送信するか
-        public static int MinSendTime = 1;
+        //何秒経過してからTogglに送信するか
+        public static int MinSendTime = 60;
 
         //============================================================
         //その他保存用データ
