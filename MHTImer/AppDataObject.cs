@@ -12,6 +12,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.ComponentModel;
 
 namespace MHTimer
 {
@@ -45,19 +48,18 @@ namespace MHTimer
 
         //アイコン画像
         public ImageSource IconImageSource { get; private set; }
-        //public Image IconImage { get; private set; }
 
         //時間データ
         public TimeSpan TodaysTime { get; set; }
         public TimeSpan TotalTime { get; set; }
         public TimeSpan TimeFromLastLaunched { get; set; }
-        public bool IsRecordStarted { get; set; } = false;
+        public bool IsRecoding { get; set; } = false;
 
         //Toggl記録用の終了確認フラグ
         public bool IsRunning { get; set; } = false;
 
         //Toggl設定
-        public bool IsLinkedToToggle { get; set; } = false;
+        public bool IsLinkedToToggl { get; set; } = false;
         public string LinkedProjectName { get; set; } = "";
         public string LinkedTag { get; set; } = "";
 
@@ -69,49 +71,36 @@ namespace MHTimer
         {
             get
             {
-                if (IsRecordStarted) return "#ffc0cb";
+                if (IsRecoding) return "#ffc0cb";
                 return "White";
             }
         }
 
         public string NameOfProject
         {
-            get
-            {
-                return LinkedProjectName;
-            }
+            get => LinkedProjectName;
             set
             {
                 LinkedProjectName = value;
+                OnPropertyChanged(nameof(NameOfProject));
+                return;
             }
         }
 
         public string NameOfTag
         {
-            get
-            {
-                return LinkedTag;
-            }
-            set
-            {
-                LinkedTag = value;
-            }
+            get => LinkedTag;
+            set => LinkedTag = value;
         }
 
         public string GetTotalTime
         {
-            get
-            {
-                return GetFormattedStringFromTimeSpan(TotalTime);
-            }
+            get => GetFormattedStringFromTimeSpan(TotalTime);
         }
 
         public string GetTodaysTime
         {
-            get
-            {
-                return GetFormattedStringFromTimeSpan(TodaysTime);
-            }
+            get => GetFormattedStringFromTimeSpan(TodaysTime);
         }
 
 
@@ -127,6 +116,34 @@ namespace MHTimer
                 else
                 {
                     return "-";
+                }
+            }
+        }
+
+        /// <summary>
+        /// ファイル拡張子の設定をstring型で返す(保存用)
+        /// </summary>
+        /// <returns></returns>
+        public string GetFileExtensionText()
+        {
+            var extentionText = string.Join("/", FileExtensions.ToArray());
+            return extentionText;
+        }
+
+        /// <summary>
+        /// ファイル拡張子を設定
+        /// </summary>
+        /// <param name="extensionTexts">半角スラッシュ区切りの拡張子文字列</param>
+        public void SetFileExtensions(string extensionTexts)
+        {
+            string[] parsed = extensionTexts.Split('/');
+            if (parsed.Length > 0)
+            {
+                FileExtensions = new List<string>();
+                foreach (string s in parsed)
+                {
+                    if (!s.Contains('.')) continue;
+                    FileExtensions.Add(s);
                 }
             }
         }
@@ -157,42 +174,15 @@ namespace MHTimer
         /// </summary>
         public void Exit()
         {
-            if (IsRecordStarted)
+            if (IsRecoding)
             {
                 IsRunning = false;
-                if (IsLinkedToToggle)
+                if (IsLinkedToToggl && TimeFromLastLaunched.Minutes > Settings.MinSendTime)
                 {
                     mainWindow.TogglManager.SetTimeEntry(this);
                 }
             }
-            IsRecordStarted = false;
-        }
-
-        /// <summary>
-        /// ファイル拡張子の設定をstring型で返す(保存用)
-        /// </summary>
-        /// <returns></returns>
-        public string GetFileExtensionText()
-        {
-            var extentionText = string.Join("/", FileExtensions.ToArray());
-            return extentionText;
-        }
-
-        /// <summary>
-        /// ファイル拡張子を設定
-        /// </summary>
-        /// <param name="extensionTexts">半角スラッシュ区切りの拡張子文字列</param>
-        public void SetFileExtensions(string extensionTexts)
-        {
-            string[] parsed = extensionTexts.Split('/');
-            if (parsed.Length > 0)
-            {
-                FileExtensions = new List<string>();
-                foreach (string s in parsed)
-                {
-                    FileExtensions.Add(s);
-                }
-            }
+            IsRecoding = false;
         }
 
         /// <summary>
@@ -253,6 +243,13 @@ namespace MHTimer
             }
         }
 
+        public event PropertyChangedEventHandler PropertyChanged = null;
+        protected void OnPropertyChanged(string info)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
+        }
+
+
         /// <summary>
         /// ファイルパスからアイコンを読み込み、保存
         /// </summary>
@@ -263,6 +260,7 @@ namespace MHTimer
             try
             {
                 icon = System.Drawing.Icon.ExtractAssociatedIcon(@path);
+                //icon = IconGetter.GetIcon(@path);
 
                 using (MemoryStream s = new MemoryStream())
                 {
@@ -271,6 +269,7 @@ namespace MHTimer
                 }
                 var savePath = currentDir + iconFileDir + $"{ProcessName}.png";
                 SaveIconImage(IconImageSource, savePath);
+                //LoadIconImage(savePath);
             }
             catch (FileNotFoundException e)
             {
@@ -282,6 +281,7 @@ namespace MHTimer
                 Console.WriteLine(e);
             }
         }
+
 
         /// <summary>
         /// アイコンイメージの保存
@@ -312,7 +312,6 @@ namespace MHTimer
             {
                 bmpImage.BeginInit();
                 bmpImage.UriSource = new Uri(@path, UriKind.Absolute);
-                //bmpImage.UriSource = new Uri(@path);
                 bmpImage.EndInit();
                 IconImageSource = bmpImage;
             }
@@ -350,10 +349,10 @@ namespace MHTimer
             if (TimeFromLastLaunched.Minutes >= Settings.MinCountStartTime)
             {
                 //一度だけ、時間の差分を足す
-                if (!IsRecordStarted)
+                if (!IsRecoding)
                 {
                     AccumulateTime(Settings.MinCountStartTime);
-                    IsRecordStarted = true;
+                    IsRecoding = true;
                 }
                 else
                 {
@@ -383,56 +382,62 @@ namespace MHTimer
         public void AccumulateTimeToFileDatas()
         {
             //ウィンドウタイトルを取得
-            WindowTitles2 windowTitles2 = new WindowTitles2();
-            var titles = windowTitles2.Get(ProcessName);
+            WindowTitlesGetter windowTitlesGetter = new WindowTitlesGetter();
+            var titles = windowTitlesGetter.Get(ProcessName);
 
-            var isCounteds = new List<string>();
+            var countedTitles = new List<string>();
             foreach (string title in titles)
             {
-                if (isCounteds.Contains(title)) continue;
-                else isCounteds.Add(title);
+                if (countedTitles.Contains(title)) continue;
+                else countedTitles.Add(title);
                 var fileName = GetFileNameByTitle(title);
+                if (string.IsNullOrEmpty(fileName)) continue;
                 AccumulateTimeToFileData(fileName);
             }
         }
 
         public string GetFileNameByTitle(string title)
         {
-            var fileName = "";
-            var parsed = title.Split(' ');
-
-            foreach (string s in parsed)
+            foreach (var extentionName in FileExtensions)
             {
-                if (FileExtensions.Count > 0 && FileExtensions.Any(f => s.Contains(f)))
-                    fileName = s;
+                if (!extentionName.Contains('.')) continue;
+                var text = $@"\s*(.+\{extentionName})";
+                var match = Regex.Match(title, text);
+                if (match.Success)
+                {
+                    if (Settings.IsDividingBySpace)
+                    {
+                        foreach (string s in match.Groups[1].Value.Split(' '))
+                        {
+                            var match2 = Regex.Match(s, text);
+                            if (match2.Success) return match2.Value;
+                        }
+                    }
+                    return match.Value;
+                }
             }
 
-            if (Properties.Settings.Default.IsEnableAdditionalFileName &&
-                string.IsNullOrEmpty(fileName))
+            if (Properties.Settings.Default.IsEnableAdditionalFileName)
             {
-                fileName = GetAdditionalFileNameByTitle(title);
+                return GetAdditionalFileNameByTitle(title);
             }
 
-            return fileName;
+            return "";
         }
 
         public string GetAdditionalFileNameByTitle(string title)
         {
-            var fileName = "";
-            var parsedByHyphen = title.Split('-');
-            if (parsedByHyphen.Length > 1)
+            Match match = Regex.Match(title, @"(.+?)\s+-");
+            if (match.Groups[1].Success)
             {
                 if (Settings.IsDividingBySpace)
                 {
-                    var parsedBySpace = title.Split(' ');
-                    fileName = parsedBySpace[0];
+                    return match.Groups[1].Value.Split(' ')[0];
                 }
-                else
-                {
-                    fileName = parsedByHyphen[0];
-                }
+                return match.Groups[1].Value;
             }
-            return fileName;
+
+            return "";
         }
 
         /// <summary>
@@ -461,9 +466,10 @@ namespace MHTimer
             {
                 Files.RemoveAt(0);
             }
-            //Files.Add(fileData);
-            mainWindow.Dispatcher.BeginInvoke(new Action(() => Files.Add(fileData)));
-                //.Dispatcher.BeginInvoke(new Action(() => mainWindow.listView.Items.Add(appData)));
+            lock (fileData)
+            {
+                mainWindow.Dispatcher.BeginInvoke(new Action(() => Files.Add(fileData)));
+            }
         }
 
         /// <summary>
@@ -472,7 +478,10 @@ namespace MHTimer
         /// <param name="fileData"></param>
         public void RemoveFileDataFromList(FileDataObject fileData)
         {
-            Files.Remove(fileData);
+            lock (fileData)
+            {
+                Files.Remove(fileData);
+            }
             SaveFileDatas();
         }
 

@@ -11,82 +11,61 @@
         AllowDrop="True"
         Drop="Window_Drop" PreviewDragOver="Window_PreviewDragOver"
         Closing="Window_Closing"
-        ResizeMode="NoResize"
         >
 
-  <!--ListViewの設定-->
-  <Window.Resources>
-    <Style TargetType="ListViewItem">
-      <!--
-           <Setter Property="Height" Value="20"/>
-          -->
-      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <!--ListViewの設定-->
+    <Window.Resources>
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+    </Window.Resources>
 
-      <!--<DataTemplate x:Key="ListViewItemTemplate">
-            <TextBlock HorizontalAlignment="Right"/>
-          </DataTemplate>-->
-
-    </Style>
-  </Window.Resources>
-
-  <Grid>
-
-    <Grid.RowDefinitions>
-      <RowDefinition Height="1*" />
-    </Grid.RowDefinitions>
-
-    <Menu VerticalAlignment="Top">
-      <MenuItem Header="ファイル">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="232*"/>
+            <RowDefinition Height="187*"/>
+        </Grid.RowDefinitions>
+        <Menu VerticalAlignment="Top">
+            <MenuItem Header="ファイル">
                 <MenuItem Name="AddApp" Header="アプリケーションを追加"/>
-                <!--<MenuItem Name="Import" Header="データのインポート"/>-->
                 <MenuItem Name="Export" Header="データのエクスポート"/>
             </MenuItem>
-      <MenuItem Header="設定">
-        <MenuItem Header="設定画面を開く" Click="topMenu_Click"/>
-      </MenuItem>
-    </Menu>
-    <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="1*" />
-        <!--<ColumnDefinition Width="120" />-->
-      </Grid.ColumnDefinitions>
-      <ListView 
-          Name="listView"  
-          HorizontalAlignment="Center"  
-          Height="340" Margin="20,40,20,20" 
-          VerticalAlignment="Top" 
-          Width="540" 
+            <MenuItem Header="設定">
+                <MenuItem Header="設定画面を開く" Click="topMenu_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <ListView 
+          Name="listView" Margin="18,39,22,21" 
           SelectionChanged="listView_SelectionChanged"
-          GridViewColumnHeader.Click="listHeader_Click">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Background" Value="{Binding Path=Color}"/>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListView.View>
-          <GridView>
-            <!--アプリ名表示列-->
-            <GridViewColumn Header ="アプリケーション名" Width="200">
-              <GridViewColumn.CellTemplate>
-                  
-                <DataTemplate>
-                    
-                  <StackPanel Orientation="Horizontal">
-                                        <Image x:Name="_icon" Width="16" Height="16" Source="{Binding IconImageSource}"/>
-                    <TextBlock HorizontalAlignment="Right" Text="{Binding Path=DisplayedName}" />
-                  </StackPanel>
-                </DataTemplate>
-              </GridViewColumn.CellTemplate>
-            </GridViewColumn>
-            <!---->
-            <GridViewColumn Header ="今日の起動時間" Width="150">
+          GridViewColumnHeader.Click="listHeader_Click" Grid.RowSpan="2">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Background" Value="{Binding Path=Color}"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <!--アプリ名表示列-->
+                    <GridViewColumn Header ="アプリケーション名" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image x:Name="_icon" Width="16" Height="16" Source="{Binding IconImageSource}"/>
+                                    <TextBlock HorizontalAlignment="Right" Text="{Binding Path=DisplayedName}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <!---->
+            <GridViewColumn Header ="今日の起動時間" Width="100">
               <GridViewColumn.CellTemplate>
                 <DataTemplate>
                     <TextBlock HorizontalAlignment="Right" Text="{Binding Path=GetTodaysTime}"/>
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>
-            <GridViewColumn Header ="累積起動時間" Width="150">
+            <GridViewColumn Header ="累計起動時間" Width="100">
               <GridViewColumn.CellTemplate>
                 <DataTemplate>
                   <Grid>
@@ -104,19 +83,11 @@
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>-->
-              
-          </GridView>
-        </ListView.View>
-      </ListView>
-      <!--
-             <Button Grid.Column="1" Content="追加" HorizontalAlignment="Left" Height="40" Margin="5,20,0,0" Click="OnClickAdd" VerticalAlignment="Bottom" Width="90"/>
-            -->
+
+                </GridView>
+            </ListView.View>
+        </ListView>
 
     </Grid>
 
-
-
-
-
-  </Grid>
 </Window>

@@ -79,6 +79,7 @@ namespace MHTimer
             MinCountTime.Text = Settings.MinCountStartTime.ToString();
             NoInputTime.Text = Settings.NoInputTime.ToString();
             MaxFileNum.Text = Settings.MaxFileNum.ToString();
+            MinSendTime.Text = Settings.MinSendTime.ToString();
 
             APIKeyInput.Text = mainWindow.TogglManager.ApiKey;
         }
@@ -96,6 +97,15 @@ namespace MHTimer
                 appData.ProjectNames = mainWindow.TogglManager.ProjectIDs.Keys.ToList();
                 appData.TagNames = mainWindow.TogglManager.Tags;
             }
+        }
+
+        public void SaveTogglList()
+        {
+            //foreach (Grid item in ApplicationListInToggleSetting.Items)
+            //{
+            //    Console.WriteLine(item);
+            //    Console.WriteLine(item);
+            //}
         }
 
         public void okButton_OnClicked(object sender, RoutedEventArgs e)
@@ -123,6 +133,7 @@ namespace MHTimer
             // 0-9のみ
             e.Handled = !new Regex("[0-9]").IsMatch(e.Text);
         }
+
         private void textBoxPrice_PreviewExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             // 貼り付けを許可しない
@@ -154,10 +165,11 @@ namespace MHTimer
                 Settings.MinCountStartTime = int.Parse(MinCountTime.Text);
                 if (int.Parse(MaxFileNum.Text) > 0) Settings.MaxFileNum = int.Parse(MaxFileNum.Text);
                 Settings.NoInputTime = int.Parse(NoInputTime.Text);
+                Settings.MinSendTime = int.Parse(MinSendTime.Text);
 
                 Settings.Save();
 
-                SetAutoLaunch(Settings.IsAutoLauch);
+                SaveTogglList();
 
                 mainWindow.SaveAndLoader.SaveCsvData();
 

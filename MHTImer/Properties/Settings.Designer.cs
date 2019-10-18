@@ -166,5 +166,17 @@ namespace MHTimer.Properties {
                 this["NoInputTime"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int MinSendTime {
+            get {
+                return ((int)(this["MinSendTime"]));
+            }
+            set {
+                this["MinSendTime"] = value;
+            }
+        }
     }
 }

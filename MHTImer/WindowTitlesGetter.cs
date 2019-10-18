@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MHTimer
 {
-    public class WindowTitles2
+    public class WindowTitlesGetter
     {
         [DllImport("user32")]
         private static extern bool EnumWindows(WNDENUMPROC lpEnumFunc, IntPtr lParam);

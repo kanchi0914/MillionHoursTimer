@@ -37,7 +37,7 @@ namespace MHTimer
                             $"{appData.TodaysTime}," +
                             $"{appData.TotalTime}," +
                             $"{appData.GetLastLaunchedTime}," +
-                            $"{appData.IsLinkedToToggle.ToString()}," +
+                            $"{appData.IsLinkedToToggl.ToString()}," +
                             $"{appData.LinkedProjectName}," +
                             $"{appData.LinkedTag}," +
                             $"{appData.GetFileExtensionText()}");
@@ -75,7 +75,7 @@ namespace MHTimer
                             TodaysTime = TimeSpan.Parse(parsedLine[1]),
                             TotalTime = TimeSpan.Parse(parsedLine[2]),
                             //[3]
-                            IsLinkedToToggle = bool.Parse(parsedLine[4]),
+                            IsLinkedToToggl = bool.Parse(parsedLine[4]),
                             LinkedProjectName = parsedLine[5],
                             LinkedTag = parsedLine[6]
                         };

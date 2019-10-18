@@ -32,14 +32,6 @@ namespace MHTimer
             var sumTime = new TimeSpan(0, 0, 0);
             var appData = fileViewWindow.AppData;
 
-            //var selectedItems = (List<FileDataObject>)fileViewWindow.fileListView.SelectedItems;
-
-            //for (int i = selectedItems.Count -1; i >= 0; i--)
-            //{
-            //    sumTime += selectedItems[i].TotalTime;
-            //    appData.RemoveFileDataFromList(selectedItems[i]);
-            //}
-
             for (int i = appData.Files.Count - 1; i >= 0; i--)
             {
                 if (fileViewWindow.fileListView.SelectedItems.Contains(appData.Files[i]))
@@ -50,12 +42,7 @@ namespace MHTimer
             }
 
             var fileData = AppDataObject.CreateFileDate(TextBox.Text, sumTime);
-
-            //マージ後のデータを追加
             fileViewWindow.AppData.AddFileDataToList(fileData);
-
-            ////リストビューを更新
-            //fileViewWindow.UpdateListView();
 
             Close();
         }

@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MHTimer"
         mc:Ignorable="d"
-        Title="設定" Height="400" Width="600"
+        Title="設定" Height="450" Width="600"
         ResizeMode="NoResize">
     <Window.Resources>
         <local:BoolVisibilityConverter x:Key="BoolVisibilityConverter"/>
@@ -59,9 +59,9 @@
                                 PreviewTextInput="textBoxPrice_PreviewTextInput"
                                  CommandManager.PreviewExecuted="textBoxPrice_PreviewExecuted"
                              Width="50" Text="1" TextAlignment="Right" VerticalAlignment="Center"/>
-                    <Label Content="分" VerticalAlignment="Center"/>
+                    <Label Content="秒" VerticalAlignment="Center"/>
                 </StackPanel>
-                <TextBlock Grid.Row="5" TextWrapping="Wrap" Text="設定した時間(分)ごとに計測します。"/>
+                <TextBlock Grid.Row="5" TextWrapping="Wrap" Text="設定した時間(秒)ごとに計測します。"/>
                 <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Left">
                     <Label Content="無操作判定時間" VerticalAlignment="Center"/>
                     <TextBox Name="NoInputTime" Width="50" Text="30" 
@@ -108,34 +108,42 @@
                 <CheckBox Name="DividingBySpace" Grid.Row="6" Content="ファイル名をスペースで区切る" MinWidth="50" IsChecked="False"/>
                 <TextBlock Grid.Row="7" TextWrapping="Wrap" Text="ハイフン区切りで取得されたファイル名を、さらにスペースで区切ります。"/>
             </Grid>
-            <Grid Margin="20" Height="300" Visibility="{Binding ElementName=tab3, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}">
+            <Grid Margin="20" Height="350" Visibility="{Binding ElementName=tab3, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="0*"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1*" />
-                    <RowDefinition Height="1*" />
-                    <RowDefinition Height="10*" />
-
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="300" />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Name="User" TextWrapping="Wrap" Text="ユーザー："/>
-                <StackPanel Name ="stackpaaa" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Label Name="tes" Content="API キー：" VerticalAlignment="Center"/>
-                    <TextBox x:Name="APIKeyInput" Width="200" Text="" TextAlignment="Right" VerticalAlignment="Center"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Width="154">
+                    <Label Content="最低記録時間" VerticalAlignment="Center"/>
+                    <TextBox Name="MinSendTime" 
+                               InputMethod.IsInputMethodEnabled="False"
+                                PreviewTextInput="textBoxPrice_PreviewTextInput"
+                                 CommandManager.PreviewExecuted="textBoxPrice_PreviewExecuted"
+                             Width="50" Text="1" TextAlignment="Right" VerticalAlignment="Center"/>
+                    <Label Content="分" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Grid.Row="1" Name="MinSendTimeDesctiption" TextWrapping="Wrap" 
+                           Text="指定した時間以内に終了したアプリはTogglに記録しません。"/>
+                <TextBlock Grid.Row="3" Name="User" TextWrapping="Wrap" Text="ユーザー："/>
+                <StackPanel Name ="stackpaaa" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Width="544">
+                    <Label Name="tes" Content="API キー：" VerticalAlignment="Bottom" Margin="0,0,0,2"/>
+                    <TextBox x:Name="APIKeyInput" Width="254" Text="" TextAlignment="Right" VerticalAlignment="Center" Margin="0,6"/>
                     <Button Name="OKButton" Width=" 50" Content="OK" Margin="20, 0, 0, 0"/>
                 </StackPanel>
-
-                <!--                <Grid Grid.Row="3" Margin="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="20"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
-                </Grid>-->
-                <ListView Grid.Row="2" Margin="0,20,0,20" SelectionMode="Single" x:Name="ApplicationListInToggleSetting">
+                <ListView Grid.Row="4" Margin="0,0,0,80" SelectionMode="Single" x:Name="ApplicationListInToggleSetting">
                     <ListView.View>
-                        <GridView>
+                        <GridView x:Name="AppGrid">
                             <GridViewColumn Header ="連携オン" Width="60">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate DataType="wpf:Entry">
-                                        <CheckBox Name="IsOn" IsChecked="{Binding Path=IsLinkedToToggle}" HorizontalAlignment = "Center"/>
+                                        <CheckBox Name="IsOn" IsChecked="{Binding IsLinkedToToggle, Mode=TwoWay}" HorizontalAlignment = "Center"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

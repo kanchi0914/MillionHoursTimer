@@ -172,8 +172,7 @@ namespace MHTimer
         public void RemoveFileData(FileDataObject fileData)
         {
             AppData.RemoveFileDataFromList(fileData);
-            fileListView.Items.Remove(fileData);
-            fileListView.Items.Refresh();
+            UpdateListView();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

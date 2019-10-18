@@ -127,30 +127,53 @@ namespace MHTimer
             }
         }
 
+        class A
+        {
+            public string ID = "";
+            public A(string id)
+            {
+                ID = id;
+            }
+        }
+
+        //ref:http://var.blog.jp/archives/67144454.html
+        //ref;http://10.hateblo.jp/entry/2014/05/30/154157
         private void listHeader_Click(object sender, RoutedEventArgs e)
         {
-
-            //fnLvSort.SetColumn(e.Column);
-            //lvList.Sort();
             var header = (GridViewColumnHeader)e.OriginalSource;
+            var headerName = (string)header.Content;
 
-            // 列の外部分は無視
-            if (header.Column == null)
+            if (header.Column == null || string.IsNullOrEmpty(headerName))
             {
                 return;
             }
 
-            //var aaa = (ObservableCollection<AppDataObject>)AppDatas.OrderBy(a => a.DisplayedName);
-            
-            AppDatas = new ObservableCollection<AppDataObject>(AppDatas.OrderBy(a => a.DisplayedName));
+            Func<AppDataObject, dynamic> keySelecter = a => a.DisplayedName;
+            var pre = new ObservableCollection<AppDataObject>(AppDatas);
+
+            if (headerName == "アプリケーション名")
+            {
+                keySelecter = a => a.DisplayedName;
+            }
+            else if (headerName == "今日の起動時間")
+            {
+                keySelecter = a => a.TodaysTime;
+            }
+            else if (headerName == "累計起動時間")
+            {
+                keySelecter = a => a.TotalTime;
+            }
+
+            AppDatas = new ObservableCollection<AppDataObject>(AppDatas.OrderBy(keySelecter));
+            if (AppDatas.SequenceEqual(pre, keySelecter))
+            {
+                AppDatas = new ObservableCollection<AppDataObject>(AppDatas.Reverse());
+            }
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 listView.ItemsSource = null;
                 listView.ItemsSource = AppDatas;
             }));
-
-
-            ListViewSetter.UpdateListView();
 
         }
 
@@ -198,9 +221,9 @@ namespace MHTimer
         /// </summary>
         public void CreateMenu()
         {
-            AddApp.Click += OnClickAddApp;
+            AddApp.Click += menu_ClickAddApp;
             //Import.Click += OnClickImportData;
-            Export.Click += OnClickExportData;
+            Export.Click += menu_ClickExportData;
         }
 
         /// <summary>
@@ -208,7 +231,7 @@ namespace MHTimer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnClickAddApp(object sender, RoutedEventArgs e)
+        private void menu_ClickAddApp(object sender, RoutedEventArgs e)
         {
             string path = GetFilePathByFileDialog();
 
@@ -223,7 +246,7 @@ namespace MHTimer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnClickExportData(object sender, RoutedEventArgs e)
+        public void menu_ClickExportData(object sender, RoutedEventArgs e)
         {
             string path = GetFolderPathByFileDialog();
 

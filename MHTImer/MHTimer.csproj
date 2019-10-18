@@ -98,6 +98,8 @@
     <Compile Include="BoolVisibilityConverter.cs" />
     <Compile Include="ContextMenuSetter.cs" />
     <Compile Include="FileDataObject.cs" />
+    <Compile Include="IconGetter.cs" />
+    <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="NotifyIconSetter.cs" />
     <Compile Include="LastInputCounter.cs" />
     <Compile Include="MergedNameSettingWindow.xaml.cs">
@@ -132,7 +134,7 @@
       <DependentUpon>AppNameSettingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="WindowHandles.cs" />
-    <Compile Include="WindowTitles2.cs" />
+    <Compile Include="WindowTitlesGetter.cs" />
     <Page Include="MergedNameSettingWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

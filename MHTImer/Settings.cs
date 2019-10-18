@@ -51,12 +51,14 @@ namespace MHTimer
         //ファイル名の最大保存件数
         public static int MaxFileNum = 100;
 
-        //計測間隔
+        //計測間隔(秒)
         public static int CountingSecondsInterval = 1;
-        //無操作判定時間
+        //無操作判定時間(分)
         public static int NoInputTime = 30;
         //何分立ってから記録を開始するか
         public static int MinCountStartTime = 0;
+        //何分経過してからTogglに送信するか
+        public static int MinSendTime = 1;
 
         //============================================================
         //その他保存用データ
@@ -91,6 +93,7 @@ namespace MHTimer
             CountingSecondsInterval = Properties.Settings.Default.CountingSecondsInterval;
             NoInputTime = Properties.Settings.Default.NoInputTime;
             MinCountStartTime = Properties.Settings.Default.MinCountStartTime;
+            MinSendTime = Properties.Settings.Default.MinSendTime;
             Date = Properties.Settings.Default.Date;
 
         }
@@ -114,6 +117,7 @@ namespace MHTimer
             Properties.Settings.Default.MinCountStartTime = MinCountStartTime;
             Properties.Settings.Default.NoInputTime = NoInputTime;
             Properties.Settings.Default.Date = Date;
+            Properties.Settings.Default.MinSendTime = MinSendTime;
 
             Properties.Settings.Default.Save();
         }

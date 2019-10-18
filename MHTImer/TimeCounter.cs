@@ -119,8 +119,6 @@ namespace MHTimer
 
         public void Count()
         {
-
-
             //アクティブウィンドウのみをカウント
             if (Settings.IsCountingOnlyActive)
             {
@@ -138,7 +136,6 @@ namespace MHTimer
             }
 
             mainWindow.FileViewWindows.ForEach(w => w.UpdateListView());
-
         }
 
         public void CountAllApps()
@@ -252,7 +249,7 @@ namespace MHTimer
         public void ExitClosedApp()
         {
             var sec = Properties.Settings.Default.CountingSecondsInterval;
-            mainWindow.AppDatas.Where(a => a.IsRecordStarted && a.IsRunning)
+            mainWindow.AppDatas.Where(a => a.IsRecoding && a.IsRunning)
                 .Where(a => (DateTime.Now - a.LastTime).Seconds > sec)
                 .ToList().ForEach(a => a.Exit());
         }
