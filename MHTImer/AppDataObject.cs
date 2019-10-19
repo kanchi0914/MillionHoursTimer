@@ -8,6 +8,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Interop;
+using System.Windows;
+using System.Runtime.InteropServices;
 
 namespace MHTimer
 {
@@ -211,13 +215,12 @@ namespace MHTimer
             WindowTitlesGetter windowTitlesGetter = new WindowTitlesGetter();
             var titles = windowTitlesGetter.Get(ProcessName);
 
-            var countedTitles = new List<string>();
+            var countedFileNames = new HashSet<string>();
             foreach (string title in titles)
             {
-                if (countedTitles.Contains(title)) continue;
-                else countedTitles.Add(title);
                 var fileName = GetFileNameByTitle(title);
-                if (string.IsNullOrEmpty(fileName)) continue;
+                if (string.IsNullOrEmpty(fileName) || countedFileNames.Contains(fileName)) continue;
+                countedFileNames.Add(fileName);
                 AccumulateTimeToFileData(fileName);
             }
         }
@@ -275,15 +278,11 @@ namespace MHTimer
         /// <param name="path"></param>
         public void SetIcon(string path)
         {
-            System.Drawing.Icon icon;
             try
             {
-                icon = System.Drawing.Icon.ExtractAssociatedIcon(@path);
-                using (MemoryStream s = new MemoryStream())
-                {
-                    icon.Save(s);
-                    IconImageSource = BitmapFrame.Create(s);
-                }
+                var img = Icon.ExtractAssociatedIcon(@path).ToBitmap();
+                IconImageSource = img.ToImageSource();
+
                 var savePath = currentDir + iconFileDir + $"{ProcessName}.png";
                 SaveIconImage(IconImageSource, savePath);
             }
@@ -308,7 +307,7 @@ namespace MHTimer
         {
             using (var fileStream = new FileStream(@path, FileMode.Create))
             {
-                BitmapEncoder encoder = new PngBitmapEncoder();
+                var encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create((BitmapSource)source));
                 encoder.Save(fileStream);
             }

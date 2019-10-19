@@ -68,7 +68,11 @@ namespace MHTimer
 
             if (p.ProcessName == ProcessName && !string.IsNullOrEmpty(caption.ToString()))
             {
-                if (!Properties.Settings.Default.IsCountingNotMinimized)
+                if (Settings.IsIgnoringChindWindowSettings)
+                {
+                    Titles.Add(caption.ToString());
+                }
+                else if (!Properties.Settings.Default.IsCountingNotMinimized)
                 {
                     Titles.Add(caption.ToString());
                 }

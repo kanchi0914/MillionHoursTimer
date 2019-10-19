@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Drawing;
+using System.Reflection;
 
 namespace MHTimer
 {
@@ -38,5 +39,27 @@ namespace MHTimer
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
             public string szTypeName;
         };
+
+
+        public static Icon GetIcon2()
+        {
+            Assembly mainAssembly = Assembly.GetEntryAssembly();
+            Icon appIcon;
+            SHFILEINFO shinfo = new SHFILEINFO();
+            IntPtr hSuccess = SHGetFileInfo(
+              mainAssembly.Location, 0,
+              ref shinfo, (uint)Marshal.SizeOf(shinfo),
+              SHGFI_ICON | SHGFI_LARGEICON);
+            if (hSuccess != IntPtr.Zero)
+            {
+                appIcon = Icon.FromHandle(shinfo.hIcon);
+            }
+            else
+            {
+                appIcon = SystemIcons.Application;
+            }
+            return appIcon;
+        }
+
     }
 }

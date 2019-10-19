@@ -61,7 +61,8 @@ namespace MHTimer
                 AddFileListWindow(appData);
                 lock (mainWindow.AppDatas)
                 {
-                    mainWindow.Dispatcher.BeginInvoke(new Action(() => mainWindow.AppDatas.Add(appData)));
+                    mainWindow.AppDatas.Add(appData);
+                    //mainWindow.Dispatcher.BeginInvoke(new Action(() => mainWindow.AppDatas.Add(appData)));
                 }
 
                 mainWindow.SaveAndLoader.SaveCsvData();

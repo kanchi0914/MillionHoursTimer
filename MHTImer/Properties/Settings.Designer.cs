@@ -178,5 +178,17 @@ namespace MHTimer.Properties {
                 this["MinSendTime"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isIgnoringChindsWindows {
+            get {
+                return ((bool)(this["isIgnoringChindsWindows"]));
+            }
+            set {
+                this["isIgnoringChindsWindows"] = value;
+            }
+        }
     }
 }

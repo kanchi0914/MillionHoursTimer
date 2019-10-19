@@ -93,6 +93,9 @@
                     <RowDefinition Height="30" />
                     <RowDefinition Height="20" />
                     <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="80" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
                     <Label Content="最大記録ファイル数" VerticalAlignment="Center"/>
@@ -105,8 +108,16 @@
                 <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="アプリケーション毎に記録されるファイル名の最大記録件数を設定します。&#xa;最大件数をオーバーすると、古いものから順に削除されます。"/>
                 <CheckBox Name="AdditionalCount" Grid.Row="3" Content="ハイフン区切りをファイル名の取得に利用する" MinWidth="50" IsChecked="False"/>
                 <TextBlock Grid.Row="4" TextWrapping="Wrap" Text="オンにすると、タイトルバーにファイルの拡張子名が表示されない&#xa;アプリケーションでもファイル毎の作業時間を記録できる可能性があります。"/>
-                <CheckBox Name="DividingBySpace" Grid.Row="6" Content="ファイル名をスペースで区切る" MinWidth="50" IsChecked="False"/>
+                <CheckBox Name="DividingBySpace" Grid.Row="6" Content="ファイル名をスペースで区切る" MinWidth="50" IsChecked="False" Checked="DividingBySpace_Checked"/>
                 <TextBlock Grid.Row="7" TextWrapping="Wrap" Text="ハイフン区切りで取得されたファイル名を、さらにスペースで区切ります。"/>
+                <CheckBox Name="IgnoreChildsSetting" Grid.Row="9" Content="ファイル名表示ウィンドウの計測条件を無視" MinWidth="50" IsChecked="False" Checked="DividingBySpace_Checked"/>
+                <TextBlock Grid.Row="10" TextWrapping="Wrap">
+                    別ウィンドウでファイル名表示されているウィンドウを開いているとき、<LineBreak/>
+                    そのファイル名取得時に計測条件を無視します。<LineBreak/>
+                    詳細は
+                    <Hyperlink NavigateUri="http://www.google.com">ドキュメント</Hyperlink>
+                    をご参照ください。<LineBreak/>
+                </TextBlock> 
             </Grid>
             <Grid Margin="20" Height="350" Visibility="{Binding ElementName=tab3, Path=IsSelected, Converter={StaticResource BoolVisibilityConverter}}" >
                 <Grid.ColumnDefinitions>

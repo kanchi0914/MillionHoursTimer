@@ -42,6 +42,8 @@ namespace MHTimer
         public static bool IsEnabledAdditionalFileNameSetting = false;
         //ファイル名をスペースで区切るか
         public static bool IsDividingBySpace = false;
+        //別ウィンドウ表示時、計測設定を無視するか
+        public static bool IsIgnoringChindWindowSettings = false;
         //ファイル名の最大保存件数
         public static int MaxFileNum = 100;
 
@@ -89,6 +91,7 @@ namespace MHTimer
             MinCountStartTime = Properties.Settings.Default.MinCountStartTime;
             MinSendTime = Properties.Settings.Default.MinSendTime;
             Date = Properties.Settings.Default.Date;
+            IsIgnoringChindWindowSettings = Properties.Settings.Default.isIgnoringChindsWindows;
 
         }
 
@@ -112,6 +115,7 @@ namespace MHTimer
             Properties.Settings.Default.NoInputTime = NoInputTime;
             Properties.Settings.Default.Date = Date;
             Properties.Settings.Default.MinSendTime = MinSendTime;
+            Properties.Settings.Default.isIgnoringChindsWindows = IsIgnoringChindWindowSettings;
 
             Properties.Settings.Default.Save();
         }

@@ -71,6 +71,7 @@ namespace MHTimer
 
             AdditionalCount.IsChecked = Settings.IsEnabledAdditionalFileNameSetting;
             DividingBySpace.IsChecked = Settings.IsDividingBySpace;
+            IgnoreChildsSetting.IsChecked = Settings.IsIgnoringChindWindowSettings;
 
             OKButton.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent,
                 new RoutedEventHandler(okButton_OnClicked));
@@ -151,6 +152,7 @@ namespace MHTimer
                 Settings.IsCountingOnlyActive = (bool)OnlyCountActive.IsChecked;
                 Settings.IsEnabledAdditionalFileNameSetting = (bool)AdditionalCount.IsChecked;
                 Settings.IsDividingBySpace = (bool)DividingBySpace.IsChecked;
+                Settings.IsIgnoringChindWindowSettings = (bool)IgnoreChildsSetting.IsChecked;
 
                 if (int.Parse(CountInterval.Text) > 0) Settings.CountingSecondsInterval = int.Parse(CountInterval.Text);
                 Settings.MinCountStartTime = int.Parse(MinCountTime.Text);
@@ -204,6 +206,11 @@ namespace MHTimer
         }
 
         private void Maintab_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void DividingBySpace_Checked(object sender, RoutedEventArgs e)
         {
 
         }
