@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MHTimer
 {
@@ -13,7 +9,7 @@ namespace MHTimer
         public TimeSpan TotalTime { get; set; }
         public TimeSpan TimeFromLaunched { get; set; }
         public bool IsCountStarted { get; set; } = false;
-        public bool IsCounted { get; set; } = false;
+        //public bool IsCounted { get; set; } = false;
 
         public string GetTime
         {
@@ -25,8 +21,8 @@ namespace MHTimer
 
         public void AccumulateTime()
         {
-            //同名ファイルが複数回計測されるのを防ぐ
-            if (IsCounted) return;
+            ////同名ファイルが複数回計測されるのを防ぐ
+            //if (IsCounted) return;
 
             TimeFromLaunched = TimeFromLaunched.Add(TimeSpan.FromSeconds(Settings.CountingSecondsInterval));
 

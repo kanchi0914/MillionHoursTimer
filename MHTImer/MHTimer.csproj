@@ -128,7 +128,6 @@
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="TimeCounter.cs" />
-    <Compile Include="TimeSpanExtensions.cs" />
     <Compile Include="TogglManager.cs" />
     <Compile Include=".xaml.cs">
       <DependentUpon>AppNameSettingWindow.xaml</DependentUpon>

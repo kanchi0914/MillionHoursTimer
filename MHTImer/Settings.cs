@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MHTimer
 {
@@ -13,7 +8,6 @@ namespace MHTimer
         //============================================================
         //読み取り専用の設定
         //============================================================
-
 
         //何秒ごとにカウントするか
         //デバッグ用

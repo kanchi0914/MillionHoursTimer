@@ -36,7 +36,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="NoInputTime" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">30</Value>
+      <Value Profile="(Default)">900</Value>
     </Setting>
     <Setting Name="MinSendTime" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>

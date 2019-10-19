@@ -64,7 +64,6 @@ namespace MHTimer
                     mainWindow.Dispatcher.BeginInvoke(new Action(() => mainWindow.AppDatas.Add(appData)));
                 }
 
-                //mainWindow.AppDatas.Add(appData);
                 mainWindow.SaveAndLoader.SaveCsvData();
             }
             UpdateListView();

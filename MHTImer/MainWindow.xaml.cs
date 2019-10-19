@@ -15,18 +15,6 @@ namespace MHTimer
     public partial class MainWindow : Window
     {
 
-        struct TitleAndProcess
-        {
-            public string title;
-            public Process process;
-
-            public TitleAndProcess(string t, Process p)
-            {
-                title = t;
-                process = p;
-            }
-        }
-
         public ObservableCollection<AppDataObject> AppDatas { get; set; } = new ObservableCollection<AppDataObject>();
         public List<FileViewWindow> FileViewWindows { get; set; } = new List<FileViewWindow>();
         public SettingWindow SettingMenuWindow { get; set; }
@@ -49,12 +37,10 @@ namespace MHTimer
             SaveAndLoader.LoadData();
 
             ListViewSetter = new ListViewSetter(this);
-
             TimeCounter = new TimeCounter(this);
             TogglManager = new TogglManager(this);
             SettingMenuWindow = new SettingWindow(this);
             NotifyIconSetter = new NotifyIconSetter(this);
-
             ContextMenuSetter = new ContextMenuSetter(this);
 
             //日付を確認し、今日の日付と違っていれば更新
@@ -126,15 +112,6 @@ namespace MHTimer
             {
                 SettingMenuWindow = new SettingWindow(this);
                 SettingMenuWindow.ShowDialog();
-            }
-        }
-
-        class A
-        {
-            public string ID = "";
-            public A(string id)
-            {
-                ID = id;
             }
         }
 
@@ -303,12 +280,13 @@ namespace MHTimer
         /// <summary>
         /// アプリケーションのデータを削除
         /// </summary>
-        /// <param name="obj"></param>
-        public void RemoveAppData(AppDataObject obj)
+        /// <param name="appData"></param>
+        public void RemoveAppData(AppDataObject appData)
         {
+            appData.RemoveAllFileData();
             lock (AppDatas)
             {
-                AppDatas.Remove(obj);
+                AppDatas.Remove(appData);
             }
             ListViewSetter.UpdateListView();
             SaveAndLoader.SaveCsvData();

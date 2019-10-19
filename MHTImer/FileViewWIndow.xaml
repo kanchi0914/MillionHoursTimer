@@ -5,51 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MHTimer"
         mc:Ignorable="d"
-        Title="ファイル名別作業時間" Height="400" Width="400"
-        ResizeMode="NoResize">
-    <Grid HorizontalAlignment="Center">
-        <Grid HorizontalAlignment="Center">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="320" />
-                <RowDefinition Height="50" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="380" />
-            </Grid.ColumnDefinitions>
-            <ListView Name="fileListView" HorizontalAlignment="Center" Grid.Row="0" Height="300" Width="350" 
-                      Margin="10,10,10,10" VerticalAlignment="Top">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    </Style>
-                </ListView.ItemContainerStyle>
+        Title="ファイル名別作業時間" Height="400" Width="400">
+    <Grid Margin="0,0,0,0"  >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="15*" />
+            <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+        <ListView Name="fileListView" Grid.Row="0" 
+                      Margin="10,10,10,0" SelectionChanged="FileListView_SelectionChanged"
+                   GridViewColumnHeader.Click="listHeader_Click">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
 
-                <ListView.View>
-                    <GridView>
-                        <GridView.Columns>
-                            <GridViewColumn Header ="ファイル名" Width="200" DisplayMemberBinding="{Binding Path=Name}"/>
-                            <GridViewColumn Header ="累積作業時間" Width="100" DisplayMemberBinding="{Binding Path=GetTime}">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header ="ファイル名" Width="200" DisplayMemberBinding="{Binding Path=Name}"/>
+                        <GridViewColumn Header ="累計作業時間" Width="100" DisplayMemberBinding="{Binding Path=GetTime}">
                             <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock  TextAlignment="Right" 
+                                <DataTemplate>
+                                    <TextBlock  TextAlignment="Right" 
                                         Text="{Binding}"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView.Columns>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-
-            <Grid Grid.Row="1" HorizontalAlignment="Center">
-                <Grid.ColumnDefinitions>
-                    <!--<ColumnDefinition Width="100" />-->
-                    <ColumnDefinition Width="100" />
-                </Grid.ColumnDefinitions>
-                <!--<Button Grid.Column="0" Name="ExportButton" Content="エクスポート" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75"/>-->
-                <Button Grid.Column="1" Name="DeleteAllButton" Content="全て削除" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75"/>
-            </Grid>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Grid Grid.Row="1" Margin="0,0,0,0" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+            <Button Name="DeleteAllButton" Content="全て削除" HorizontalAlignment="Center" Height="30" Width="75" Margin="0,0"/>
         </Grid>
-
     </Grid>
 </Window>

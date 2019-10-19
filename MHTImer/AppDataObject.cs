@@ -1,18 +1,11 @@
-﻿using Microsoft.WindowsAPICodePack.Shell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-//using System.Drawing;
 using System.Text;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
 
@@ -42,9 +35,17 @@ namespace MHTimer
         //最後に起動を確認した時刻
         public DateTime LastRunningTime { get; private set; }
 
+        public void SetLastRunningTime(string data)
+        {
+            if (!string.IsNullOrEmpty(data) && data != "-")
+            {
+                LastRunningTime = DateTime.Parse(data);
+            }
+        }
+
         //ファイル設定
         public List<string> FileExtensions { get; private set; } = new List<string>();
-        public ObservableCollection<FileDataObject> Files { get; private set; } = new ObservableCollection<FileDataObject>();
+        public ObservableCollection<FileDataObject> Files { get; set; } = new ObservableCollection<FileDataObject>();
 
         //アイコン画像
         public ImageSource IconImageSource { get; private set; }
@@ -58,16 +59,12 @@ namespace MHTimer
         }
 
         public bool IsRecoding { get; set; } = false;
-
-        //Toggl記録用の終了確認フラグ
         public bool IsRunning { get; set; } = false;
 
         //Toggl設定
         public bool IsLinkedToToggl { get; set; } = false;
         public string LinkedProjectName { get; set; } = "";
         public string LinkedTag { get; set; } = "";
-
-        //名前
         public List<string> ProjectNames { get; set; } = new List<string>() { "" };
         public List<string> TagNames { get; set; } = new List<string>() { "" };
 
@@ -92,12 +89,12 @@ namespace MHTimer
             set => LinkedTag = value;
         }
 
-        public string GetTotalTime
+        public string GetTotalTimeText
         {
             get => GetFormattedStringFromTimeSpan(TotalTime);
         }
 
-        public string GetTodaysTime
+        public string GetTodaysTimeText
         {
             get => GetFormattedStringFromTimeSpan(TodaysTime);
         }
@@ -147,13 +144,6 @@ namespace MHTimer
             }
         }
 
-        public void SetLastRunningTIme(string data)
-        {
-            if (!string.IsNullOrEmpty(data) && data != "-")
-            {
-                LastRunningTime = DateTime.Parse(data);
-            }
-        }
 
         public AppDataObject(MainWindow mainWindow, string processName)
         {
@@ -167,7 +157,6 @@ namespace MHTimer
             var iconImagePath = currentDir + iconFileDir + $"{ProcessName}.png";
             LoadIconImage(iconImagePath);
         }
-
 
         /// <summary>
         /// 設定した分毎に呼ばれ、時間を追加
@@ -208,7 +197,7 @@ namespace MHTimer
         /// <param name="seconds"></param>
         public void AccumulateTime(int seconds)
         {
-            if (IsDayChanged()) TodaysTime = new TimeSpan(0, 0, 0);
+            if (HasDayChanged()) TodaysTime = new TimeSpan(0, 0, 0);
             TotalTime = TotalTime.Add(TimeSpan.FromSeconds(seconds));
             TodaysTime = TodaysTime.Add(TimeSpan.FromSeconds(seconds));
         }
@@ -256,8 +245,6 @@ namespace MHTimer
         public void LoadFileDatas()
         {
             string path = currentDir + fileDataDir + ProcessName + "_files.csv";
-            Console.WriteLine(path);
-
             try
             {
                 using (StreamReader reader = new StreamReader(@path, Encoding.UTF8))
@@ -283,39 +270,6 @@ namespace MHTimer
         }
 
         /// <summary>
-        /// ファイル別の作業時間データを保存
-        /// </summary>
-        public void SaveFileDatas()
-        {
-            string path = currentDir + fileDataDir + ProcessName + "_files.csv";
-            if (Files.Count > 0)
-            {
-                try
-                {
-                    using (var sw = new System.IO.StreamWriter(@path, false, Encoding.UTF8))
-                    {
-                        sw.WriteLine($"ファイル名,累積作業時間");
-                        foreach (FileDataObject file in Files)
-                        {
-                            sw.WriteLine($"{file.Name},{file.TotalTime}");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged = null;
-        protected void OnPropertyChanged(string info)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
-        }
-
-
-        /// <summary>
         /// ファイルパスからアイコンを読み込み、保存
         /// </summary>
         /// <param name="path"></param>
@@ -325,8 +279,6 @@ namespace MHTimer
             try
             {
                 icon = System.Drawing.Icon.ExtractAssociatedIcon(@path);
-                //icon = IconGetter.GetIcon(@path);
-
                 using (MemoryStream s = new MemoryStream())
                 {
                     icon.Save(s);
@@ -334,7 +286,6 @@ namespace MHTimer
                 }
                 var savePath = currentDir + iconFileDir + $"{ProcessName}.png";
                 SaveIconImage(IconImageSource, savePath);
-                //LoadIconImage(savePath);
             }
             catch (FileNotFoundException e)
             {
@@ -355,8 +306,6 @@ namespace MHTimer
         /// <param name="path">保存先パス</param>
         public void SaveIconImage(ImageSource source, string path)
         {
-            //string uriPath = iconFileDir + $"{ProcessName}.png";
-            //string uriPath = currentDir + iconFileDir + $"{ProcessName}.png";
             using (var fileStream = new FileStream(@path, FileMode.Create))
             {
                 BitmapEncoder encoder = new PngBitmapEncoder();
@@ -391,7 +340,6 @@ namespace MHTimer
                 Console.WriteLine(ex.Message);
             }
         }
-
 
         public string GetFileNameByTitle(string title)
         {
@@ -482,7 +430,43 @@ namespace MHTimer
             SaveFileDatas();
         }
 
-        private bool IsDayChanged()
+        public void RemoveAllFileData()
+        {
+            lock (Files)
+            {
+                Files.Clear();
+            }
+            string path = currentDir + fileDataDir + ProcessName + "_files.csv";
+            File.Delete(@path);
+        }
+
+        /// <summary>
+        /// ファイル別の作業時間データを保存
+        /// </summary>
+        public void SaveFileDatas()
+        {
+            string path = currentDir + fileDataDir + ProcessName + "_files.csv";
+            if (Files.Count > 0)
+            {
+                try
+                {
+                    using (var sw = new System.IO.StreamWriter(@path, false, Encoding.UTF8))
+                    {
+                        sw.WriteLine($"ファイル名,累積作業時間");
+                        foreach (FileDataObject file in Files)
+                        {
+                            sw.WriteLine($"{file.Name},{file.TotalTime}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        private bool HasDayChanged()
         {
             var currentDate = DateTime.Now.ToString("yyyy/MM/dd");
             return currentDate != LastRunningTime.ToString("yyyy/MM/dd");

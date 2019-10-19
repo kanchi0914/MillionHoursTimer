@@ -26,8 +26,6 @@ namespace MHTimer
         public TogglManager(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
-
-            //ApiKey = Properties.Settings.Default.APIKey.ToString();
             ApiKey = Settings.APIKey;
 
             try
@@ -123,7 +121,6 @@ namespace MHTimer
             {
                 throw e;
             }
-
         }
 
         /// <summary>
@@ -161,8 +158,7 @@ namespace MHTimer
                 if (te != null)
                 {
                     timeEntryService.Add(te);
-                    Console.WriteLine("sended:");
-                    Console.WriteLine(te);
+                    Console.WriteLine($"sended:{te}");
                 }
             }
             catch

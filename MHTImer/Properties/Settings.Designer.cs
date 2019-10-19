@@ -157,7 +157,7 @@ namespace MHTimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        [global::System.Configuration.DefaultSettingValueAttribute("900")]
         public int NoInputTime {
             get {
                 return ((int)(this["NoInputTime"]));

@@ -89,7 +89,7 @@ namespace MHTimer
 
             if (isSleeping && Settings.StopsOnSleep) return;
 
-            //スリープ中、無操作時でない
+            //スリープ中や無操作時でない
             if (!isSleeping && !isNoInputing)
             {
                 //計測
@@ -99,20 +99,16 @@ namespace MHTimer
                 }
 
                 //終了確認
-                ExitClosedApp();
+                ExitClosedApps();
 
                 //データを保存
                 mainWindow.SaveAndLoader.SaveCsvData();
-
-                //ファイルデータの重複防止フラグをリセット
-                ResetFileCount();
 
             }
             mainWindow.ListViewSetter.UpdateListView();
         }
 
         #region 計測メソッド
-        object lockObj = new object();
 
         public void Count()
         {
@@ -212,14 +208,6 @@ namespace MHTimer
         #endregion
 
         /// <summary>
-        /// ファイルデータの重複防止フラグをリセット
-        /// </summary>
-        public void ResetFileCount()
-        {
-            mainWindow.AppDatas.ToList().ForEach(a => a.Files.ToList().ForEach(f => f.IsCounted = false));
-        }
-
-        /// <summary>
         /// PC操作がない場合、計測を終了
         /// </summary>
         public void CheckNoInput()
@@ -238,7 +226,7 @@ namespace MHTimer
         /// <summary>
         /// 計測中のアプリで、終了したものがないか確認
         /// </summary>
-        public void ExitClosedApp()
+        public void ExitClosedApps()
         {
             var sec = Properties.Settings.Default.CountingSecondsInterval;
             mainWindow.AppDatas.Where(a => a.IsRecoding && a.IsRunning)

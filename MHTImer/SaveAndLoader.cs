@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MHTimer
 {
@@ -74,12 +72,11 @@ namespace MHTimer
                             DisplayedName = parsedLine[0],
                             TodaysTime = TimeSpan.Parse(parsedLine[1]),
                             TotalTime = TimeSpan.Parse(parsedLine[2]),
-                            //[3]
                             IsLinkedToToggl = bool.Parse(parsedLine[4]),
                             LinkedProjectName = parsedLine[5],
                             LinkedTag = parsedLine[6]
                         };
-                        data.SetLastRunningTIme(parsedLine[3]);
+                        data.SetLastRunningTime(parsedLine[3]);
                         data.SetFileExtensions(parsedLine[7]);
                         mainWindow.AppDatas.Add(data);
                     }

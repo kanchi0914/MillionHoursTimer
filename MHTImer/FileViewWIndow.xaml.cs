@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace MHTimer
 {
@@ -69,6 +60,42 @@ namespace MHTimer
             contextMenu.Items.Add(menuItem2);
 
             fileListView.ContextMenu = contextMenu;
+        }
+
+        private void listHeader_Click(object sender, RoutedEventArgs e)
+        {
+            var header = (GridViewColumnHeader)e.OriginalSource;
+            var headerName = (string)header.Content;
+
+            if (header.Column == null || string.IsNullOrEmpty(headerName))
+            {
+                return;
+            }
+
+            Func<FileDataObject, dynamic> keySelecter = f => f.Name;
+            var pre = new ObservableCollection<FileDataObject>(AppData.Files);
+
+            if (headerName == "ファイル名")
+            {
+                keySelecter = f => f.Name;
+            }
+            else if (headerName == "累計起動時間")
+            {
+                keySelecter = f => f.TotalTime;
+            }
+            lock (AppData.Files)
+            {
+                AppData.Files = new ObservableCollection<FileDataObject>(AppData.Files.OrderBy(keySelecter));
+                if (AppData.Files.SequenceEqual(pre, keySelecter))
+                {
+                    AppData.Files = new ObservableCollection<FileDataObject>(AppData.Files.Reverse());
+                }
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    fileListView.ItemsSource = null;
+                    fileListView.ItemsSource = AppData.Files;
+                }));
+            }
         }
 
         /// <summary>
@@ -181,6 +208,10 @@ namespace MHTimer
             this.Visibility = Visibility.Collapsed;
         }
 
+        private void FileListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 
 }
