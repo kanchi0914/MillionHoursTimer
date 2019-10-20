@@ -95,6 +95,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ActiveWindowGetter.cs" />
     <Compile Include="BitmapExtensions.cs" />
     <Compile Include="BoolVisibilityConverter.cs" />
     <Compile Include="ContextMenuSetter.cs" />
@@ -111,6 +112,7 @@
     </Compile>
     <Compile Include="DirectoryProcessor.cs" />
     <Compile Include="EnumWindowsClass.cs" />
+    <Compile Include="OpenWindowGetter.cs" />
     <Compile Include="SaveAndLoader.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Components\NotifyIcon.cs">
@@ -133,8 +135,10 @@
     <Compile Include=".xaml.cs">
       <DependentUpon>AppNameSettingWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WinAPI.cs" />
+    <Compile Include="WindowFinder.cs" />
     <Compile Include="WindowHandles.cs" />
-    <Compile Include="WindowTitlesGetter.cs" />
+    <Compile Include="WindowTitleHolder.cs" />
     <Page Include="MergedNameSettingWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

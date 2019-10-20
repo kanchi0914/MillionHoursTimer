@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace MHTimer
 {
@@ -53,21 +54,22 @@ namespace MHTimer
             }
             else
             {
+                Mouse.OverrideCursor = Cursors.Wait;
                 AppDataObject appData = new AppDataObject(mainWindow, name)
                 {
                     DisplayedName = name
                 };
-                appData.SetIcon(filePath);
+                IconGetter.SetIconToNewAppData(filePath, appData);
                 AddFileListWindow(appData);
                 lock (mainWindow.AppDatas)
                 {
                     mainWindow.AppDatas.Add(appData);
-                    //mainWindow.Dispatcher.BeginInvoke(new Action(() => mainWindow.AppDatas.Add(appData)));
                 }
 
                 mainWindow.SaveAndLoader.SaveCsvData();
             }
             UpdateListView();
+            Mouse.OverrideCursor = null;
         }
 
         /// <summary>

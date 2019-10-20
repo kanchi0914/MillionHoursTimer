@@ -92,6 +92,8 @@ namespace MHTimer
             //スリープ中や無操作時でない
             if (!isSleeping && !isNoInputing)
             {
+                mainWindow.WindowTitleHolder.Enumerate();
+                WindowFinder.Find();
                 //計測
                 lock (mainWindow.AppDatas)
                 {

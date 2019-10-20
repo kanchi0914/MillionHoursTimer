@@ -25,6 +25,7 @@ namespace MHTimer
         public ListViewSetter ListViewSetter { get; set; }
         public SaveAndLoader SaveAndLoader { get; set; }
         public ContextMenuSetter ContextMenuSetter { get; set; }
+        public WindowTitleHolder WindowTitleHolder { get; set; }
 
         public MainWindow()
         {
@@ -36,12 +37,13 @@ namespace MHTimer
             //データの読み込み
             SaveAndLoader.LoadData();
 
+            WindowTitleHolder = new WindowTitleHolder(this);
             ListViewSetter = new ListViewSetter(this);
-            TimeCounter = new TimeCounter(this);
             TogglManager = new TogglManager(this);
             SettingMenuWindow = new SettingWindow(this);
             NotifyIconSetter = new NotifyIconSetter(this);
             ContextMenuSetter = new ContextMenuSetter(this);
+            TimeCounter = new TimeCounter(this);
 
             //日付を確認し、今日の日付と違っていれば更新
             UpdateDateOfAppDatas();
@@ -83,9 +85,12 @@ namespace MHTimer
             if (Settings.Date != currentDate)
             {
                 Settings.Date = currentDate;
-                foreach (AppDataObject appData in AppDatas)
+                lock (AppDatas)
                 {
-                    appData.TodaysTime = new TimeSpan(0,0,0);
+                    foreach (AppDataObject appData in AppDatas)
+                    {
+                        appData.TodaysTime = new TimeSpan(0, 0, 0);
+                    }
                 }
             }
         }
@@ -95,10 +100,14 @@ namespace MHTimer
         /// </summary>
         public void ExitAllApps()
         {
-            foreach (AppDataObject appData in AppDatas)
+            lock (AppDatas)
             {
-                appData.Exit();
+                foreach (AppDataObject appData in AppDatas)
+                {
+                    appData.Exit();
+                }
             }
+
         }
 
         /// <summary>
@@ -143,17 +152,19 @@ namespace MHTimer
                 keySelecter = a => a.TotalTime;
             }
 
-            AppDatas = new ObservableCollection<AppDataObject>(AppDatas.OrderBy(keySelecter));
-            if (AppDatas.SequenceEqual(pre, keySelecter))
+            lock (AppDatas)
             {
-                AppDatas = new ObservableCollection<AppDataObject>(AppDatas.Reverse());
+                AppDatas = new ObservableCollection<AppDataObject>(AppDatas.OrderBy(keySelecter));
+                if (AppDatas.SequenceEqual(pre, keySelecter))
+                {
+                    AppDatas = new ObservableCollection<AppDataObject>(AppDatas.Reverse());
+                }
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    listView.ItemsSource = null;
+                    listView.ItemsSource = AppDatas;
+                }));
             }
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                listView.ItemsSource = null;
-                listView.ItemsSource = AppDatas;
-            }));
-
         }
 
         /// <summary>
@@ -290,6 +301,7 @@ namespace MHTimer
             }
             ListViewSetter.UpdateListView();
             SaveAndLoader.SaveCsvData();
+            IconGetter.RemoveIconImage(appData.ProcessName);
         }
 
         private void InitAppDatas()

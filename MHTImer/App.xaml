@@ -7,6 +7,6 @@
              StartupUri="MainWindow.xaml"
              SessionEnding="Application_SessionEnding">
     <Application.Resources>
-         
+
     </Application.Resources>
 </Application>

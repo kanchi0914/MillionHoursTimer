@@ -38,7 +38,7 @@ namespace MHTimer
         {
 
             AttachConsole(-1);
-
+            SetFont();
             // ミューテックスの所有権を要求
             if (!mutex.WaitOne(0, false))
             {
@@ -70,6 +70,16 @@ namespace MHTimer
                 mutex.ReleaseMutex();
                 mutex.Close();
             }
+        }
+
+        private void SetFont()
+        {
+            var font = new System.Windows.Media.FontFamily("ＭＳ ゴシック");
+
+            var style = new Style(typeof(Window));
+            style.Setters.Add(new Setter(Window.FontFamilyProperty, font));
+
+            FrameworkElement.StyleProperty.OverrideMetadata(typeof(Window), new FrameworkPropertyMetadata(style));
         }
 
         private void Application_SessionEnding(object sender, SessionEndingCancelEventArgs e)

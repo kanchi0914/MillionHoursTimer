@@ -52,7 +52,7 @@ namespace MHTimer
         public ObservableCollection<FileDataObject> Files { get; set; } = new ObservableCollection<FileDataObject>();
 
         //アイコン画像
-        public ImageSource IconImageSource { get; private set; }
+        public ImageSource IconImageSource { get; set; }
 
         //時間データ
         public TimeSpan TodaysTime { get; set; }
@@ -159,7 +159,7 @@ namespace MHTimer
         public void Init()
         {
             var iconImagePath = currentDir + iconFileDir + $"{ProcessName}.png";
-            LoadIconImage(iconImagePath);
+            IconImageSource = IconGetter.LoadIconImage(iconImagePath);
         }
 
         /// <summary>
@@ -211,9 +211,7 @@ namespace MHTimer
         /// </summary>
         public void AccumulateTimeToFileDatas()
         {
-            //ウィンドウタイトルを取得
-            WindowTitlesGetter windowTitlesGetter = new WindowTitlesGetter();
-            var titles = windowTitlesGetter.Get(ProcessName);
+            var titles = mainWindow.WindowTitleHolder.GetWindowTitlesByProcessName(ProcessName);
 
             var countedFileNames = new HashSet<string>();
             foreach (string title in titles)
@@ -272,73 +270,6 @@ namespace MHTimer
             }
         }
 
-        /// <summary>
-        /// ファイルパスからアイコンを読み込み、保存
-        /// </summary>
-        /// <param name="path"></param>
-        public void SetIcon(string path)
-        {
-            try
-            {
-                var img = Icon.ExtractAssociatedIcon(@path).ToBitmap();
-                IconImageSource = img.ToImageSource();
-
-                var savePath = currentDir + iconFileDir + $"{ProcessName}.png";
-                SaveIconImage(IconImageSource, savePath);
-            }
-            catch (FileNotFoundException e)
-            {
-                var defaultIconImagePath = currentDir + iconFileDir + $"defaultIcon.png";
-                LoadIconImage(defaultIconImagePath);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
-
-
-        /// <summary>
-        /// アイコンイメージの保存
-        /// </summary>
-        /// <param name="source">Imagesourceオブジェクト</param>
-        /// <param name="path">保存先パス</param>
-        public void SaveIconImage(ImageSource source, string path)
-        {
-            using (var fileStream = new FileStream(@path, FileMode.Create))
-            {
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create((BitmapSource)source));
-                encoder.Save(fileStream);
-            }
-        }
-
-        /// <summary>
-        /// アイコン画像の読み込み
-        /// </summary>
-        /// <param name="path">読み込み先パス</param>
-        public void LoadIconImage(string path)
-        {
-            var bmpImage = new BitmapImage();
-
-            try
-            {
-                bmpImage.BeginInit();
-                bmpImage.UriSource = new Uri(@path, UriKind.Absolute);
-                bmpImage.EndInit();
-                IconImageSource = bmpImage;
-            }
-            //アイコン画像が存在しない場合、デフォルトのアイコン画像を使用
-            catch (FileNotFoundException e)
-            {
-                var defaultIconImage = currentDir + iconFileDir + $"defaultIcon.png";
-                LoadIconImage(defaultIconImage);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
 
         public string GetFileNameByTitle(string title)
         {

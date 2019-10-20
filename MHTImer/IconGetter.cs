@@ -1,65 +1,95 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Reflection;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace MHTimer
 {
     public static class IconGetter
     {
-        public static Icon GetIcon(string path)
+        static readonly string iconFileDir = Settings.IconFileDir;
+        static readonly string fileDataDir = Settings.FileDataDir;
+        static readonly string currentDir = Settings.CurrentDir;
+
+        /// <summary>
+        /// ファイルパスからアイコンを読み込み、保存
+        /// </summary>
+        /// <param name="path"></param>
+        public static void SetIconToNewAppData(string path, AppDataObject appData)
         {
-            // アプリケーション・アイコンを取得
-            SHFILEINFO shinfo = new SHFILEINFO();
-            IntPtr hSuccess = SHGetFileInfo(path, 0, ref shinfo, (uint)Marshal.SizeOf(shinfo), SHGFI_ICON | SHGFI_LARGEICON);
-            if (hSuccess != IntPtr.Zero)
+            try
             {
-                return Icon.FromHandle(shinfo.hIcon);
+                var img = Icon.ExtractAssociatedIcon(@path).ToBitmap();
+                var imageSource = img.ToImageSource();
+                appData.IconImageSource = imageSource;
+
+                var savePath = currentDir + iconFileDir + $"{appData.ProcessName}.png";
+                SaveIconImage(imageSource, savePath);
+            }
+            catch (FileNotFoundException e)
+            {
+                var defaultIconImagePath = currentDir + iconFileDir + $"defaultIcon.png";
+                LoadIconImage(defaultIconImagePath);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        /// <summary>
+        /// アイコンイメージの保存
+        /// </summary>
+        /// <param name="source">Imagesourceオブジェクト</param>
+        /// <param name="path">保存先パス</param>
+        public static void SaveIconImage(ImageSource source, string path)
+        {
+            using (var fileStream = new FileStream(@path, FileMode.Create))
+            {
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create((BitmapSource)source));
+                encoder.Save(fileStream);
+            }
+        }
+
+        /// <summary>
+        /// アイコン画像の読み込み
+        /// </summary>
+        /// <param name="path">読み込み先パス</param>
+        public static ImageSource LoadIconImage(string path)
+        {
+            var bmpImage = new BitmapImage();
+
+            try
+            {
+                //ref:http://neareal.net/index.php?Programming%2F.NetFramework%2FWPF%2FWriteableBitmap%2FLoadReleaseableBitmapImage
+                MemoryStream data = new MemoryStream(File.ReadAllBytes(@path));
+                WriteableBitmap wbmp = new WriteableBitmap(BitmapFrame.Create(data));
+                data.Close();
+                return wbmp;
+            }
+            //アイコン画像が存在しない場合、デフォルトのアイコン画像を使用
+            catch (FileNotFoundException e)
+            {
+                var defaultIconImagePath = currentDir + iconFileDir + $"defaultIcon.png";
+                return LoadIconImage(defaultIconImagePath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
             return null;
         }
-
-        // SHGetFileInfo関数
-        [DllImport("shell32.dll")]
-        private static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
-
-        // SHGetFileInfo関数で使用するフラグ
-        private const uint SHGFI_ICON = 0x100; // アイコン・リソースの取得
-        private const uint SHGFI_LARGEICON = 0x0; // 大きいアイコン
-        private const uint SHGFI_SMALLICON = 0x1; // 小さいアイコン
-
-        // SHGetFileInfo関数で使用する構造体
-        private struct SHFILEINFO
+        
+        public static void RemoveIconImage(string processName)
         {
-            public IntPtr hIcon;
-            public IntPtr iIcon;
-            public uint dwAttributes;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-            public string szDisplayName;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
-            public string szTypeName;
-        };
-
-
-        public static Icon GetIcon2()
-        {
-            Assembly mainAssembly = Assembly.GetEntryAssembly();
-            Icon appIcon;
-            SHFILEINFO shinfo = new SHFILEINFO();
-            IntPtr hSuccess = SHGetFileInfo(
-              mainAssembly.Location, 0,
-              ref shinfo, (uint)Marshal.SizeOf(shinfo),
-              SHGFI_ICON | SHGFI_LARGEICON);
-            if (hSuccess != IntPtr.Zero)
-            {
-                appIcon = Icon.FromHandle(shinfo.hIcon);
-            }
-            else
-            {
-                appIcon = SystemIcons.Application;
-            }
-            return appIcon;
+            var path = currentDir + iconFileDir + $"{processName}.png";
+            File.Delete(@path);
         }
-
     }
 }
