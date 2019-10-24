@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,6 +24,9 @@ namespace MHTimer
         {
             handleDicts = OpenWindowGetter.GetOpenWindows(mainWindow);
         }
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hWndChildAfter, string lpClassName, string lpWindowName);
 
         //ref:https://smdn.jp/programming/tips/enumwindows/
         //ref:https://dobon.net/vb/dotnet/process/enumwindows.html
@@ -49,7 +53,7 @@ namespace MHTimer
             foreach (var handle in handleDicts.Keys)
             {
                 if (handleDicts[handle] != processName) continue;
-
+               
                 var caption = new StringBuilder(256);
                 WinAPI.GetWindowText(handle, caption, caption.Capacity);
                 if (Settings.IsIgnoringChindWindowSettings)

@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Collections.ObjectModel;
-using System.Windows.Data;
 
 namespace MHTimer
 {

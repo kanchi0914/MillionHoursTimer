@@ -117,7 +117,5 @@ namespace MHTimer
                 AddListFromPath(file);
             }
         }
-
-
     }
 }
