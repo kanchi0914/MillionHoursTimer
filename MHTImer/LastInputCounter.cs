@@ -1,23 +1,21 @@
-﻿using System;
+﻿using MHTimer;
+using System;
 using System.Runtime.InteropServices;
 
 public static class LastInputCounter
 {
     public static int GetLastInputSeconds()
     {
-        var plii = new LASTINPUTINFO();
+        var plii = new WinAPI.LASTINPUTINFO();
         plii.cbSize = (uint)Marshal.SizeOf(plii);
-        if (GetLastInputInfo(ref plii))
-            return TimeSpan.FromMilliseconds(Environment.TickCount - plii.dwTime).Seconds;
+        if (WinAPI.GetLastInputInfo(ref plii))
+        {
+            var lastInputTime = TimeSpan.FromMilliseconds(Environment.TickCount - plii.dwTime).TotalSeconds;
+            return (int)lastInputTime;
+        }
+
         else
             throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
     }
 
-    [DllImport("user32.dll", SetLastError = true)]
-    static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
-    struct LASTINPUTINFO
-    {
-        public uint cbSize;
-        public uint dwTime;
-    }
 }

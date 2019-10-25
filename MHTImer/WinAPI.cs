@@ -38,7 +38,15 @@ namespace MHTimer
         [DllImport("user32.dll")]
         public static extern int GetWindowTextLength(IntPtr hWnd);
 
-        [DllImport("USER32.DLL")]
+        [DllImport("user32.dll")]
         public static extern IntPtr GetShellWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+        public struct LASTINPUTINFO
+        {
+            public uint cbSize;
+            public uint dwTime;
+        }
     }
 }
