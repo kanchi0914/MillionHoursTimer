@@ -86,7 +86,6 @@ namespace MHTimer
             {
                 mainWindow.listView.Items.Refresh();
             }));
-
         }
 
         /// <summary>

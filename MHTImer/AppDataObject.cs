@@ -62,7 +62,12 @@ namespace MHTimer
             get => LastRunningTime - LaunchedTime;
         }
 
-        public bool IsRecoding { get; set; } = false;
+        public bool IsRecoding { get { return isRecoding; } set
+            {
+                var a = 0;
+                isRecoding = value;
+            } }
+        private bool isRecoding = false;
         public bool IsRunning { get; set; } = false;
 
         //Toggl設定
@@ -177,7 +182,7 @@ namespace MHTimer
 
             LastRunningTime = DateTime.Now;
 
-            if (TimeFromLastLaunched.Seconds >= Settings.MinCountStartTime)
+            if (TimeFromLastLaunched.TotalSeconds >= Settings.MinCountStartTime)
             {
                 //一度だけ、時間の差分を足す
                 if (!IsRecoding)
@@ -230,7 +235,7 @@ namespace MHTimer
         {
             if (IsRecoding)
             {
-                if (IsLinkedToToggl && TimeFromLastLaunched.Seconds > Settings.MinSendTime)
+                if (IsLinkedToToggl && TimeFromLastLaunched.TotalSeconds > Settings.MinSendTime)
                 {
                     mainWindow.TogglManager.SetTimeEntry(this);
                 }

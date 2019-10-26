@@ -94,14 +94,16 @@ namespace MHTimer
             {
                 mainWindow.WindowTitleHolder.Enumerate();
                 WindowFinder.Find();
-                //計測
+
                 lock (mainWindow.AppDatas)
                 {
                     Count();
                 }
 
-                //終了確認
-                ExitClosedApps();
+                lock (mainWindow.AppDatas)
+                {
+                    ExitClosedApps();
+                }
 
                 //データを保存
                 mainWindow.SaveAndLoader.SaveCsvData();
@@ -231,9 +233,13 @@ namespace MHTimer
         public void ExitClosedApps()
         {
             var sec = Properties.Settings.Default.CountingSecondsInterval;
-            mainWindow.AppDatas.Where(a => a.IsRecoding && a.IsRunning)
-                .Where(a => (DateTime.Now - a.LastRunningTime).Seconds > sec)
-                .ToList().ForEach(a => a.Exit());
+            var runningApps = mainWindow.AppDatas.Where(a => a.IsRecoding && a.IsRunning).ToList();
+            var closedApps = runningApps.Where(a => (DateTime.Now - a.LastRunningTime).TotalSeconds > sec).ToList();
+            if (closedApps.Count > 0)
+            {
+                var a = 0;
+            }
+            closedApps.ForEach(a => a.Exit());
         }
     }
 }
