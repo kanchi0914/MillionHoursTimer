@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Configuration;
+using System.Windows.Navigation;
+using System.Diagnostics;
 
 namespace MHTimer
 {
@@ -203,6 +205,13 @@ namespace MHTimer
                 }
                 catch { }
             }
+        }
+
+        //ref https://codeday.me/jp/qa/20181222/31963.html
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
         }
 
         private void Maintab_SelectionChanged(object sender, SelectionChangedEventArgs e)

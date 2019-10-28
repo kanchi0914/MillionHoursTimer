@@ -115,7 +115,7 @@
                     別ウィンドウでファイル名表示されているウィンドウを開いているとき、<LineBreak/>
                     そのファイル名取得時に計測条件を無視します。<LineBreak/>
                     詳細は
-                    <Hyperlink NavigateUri="http://www.google.com">ドキュメント</Hyperlink>
+                    <Hyperlink NavigateUri="https://github.com/kanchi0914/MillionHoursTimer" RequestNavigate="Hyperlink_RequestNavigate">ドキュメント</Hyperlink>
                     をご参照ください。<LineBreak/>
                 </TextBlock> 
             </Grid>
