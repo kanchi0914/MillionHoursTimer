@@ -36,9 +36,9 @@ namespace MHTimer
                 var defaultIconImagePath = currentDir + iconFileDir + $"defaultIcon.png";
                 LoadIconImage(defaultIconImagePath);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                ErrorLogger.ShowErrorMessage(ex);
             }
         }
 
@@ -65,9 +65,10 @@ namespace MHTimer
         {
             var bmpImage = new BitmapImage();
 
+            //アクセス権握ったままだと削除できないので注意
+            //ref:http://neareal.net/index.php?Programming%2F.NetFramework%2FWPF%2FWriteableBitmap%2FLoadReleaseableBitmapImage
             try
             {
-                //ref:http://neareal.net/index.php?Programming%2F.NetFramework%2FWPF%2FWriteableBitmap%2FLoadReleaseableBitmapImage
                 MemoryStream data = new MemoryStream(File.ReadAllBytes(@path));
                 WriteableBitmap wbmp = new WriteableBitmap(BitmapFrame.Create(data));
                 data.Close();
@@ -81,7 +82,7 @@ namespace MHTimer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ErrorLogger.ShowErrorMessage(ex);
             }
             return null;
         }

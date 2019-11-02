@@ -62,7 +62,7 @@
                 </DataTemplate>
               </GridViewColumn.CellTemplate>
             </GridViewColumn>
-            <GridViewColumn Header ="累計起動時間" Width="100">
+            <GridViewColumn Header ="累積起動時間" Width="100">
               <GridViewColumn.CellTemplate>
                 <DataTemplate>
                   <Grid>

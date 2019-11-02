@@ -246,6 +246,29 @@ namespace MHTimer
         }
 
         /// <summary>
+        /// ファイル別の作業時間データを保存
+        /// </summary>
+        public void SaveFileDatas()
+        {
+            string path = currentDir + fileDataDir + ProcessName + "_files.csv";
+            try
+            {
+                using (var sw = new StreamWriter(@path, false, Encoding.UTF8))
+                {
+                    sw.WriteLine($"ファイル名,累積作業時間");
+                    foreach (FileDataObject file in Files)
+                    {
+                        sw.WriteLine($"{file.Name},{ConvertTimeSpanToSavingFormattedString(file.TotalTime)}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.ShowErrorMessage(ex);
+            }
+        }
+
+        /// <summary>
         /// ファイル別の作業時間を読み込み
         /// </summary>
         public void LoadFileDatas()
@@ -263,7 +286,7 @@ namespace MHTimer
                         FileDataObject file = new FileDataObject()
                         {
                             Name = parsedLine[0],
-                            TotalTime = TimeSpan.Parse(parsedLine[1])
+                            TotalTime = ConvertStringToTimeSpan(parsedLine[1])
                         };
                         Files.Add(file);
                     }
@@ -271,10 +294,9 @@ namespace MHTimer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ErrorLogger.ShowErrorMessage(ex);
             }
         }
-
 
         public string GetFileNameByTitle(string title)
         {
@@ -338,15 +360,17 @@ namespace MHTimer
             }
         }
 
-
         public void AddFileDataToList(FileDataObject fileData)
         {
             //最大件数をオーバーしている場合、先頭の要素を削除
             if (Files.Count >= Properties.Settings.Default.MaxFileNum)
             {
-                Files.RemoveAt(0);
+                lock (Files)
+                {
+                    Files.RemoveAt(0);
+                }
             }
-            lock (fileData)
+            lock (Files)
             {
                 mainWindow.Dispatcher.BeginInvoke(new Action(() => Files.Add(fileData)));
             }
@@ -358,7 +382,7 @@ namespace MHTimer
         /// <param name="fileData"></param>
         public void RemoveFileDataFromList(FileDataObject fileData)
         {
-            lock (fileData)
+            lock (Files)
             {
                 Files.Remove(fileData);
             }
@@ -375,31 +399,7 @@ namespace MHTimer
             File.Delete(@path);
         }
 
-        /// <summary>
-        /// ファイル別の作業時間データを保存
-        /// </summary>
-        public void SaveFileDatas()
-        {
-            string path = currentDir + fileDataDir + ProcessName + "_files.csv";
-            if (Files.Count > 0)
-            {
-                try
-                {
-                    using (var sw = new StreamWriter(@path, false, Encoding.UTF8))
-                    {
-                        sw.WriteLine($"ファイル名,累積作業時間");
-                        foreach (FileDataObject file in Files)
-                        {
-                            sw.WriteLine($"{file.Name},{file.TotalTime}");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }
-        }
+
 
         //日付が変わったかどうか
         private bool HasDayChanged()
@@ -413,6 +413,11 @@ namespace MHTimer
             return new FileDataObject { Name = fileName, TotalTime = totalTime };
         }
 
+        /// <summary>
+        /// 表示用（時間　分　秒）の形にフォーマットされる
+        /// </summary>
+        /// <param name="timeSpan"></param>
+        /// <returns></returns>
         public static string GetFormattedStringFromTimeSpan(TimeSpan timeSpan)
         {
             if (timeSpan < TimeSpan.FromSeconds(1)) return "-";
@@ -420,6 +425,34 @@ namespace MHTimer
             var minutes = string.Format("{0, 2}", timeSpan.Minutes);
             var seconds = string.Format("{0, 2}", timeSpan.Seconds);
             return $"{hours}時間{minutes}分{seconds}秒";
+        }
+
+        /// <summary>
+        /// 保存用（セミコロン区切り）の形にフォーマットされる
+        /// </summary>
+        /// <param name="timeSpan"></param>
+        /// <returns></returns>
+        public static string ConvertTimeSpanToSavingFormattedString(TimeSpan timeSpan)
+        {
+            if (timeSpan < TimeSpan.FromSeconds(1)) return "-";
+            var hours = ((int)timeSpan.TotalHours).ToString().PadLeft(2, '0');
+            var minutes = timeSpan.Minutes.ToString().PadLeft(2, '0');
+            var seconds = timeSpan.Seconds.ToString().PadLeft(2, '0');
+            return $"{hours}:{minutes}:{seconds}";
+        }
+
+        public static TimeSpan ConvertStringToTimeSpan(string str)
+        {
+            try
+            {
+                var times = str.Split(':');
+                return new TimeSpan(int.Parse(times[0]), int.Parse(times[1]), int.Parse(times[2]));
+            }
+            catch
+            {
+                return new TimeSpan(0, 0, 0);
+            }
+
         }
 
         public override bool Equals(object obj)

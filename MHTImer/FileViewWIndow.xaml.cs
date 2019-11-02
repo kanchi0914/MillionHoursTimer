@@ -79,7 +79,7 @@ namespace MHTimer
             {
                 keySelecter = f => f.Name;
             }
-            else if (headerName == "累計起動時間")
+            else if (headerName == "累積作業時間")
             {
                 keySelecter = f => f.TotalTime;
             }

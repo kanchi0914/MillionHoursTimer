@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace MHTimer
 {
@@ -27,6 +28,8 @@ namespace MHTimer
 
         public MainWindow()
         {
+
+            Mouse.OverrideCursor = Cursors.Wait;
 
             InitializeComponent();
 
@@ -51,6 +54,8 @@ namespace MHTimer
 
             SetView();
             SetEvents();
+
+            Mouse.OverrideCursor = null;
 
         }
 
@@ -145,7 +150,7 @@ namespace MHTimer
             {
                 keySelecter = a => a.TodaysTime;
             }
-            else if (headerName == "累計起動時間")
+            else if (headerName == "累積起動時間")
             {
                 keySelecter = a => a.TotalTime;
             }

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace MHTimer
 {
@@ -27,13 +28,13 @@ namespace MHTimer
 
                 using (var sw = new StreamWriter(filePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine($"アプリケーション名,今日の起動時間(分),累積起動時間(分),最終起動日時," +
+                    sw.WriteLine($"アプリケーション名,今日の起動時間,累積起動時間,最終起動日時," +
                         $"toggle連携フラグ,連携プロジェクト名,連携タグ名, ファイル拡張子");
                     foreach (AppDataObject appData in mainWindow.AppDatas)
                     {
                         sw.WriteLine($"{appData.ProcessName}," +
-                            $"{appData.TodaysTime}," +
-                            $"{appData.TotalTime}," +
+                            $"{AppDataObject.ConvertTimeSpanToSavingFormattedString(appData.TodaysTime)}," +
+                            $"{AppDataObject.ConvertTimeSpanToSavingFormattedString(appData.TotalTime)}," +
                             $"{appData.GetLastLaunchedTimeText}," +
                             $"{appData.IsLinkedToToggl.ToString()}," +
                             $"{appData.LinkedProjectName}," +
@@ -44,7 +45,7 @@ namespace MHTimer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                MessageBox.Show($"エラー:{ex.ToString()}");
             }
 
             mainWindow.AppDatas.ToList().ForEach(a => a.SaveFileDatas());
@@ -67,24 +68,33 @@ namespace MHTimer
                     {
                         string line = reader.ReadLine();
                         string[] parsedLine = line.Split(',');
-                        AppDataObject data = new AppDataObject(mainWindow, parsedLine[0])
-                        {
-                            DisplayedName = parsedLine[0],
-                            TodaysTime = TimeSpan.Parse(parsedLine[1]),
-                            TotalTime = TimeSpan.Parse(parsedLine[2]),
-                            IsLinkedToToggl = bool.Parse(parsedLine[4]),
-                            LinkedProjectName = parsedLine[5],
-                            LinkedTag = parsedLine[6]
-                        };
+                        AppDataObject data = new AppDataObject(mainWindow, parsedLine[0]);
+                        data.DisplayedName = parsedLine[0];
+                        data.TodaysTime = AppDataObject.ConvertStringToTimeSpan(parsedLine[1]);
+                        data.TotalTime = AppDataObject.ConvertStringToTimeSpan(parsedLine[2]);
+
+                        //structなので元データはnullでよい
                         data.SetLastRunningTime(parsedLine[3]);
-                        data.SetFileExtensions(parsedLine[7]);
+                        
+                        //nullの場合はfalse
+                        bool isLinkedToToggl;
+                        bool.TryParse(parsedLine[4], out isLinkedToToggl);
+                        data.IsLinkedToToggl = isLinkedToToggl;
+                        
+                        //nullでよい
+                        data.LinkedProjectName = parsedLine[5];
+                        data.LinkedTag = parsedLine[6];
+
+                        if (!string.IsNullOrEmpty(parsedLine[7])) data.SetFileExtensions(parsedLine[7]);
+
                         mainWindow.AppDatas.Add(data);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                //データが存在しない場合など
+                ErrorLogger.ShowErrorMessage(ex);
             }
 
             mainWindow.AppDatas.ToList().ForEach(a => a.LoadFileDatas());

@@ -24,7 +24,7 @@
                 <GridView>
                     <GridView.Columns>
                         <GridViewColumn Header ="ファイル名" Width="200" DisplayMemberBinding="{Binding Path=Name}"/>
-                        <GridViewColumn Header ="累計作業時間" Width="100" DisplayMemberBinding="{Binding Path=GetTime}">
+                        <GridViewColumn Header ="累積作業時間" Width="100" DisplayMemberBinding="{Binding Path=GetTime}">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock  TextAlignment="Right" 

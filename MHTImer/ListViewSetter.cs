@@ -22,7 +22,7 @@ namespace MHTimer
             }
             catch (Exception ex)
             {
-                MessageBox.Show("エラー:\n" + ex.ToString());
+                ErrorLogger.ShowErrorMessage(ex);
             }
         }
 
@@ -60,6 +60,7 @@ namespace MHTimer
                     DisplayedName = name
                 };
                 IconGetter.SetIconToNewAppData(filePath, appData);
+                appData.SaveFileDatas();
                 AddFileListWindow(appData);
                 lock (mainWindow.AppDatas)
                 {

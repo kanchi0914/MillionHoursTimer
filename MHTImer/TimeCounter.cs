@@ -1,38 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using TM = System.Timers;
 using System.Diagnostics;
 using Microsoft.Win32;
+using static MHTimer.WinAPI;
 
 namespace MHTimer
 {
     public class TimeCounter
     {
-
         private MainWindow mainWindow;
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll", EntryPoint = "GetWindowText", CharSet = CharSet.Auto)]
-        public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-
-        [DllImport("user32.dll")]
-        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool IsIconic(IntPtr hWnd);
 
         private TM.Timer timer;
 
+        //スリープ中かどうか
         private bool isSleeping = false;
+        //操作無し状態かどうか
         private bool isNoInputing = false;
 
-        private int interval = Properties.Settings.Default.CountingSecondsInterval;
+        private int countInterval = Properties.Settings.Default.CountingSecondsInterval;
 
         public TimeCounter(MainWindow mainWindow)
         {
@@ -55,7 +42,7 @@ namespace MHTimer
                 }
             };
 
-            interval = Properties.Settings.Default.CountingSecondsInterval;
+            countInterval = Properties.Settings.Default.CountingSecondsInterval;
             CreateTimer();
         }
 
@@ -235,10 +222,6 @@ namespace MHTimer
             var sec = Properties.Settings.Default.CountingSecondsInterval;
             var runningApps = mainWindow.AppDatas.Where(a => a.IsRecoding && a.IsRunning).ToList();
             var closedApps = runningApps.Where(a => (DateTime.Now - a.LastRunningTime).TotalSeconds > sec).ToList();
-            if (closedApps.Count > 0)
-            {
-                var a = 0;
-            }
             closedApps.ForEach(a => a.Exit());
         }
     }

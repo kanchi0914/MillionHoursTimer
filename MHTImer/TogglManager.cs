@@ -32,10 +32,11 @@ namespace MHTimer
             {
                 Init();
             }
-            catch(Exception e)
+            catch(Exception ex)
             {
                 ApiKey = "";
-                Console.WriteLine(e);
+                ErrorLogger.ShowErrorMessage(ex);
+
             }
 
         }
@@ -161,9 +162,9 @@ namespace MHTimer
                     Console.WriteLine($"sended:{te}");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                ErrorLogger.ShowErrorMessage(ex);
             }
 
         }
