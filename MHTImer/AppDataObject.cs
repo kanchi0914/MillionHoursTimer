@@ -5,13 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
-using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Interop;
-using System.Windows;
-using System.Runtime.InteropServices;
 
 namespace MHTimer
 {
@@ -62,11 +56,17 @@ namespace MHTimer
             get => LastRunningTime - LaunchedTime;
         }
 
-        public bool IsRecoding { get { return isRecoding; } set
+        public bool IsRecoding
+        {
+            get
             {
-                var a = 0;
+                return isRecoding;
+            }
+            set
+            {
                 isRecoding = value;
-            } }
+            }
+        }
         private bool isRecoding = false;
         public bool IsRunning { get; set; } = false;
 
@@ -385,7 +385,7 @@ namespace MHTimer
             {
                 try
                 {
-                    using (var sw = new System.IO.StreamWriter(@path, false, Encoding.UTF8))
+                    using (var sw = new StreamWriter(@path, false, Encoding.UTF8))
                     {
                         sw.WriteLine($"ファイル名,累積作業時間");
                         foreach (FileDataObject file in Files)
@@ -401,6 +401,7 @@ namespace MHTimer
             }
         }
 
+        //日付が変わったかどうか
         private bool HasDayChanged()
         {
             var currentDate = DateTime.Now.ToString("yyyy/MM/dd");
@@ -415,7 +416,7 @@ namespace MHTimer
         public static string GetFormattedStringFromTimeSpan(TimeSpan timeSpan)
         {
             if (timeSpan < TimeSpan.FromSeconds(1)) return "-";
-            var hours = string.Format("{0, 4}", timeSpan.Hours);
+            var hours = string.Format("{0, 4}", (int)timeSpan.TotalHours);
             var minutes = string.Format("{0, 2}", timeSpan.Minutes);
             var seconds = string.Format("{0, 2}", timeSpan.Seconds);
             return $"{hours}時間{minutes}分{seconds}秒";

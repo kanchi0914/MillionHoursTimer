@@ -4,6 +4,8 @@ namespace MHTimer
 {
     public static class Settings
     {
+        //設定保存先
+        //C:\Users\アカウント名\AppData\Local\アプリ名\中略\user.config
 
         //============================================================
         //読み取り専用の設定
@@ -92,7 +94,6 @@ namespace MHTimer
             MinSendTime = Properties.Settings.Default.MinSendTime;
             Date = Properties.Settings.Default.Date;
             IsIgnoringChindWindowSettings = Properties.Settings.Default.isIgnoringChindsWindows;
-
         }
 
         /// <summary>
