@@ -19,7 +19,6 @@ namespace MHTimer
         [System.Runtime.InteropServices.DllImport("Kernel32.dll")]
         public static extern bool AttachConsole(int processId);
 
-        //Components.NotifyIcon notifyIcon = new Components.NotifyIcon();
         private System.Threading.Mutex mutex = new System.Threading.Mutex(false, "MHTimer");
         private MainWindow mainWindow;
 

@@ -14,9 +14,6 @@ namespace MHTimer
 
         private MainWindow mainWindow;
 
-        readonly string iconFileDir = Settings.IconFileDir;
-        readonly string fileDataDir = Settings.FileDataDir;
-
         string currentDir = Settings.CurrentDir;
         
         //プロセスの名前（不変）
@@ -163,7 +160,7 @@ namespace MHTimer
 
         public void Init()
         {
-            var iconImagePath = currentDir + iconFileDir + $"{ProcessName}.png";
+            var iconImagePath = Settings.IconFileDirPath + $"{ProcessName}.png";
             IconImageSource = IconGetter.LoadIconImage(iconImagePath);
         }
 
@@ -250,7 +247,7 @@ namespace MHTimer
         /// </summary>
         public void SaveFileDatas()
         {
-            string path = currentDir + fileDataDir + ProcessName + "_files.csv";
+            string path = Settings.FileDataDirPath + ProcessName + "_files.csv";
             try
             {
                 using (var sw = new StreamWriter(@path, false, Encoding.UTF8))
@@ -273,7 +270,7 @@ namespace MHTimer
         /// </summary>
         public void LoadFileDatas()
         {
-            string path = currentDir + fileDataDir + ProcessName + "_files.csv";
+            string path = Settings.FileDataDirPath + ProcessName + "_files.csv";
             try
             {
                 using (StreamReader reader = new StreamReader(@path, Encoding.UTF8))
@@ -395,7 +392,7 @@ namespace MHTimer
             {
                 Files.Clear();
             }
-            string path = currentDir + fileDataDir + ProcessName + "_files.csv";
+            string path = Settings.FileDataDirPath + ProcessName + "_files.csv";
             File.Delete(@path);
         }
 

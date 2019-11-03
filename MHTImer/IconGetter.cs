@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -12,9 +8,6 @@ namespace MHTimer
 {
     public static class IconGetter
     {
-        static readonly string iconFileDir = Settings.IconFileDir;
-        static readonly string fileDataDir = Settings.FileDataDir;
-        static readonly string currentDir = Settings.CurrentDir;
 
         /// <summary>
         /// ファイルパスからアイコンを読み込み、保存
@@ -28,12 +21,13 @@ namespace MHTimer
                 var imageSource = img.ToImageSource();
                 appData.IconImageSource = imageSource;
 
-                var savePath = currentDir + iconFileDir + $"{appData.ProcessName}.png";
+                var savePath = Settings.IconFileDirPath + $"{appData.ProcessName}.png";
                 SaveIconImage(imageSource, savePath);
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException ex)
             {
-                var defaultIconImagePath = currentDir + iconFileDir + $"defaultIcon.png";
+                var defaultIconImagePath = Settings.IconFileDirPath + $"defaultIcon.png";
+                ErrorLogger.Log(ex);
                 LoadIconImage(defaultIconImagePath);
             }
             catch (Exception ex)
@@ -75,9 +69,10 @@ namespace MHTimer
                 return wbmp;
             }
             //アイコン画像が存在しない場合、デフォルトのアイコン画像を使用
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException ex)
             {
-                var defaultIconImagePath = currentDir + iconFileDir + $"defaultIcon.png";
+                var defaultIconImagePath = Settings.IconFileDirPath + $"defaultIcon.png";
+                ErrorLogger.Log(ex);
                 return LoadIconImage(defaultIconImagePath);
             }
             catch (Exception ex)
@@ -89,7 +84,7 @@ namespace MHTimer
         
         public static void RemoveIconImage(string processName)
         {
-            var path = currentDir + iconFileDir + $"{processName}.png";
+            var path = Settings.IconFileDirPath + $"{processName}.png";
             File.Delete(@path);
         }
     }

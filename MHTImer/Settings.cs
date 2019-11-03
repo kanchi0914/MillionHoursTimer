@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 namespace MHTimer
 {
@@ -18,12 +21,13 @@ namespace MHTimer
 
         //public static readonly string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
 
-        public static readonly string IconFileDir = "/data/icons/";
+        public static string DataDirPath { get => CurrentDir + "/data/"; }
 
-        public static readonly string FileDataDir = "/data/fileData/";
+        public static string IconFileDirPath { get => CurrentDir + "/data/icons/"; }
 
-        public static readonly string LogDir = "/logs";
+        public static string FileDataDirPath { get => CurrentDir + "/data/fileData/"; }
 
+        public static string LogDirPath { get => CurrentDir + "/logs/";  }
 
         //public static readonly string AppDataFile = "data/appData.csv";
 
@@ -74,6 +78,13 @@ namespace MHTimer
         static Settings()
         {
             CurrentDir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+
+            //アクセス権を付与
+            AddAccessRule(DataDirPath);
+            AddAccessRule(IconFileDirPath);
+            AddAccessRule(FileDataDirPath);
+            AddAccessRule(LogDirPath);
+
             Load();
 
             //初めて起動された
@@ -82,7 +93,20 @@ namespace MHTimer
                 LoadDefaultSettings();
                 Date = DateTime.Now.ToString("yyyy/MM/dd");
             }
+        }
 
+        static void AddAccessRule(string path)
+        {
+            FileSystemAccessRule rule = new FileSystemAccessRule(
+              new NTAccount("everyone"),
+              FileSystemRights.FullControl,
+              InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit,
+              PropagationFlags.None,
+              AccessControlType.Allow);
+
+            DirectorySecurity security = Directory.GetAccessControl(path);
+            security.SetAccessRule(rule);
+            Directory.SetAccessControl(path, security);
         }
 
         /// <summary>

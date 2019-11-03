@@ -7,14 +7,14 @@ namespace MHTimer
 {
     public static class ErrorLogger
     {
-        static string dirPath = Settings.CurrentDir + Settings.LogDir;
+        
         static readonly int maxLogFileNum = 20;
 
         public static void Log(Exception ex)
         {
-            SafeCreateDirectory(dirPath);
+            SafeCreateDirectory(Settings.LogDirPath);
             using (var sw = new StreamWriter(
-                $@"{dirPath}/log_{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt", false, Encoding.UTF8))
+                $@"{Settings.LogDirPath}log_{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt", false, Encoding.UTF8))
             {
                 sw.WriteLine(ex.ToString());
                 sw.WriteLine();
@@ -24,7 +24,7 @@ namespace MHTimer
 
         private static void RemoveOldErrorLog()
         {
-            var dirInfo = new DirectoryInfo(dirPath);
+            var dirInfo = new DirectoryInfo(Settings.LogDirPath);
             var files = dirInfo.GetFiles().ToList();
             files.OrderBy(f => f.LastWriteTime);
             if (files.Count > maxLogFileNum)
