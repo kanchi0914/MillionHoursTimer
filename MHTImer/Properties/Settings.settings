@@ -12,7 +12,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="Date" Type="System.String" Scope="User">
-      <Value Profile="(Default)">2000/01/01</Value>
+      <Value Profile="(Default)">0001/01/01</Value>
     </Setting>
     <Setting Name="APIKey" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -26,8 +26,8 @@
     <Setting Name="MaxFileNum" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100</Value>
     </Setting>
-    <Setting Name="CountsOnSleep" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="StopsOnSleep" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="IsAutoLaunch" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

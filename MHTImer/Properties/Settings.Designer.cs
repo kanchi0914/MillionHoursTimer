@@ -61,7 +61,7 @@ namespace MHTimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2000/01/01")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0001/01/01")]
         public string Date {
             get {
                 return ((string)(this["Date"]));
@@ -121,13 +121,13 @@ namespace MHTimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool CountsOnSleep {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool StopsOnSleep {
             get {
-                return ((bool)(this["CountsOnSleep"]));
+                return ((bool)(this["StopsOnSleep"]));
             }
             set {
-                this["CountsOnSleep"] = value;
+                this["StopsOnSleep"] = value;
             }
         }
         

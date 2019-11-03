@@ -218,7 +218,6 @@ namespace MHTimer
         public void CreateMenu()
         {
             AddApp.Click += menu_ClickAddApp;
-            //Import.Click += OnClickImportData;
             Export.Click += menu_ClickExportData;
         }
 

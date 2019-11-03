@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 
 namespace MHTimer
 {
@@ -72,9 +73,16 @@ namespace MHTimer
 
         static Settings()
         {
-            //CurrentDir = Directory.GetCurrentDirectory();
             CurrentDir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             Load();
+
+            //初めて起動された
+            if (Date == "0001/01/01")
+            {
+                LoadDefaultSettings();
+                Date = DateTime.Now.ToString("yyyy/MM/dd");
+            }
+
         }
 
         /// <summary>
@@ -87,7 +95,7 @@ namespace MHTimer
             IsAutoLauch = Properties.Settings.Default.IsAutoLaunch;
             IsCountingNotMinimized = Properties.Settings.Default.IsCountingNotMinimized;
             IsCountingOnlyActive = Properties.Settings.Default.IsCountingOnlyActive;
-            StopsOnSleep = Properties.Settings.Default.CountsOnSleep;
+            StopsOnSleep = Properties.Settings.Default.StopsOnSleep;
             IsEnabledAdditionalFileNameSetting = Properties.Settings.Default.IsEnableAdditionalFileName;
             IsDividingBySpace = Properties.Settings.Default.IsDividingBySpace;
             MaxFileNum = Properties.Settings.Default.MaxFileNum;
@@ -97,6 +105,36 @@ namespace MHTimer
             MinSendTime = Properties.Settings.Default.MinSendTime;
             Date = Properties.Settings.Default.Date;
             IsIgnoringChindWindowSettings = Properties.Settings.Default.isIgnoringChindsWindows;
+        }
+
+        public static void LoadDefaultSettings()
+        {
+            try
+            {
+                APIKey = Properties.Settings.Default.Properties["APIKey"].DefaultValue.ToString();
+                Date = Properties.Settings.Default.Properties["Date"].DefaultValue.ToString();
+
+                IsAutoLauch = bool.Parse(Properties.Settings.Default.Properties["IsAutoLaunch"].DefaultValue.ToString());
+                IsCountingNotMinimized = bool.Parse(Properties.Settings.Default.Properties["IsCountingNotMinimized"].DefaultValue.ToString());
+                IsCountingOnlyActive = bool.Parse(Properties.Settings.Default.Properties["IsCountingOnlyActive"].DefaultValue.ToString());
+                StopsOnSleep = bool.Parse(Properties.Settings.Default.Properties["StopsOnSleep"].DefaultValue.ToString());
+                IsEnabledAdditionalFileNameSetting = bool.Parse(Properties.Settings.Default.Properties["IsEnableAdditionalFileName"].DefaultValue.ToString());
+                IsDividingBySpace = bool.Parse(Properties.Settings.Default.Properties["IsDividingBySpace"].DefaultValue.ToString());
+                IsIgnoringChindWindowSettings = bool.Parse(Properties.Settings.Default.Properties["isIgnoringChindsWindows"].DefaultValue.ToString());
+
+                MaxFileNum = int.Parse(Properties.Settings.Default.Properties["MaxFileNum"].DefaultValue.ToString());
+                CountingSecondsInterval = int.Parse(Properties.Settings.Default.Properties["CountingSecondsInterval"].DefaultValue.ToString());
+                NoInputTime = int.Parse(Properties.Settings.Default.Properties["NoInputTime"].DefaultValue.ToString());
+                MinCountStartTime = int.Parse(Properties.Settings.Default.Properties["MinCountStartTime"].DefaultValue.ToString());
+                MinSendTime = int.Parse(Properties.Settings.Default.Properties["MinSendTime"].DefaultValue.ToString());
+
+                Save();
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.Log(ex);
+            }
+            
         }
 
         /// <summary>
@@ -110,7 +148,7 @@ namespace MHTimer
 
             Properties.Settings.Default.IsCountingNotMinimized = IsCountingNotMinimized;
             Properties.Settings.Default.IsCountingOnlyActive = IsCountingOnlyActive;
-            Properties.Settings.Default.CountsOnSleep = StopsOnSleep;
+            Properties.Settings.Default.StopsOnSleep = StopsOnSleep;
             Properties.Settings.Default.IsEnableAdditionalFileName = IsEnabledAdditionalFileNameSetting;
             Properties.Settings.Default.IsDividingBySpace = IsDividingBySpace;
             Properties.Settings.Default.MaxFileNum = MaxFileNum;
