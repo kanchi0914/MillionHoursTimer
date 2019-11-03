@@ -22,7 +22,7 @@ namespace MHTimer
             }
             catch (Exception ex)
             {
-                ErrorLogger.ShowErrorMessage(ex);
+                ErrorLogger.Log(ex);
             }
         }
 
@@ -98,7 +98,6 @@ namespace MHTimer
             FileViewWindow fileListWindow = new FileViewWindow(data);
             mainWindow.FileViewWindows.Add(fileListWindow);
         }
-
 
         public void SetFilePathFromDroppedLinks(string file)
         {

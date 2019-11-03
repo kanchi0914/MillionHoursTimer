@@ -192,7 +192,7 @@ namespace MHTimer
             }
             catch (System.ComponentModel.Win32Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ErrorLogger.Log(ex);
             }
         }
 

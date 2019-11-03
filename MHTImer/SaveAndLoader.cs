@@ -45,7 +45,7 @@ namespace MHTimer
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"エラー:{ex.ToString()}");
+                ErrorLogger.Log(ex);
             }
 
             mainWindow.AppDatas.ToList().ForEach(a => a.SaveFileDatas());
@@ -94,7 +94,7 @@ namespace MHTimer
             catch (Exception ex)
             {
                 //データが存在しない場合など
-                ErrorLogger.ShowErrorMessage(ex);
+                ErrorLogger.Log(ex);
             }
 
             mainWindow.AppDatas.ToList().ForEach(a => a.LoadFileDatas());

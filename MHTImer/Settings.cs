@@ -21,6 +21,9 @@ namespace MHTimer
 
         public static readonly string FileDataDir = "/data/fileData/";
 
+        public static readonly string LogDir = "/logs";
+
+
         //public static readonly string AppDataFile = "data/appData.csv";
 
         public static readonly string extentionSample =

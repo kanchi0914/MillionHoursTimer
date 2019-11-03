@@ -107,6 +107,7 @@ namespace MHTimer
                 {
                     MessageBox.Show("認証に失敗しました。API Keyが正しく入力されているか確認してください。\nエラー詳細:\n" 
                         + ex.ToString());
+                    ErrorLogger.Log(ex);
                 }
             }
         }
@@ -180,7 +181,10 @@ namespace MHTimer
                     regkey.SetValue(Name, path + " -v");
                     regkey.Close();
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    ErrorLogger.Log(ex);
+                }
             }
             else
             {
@@ -192,7 +196,10 @@ namespace MHTimer
                     regkey.DeleteValue(Name, false);
                     regkey.Close();
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    ErrorLogger.Log(ex);
+                }
             }
         }
 

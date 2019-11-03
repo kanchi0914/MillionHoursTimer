@@ -57,7 +57,10 @@ namespace MHTimer
                     mainWindow.Activate();
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                ErrorLogger.Log(ex);
+            }
         }
 
         /// <summary>

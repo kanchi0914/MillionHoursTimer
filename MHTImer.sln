@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MHTimer", "MHTimer\MHTimer.csproj", "{A72CA7C2-690D-4FD0-8647-D085DE17BA4C}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{B2109C72-AEE6-4558-B959-D007832FA7CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{A72CA7C2-690D-4FD0-8647-D085DE17BA4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A72CA7C2-690D-4FD0-8647-D085DE17BA4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A72CA7C2-690D-4FD0-8647-D085DE17BA4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2109C72-AEE6-4558-B959-D007832FA7CE}.Debug|Any CPU.ActiveCfg = Debug
+		{B2109C72-AEE6-4558-B959-D007832FA7CE}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

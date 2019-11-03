@@ -185,7 +185,10 @@ namespace MHTimer
                 //ウィンドウを非可視にする
                 Visibility = Visibility.Collapsed;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                ErrorLogger.Log(ex);
+            }
         }
 
         /// <summary>
