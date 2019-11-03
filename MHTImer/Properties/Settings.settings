@@ -3,13 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="IsCountingNotMinimized" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="IsCountingOnlyActive" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="IsEnableAdditionalFileName" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="Date" Type="System.String" Scope="User">
       <Value Profile="(Default)">2000/01/01</Value>
@@ -26,20 +26,20 @@
     <Setting Name="MaxFileNum" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100</Value>
     </Setting>
-    <Setting Name="IsCountingOnSleep" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="CountsOnSleep" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="IsAutoLaunch" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="IsDividingBySpace" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="NoInputTime" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">900</Value>
+      <Value Profile="(Default)">60</Value>
     </Setting>
     <Setting Name="MinSendTime" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">30</Value>
     </Setting>
     <Setting Name="isIgnoringChindsWindows" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

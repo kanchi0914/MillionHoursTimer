@@ -25,7 +25,7 @@ namespace MHTimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool IsCountingNotMinimized {
             get {
                 return ((bool)(this["IsCountingNotMinimized"]));
@@ -49,7 +49,7 @@ namespace MHTimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool IsEnableAdditionalFileName {
             get {
                 return ((bool)(this["IsEnableAdditionalFileName"]));
@@ -121,13 +121,13 @@ namespace MHTimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IsCountingOnSleep {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CountsOnSleep {
             get {
-                return ((bool)(this["IsCountingOnSleep"]));
+                return ((bool)(this["CountsOnSleep"]));
             }
             set {
-                this["IsCountingOnSleep"] = value;
+                this["CountsOnSleep"] = value;
             }
         }
         
@@ -145,7 +145,7 @@ namespace MHTimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool IsDividingBySpace {
             get {
                 return ((bool)(this["IsDividingBySpace"]));
@@ -157,7 +157,7 @@ namespace MHTimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("900")]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
         public int NoInputTime {
             get {
                 return ((int)(this["NoInputTime"]));
@@ -169,7 +169,7 @@ namespace MHTimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
         public int MinSendTime {
             get {
                 return ((int)(this["MinSendTime"]));

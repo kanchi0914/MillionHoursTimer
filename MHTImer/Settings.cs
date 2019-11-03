@@ -87,7 +87,7 @@ namespace MHTimer
             IsAutoLauch = Properties.Settings.Default.IsAutoLaunch;
             IsCountingNotMinimized = Properties.Settings.Default.IsCountingNotMinimized;
             IsCountingOnlyActive = Properties.Settings.Default.IsCountingOnlyActive;
-            StopsOnSleep = Properties.Settings.Default.IsCountingOnSleep;
+            StopsOnSleep = Properties.Settings.Default.CountsOnSleep;
             IsEnabledAdditionalFileNameSetting = Properties.Settings.Default.IsEnableAdditionalFileName;
             IsDividingBySpace = Properties.Settings.Default.IsDividingBySpace;
             MaxFileNum = Properties.Settings.Default.MaxFileNum;
@@ -110,7 +110,7 @@ namespace MHTimer
 
             Properties.Settings.Default.IsCountingNotMinimized = IsCountingNotMinimized;
             Properties.Settings.Default.IsCountingOnlyActive = IsCountingOnlyActive;
-            Properties.Settings.Default.IsCountingOnSleep = StopsOnSleep;
+            Properties.Settings.Default.CountsOnSleep = StopsOnSleep;
             Properties.Settings.Default.IsEnableAdditionalFileName = IsEnabledAdditionalFileNameSetting;
             Properties.Settings.Default.IsDividingBySpace = IsDividingBySpace;
             Properties.Settings.Default.MaxFileNum = MaxFileNum;
