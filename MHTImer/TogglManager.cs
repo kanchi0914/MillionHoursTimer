@@ -35,8 +35,7 @@ namespace MHTimer
             catch(Exception ex)
             {
                 ApiKey = "";
-                ErrorLogger.ShowErrorMessage(ex);
-
+                ErrorLogger.Log(ex);
             }
 
         }
@@ -164,7 +163,7 @@ namespace MHTimer
             }
             catch (Exception ex)
             {
-                ErrorLogger.ShowErrorMessage(ex);
+                ErrorLogger.Log(ex);
             }
 
         }
