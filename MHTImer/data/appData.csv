@@ -1,1 +1,4 @@
-﻿アプリケーション名,今日の起動時間,累積起動時間,最終起動日時,toggleと連携するか,連携プロジェクト名
+アプリケーション名,今日の起動時間(分),累積起動時間(分),最終起動日時,toggle連携フラグ,連携プロジェクト名,連携タグ名, ファイル拡張子
+CLIPStudioPaint,00:00:00,00:00:00,,False,,,.gif/.jpg/.jpeg/.png/.bmp/.ico/.tif/.tiff/.tga/.psd/.psb/.sai
+Photoshop,00:00:00,00:00:00,,False,,,.gif/.jpg/.jpeg/.png/.bmp/.ico/.tif/.tiff/.tga/.psd/.psb/.sai
+sai,00:00:00,00:00:00,,False,,,.gif/.jpg/.jpeg/.png/.bmp/.ico/.tif/.tiff/.tga/.psd/.psb/.sai
