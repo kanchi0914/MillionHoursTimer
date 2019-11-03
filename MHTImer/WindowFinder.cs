@@ -29,10 +29,6 @@ namespace MHTimer
                 //ウィンドウタイトルを取得
                 StringBuilder title = new StringBuilder(256);
                 int titleLen = GetWindowText(hWnd, title, 256);
-
-                //出力
-                //Console.WriteLine(title);
-                //出力
             }
         }
     }

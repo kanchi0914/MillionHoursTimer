@@ -2,14 +2,12 @@
 
 namespace MHTimer
 {
-
     public class FileDataObject
     {
         public string Name { get; set; } = "";
         public TimeSpan TotalTime { get; set; }
         public TimeSpan TimeFromLaunched { get; set; }
         public bool IsCountStarted { get; set; } = false;
-        //public bool IsCounted { get; set; } = false;
 
         public string GetTime
         {
@@ -21,9 +19,6 @@ namespace MHTimer
 
         public void AccumulateTime()
         {
-            ////同名ファイルが複数回計測されるのを防ぐ
-            //if (IsCounted) return;
-
             TimeFromLaunched = TimeFromLaunched.Add(TimeSpan.FromSeconds(Settings.CountingSecondsInterval));
 
             //指定した時間が経過していたら、データの記録を開始

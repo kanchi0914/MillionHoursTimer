@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
@@ -21,13 +20,13 @@ namespace MHTimer
 
         //public static readonly string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
 
-        public static string DataDirPath { get => CurrentDir + "/data/"; }
+        public static string DataDirPath { get => CurrentDir + @"data\"; }
 
-        public static string IconFileDirPath { get => CurrentDir + "/data/icons/"; }
+        public static string IconFileDirPath { get => CurrentDir + @"data\icons\"; }
 
-        public static string FileDataDirPath { get => CurrentDir + "/data/fileData/"; }
+        public static string FileDataDirPath { get => CurrentDir + @"data\fileData\"; }
 
-        public static string LogDirPath { get => CurrentDir + "/logs/";  }
+        public static string LogDirPath { get => CurrentDir + @"logs\";  }
 
         //public static readonly string AppDataFile = "data/appData.csv";
 
@@ -97,16 +96,24 @@ namespace MHTimer
 
         static void AddAccessRule(string path)
         {
-            FileSystemAccessRule rule = new FileSystemAccessRule(
-              new NTAccount("everyone"),
-              FileSystemRights.FullControl,
-              InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit,
-              PropagationFlags.None,
-              AccessControlType.Allow);
+            try
+            {
+                FileSystemAccessRule rule = new FileSystemAccessRule(
+                  new NTAccount("everyone"),
+                  FileSystemRights.FullControl,
+                  InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit,
+                  PropagationFlags.None,
+                  AccessControlType.Allow);
 
-            DirectorySecurity security = Directory.GetAccessControl(path);
-            security.SetAccessRule(rule);
-            Directory.SetAccessControl(path, security);
+                DirectorySecurity security = Directory.GetAccessControl(path);
+                security.SetAccessRule(rule);
+                Directory.SetAccessControl(path, security);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.Log(ex);
+            }
+
         }
 
         /// <summary>

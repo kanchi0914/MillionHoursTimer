@@ -13,8 +13,6 @@ namespace MHTimer
     {
 
         private MainWindow mainWindow;
-
-        string currentDir = Settings.CurrentDir;
         
         //プロセスの名前（不変）
         public string ProcessName { get; } = "";

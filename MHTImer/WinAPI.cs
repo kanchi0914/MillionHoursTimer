@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MHTimer
 {
@@ -11,11 +8,6 @@ namespace MHTimer
     {
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
-
-        //[DllImport("user32")]
-        //public static extern bool EnumWindows(WNDENUMPROC lpEnumFunc, IntPtr lParam);
-
-        //public delegate bool WNDENUMPROC(IntPtr hWnd, IntPtr lParam);
 
         public delegate bool EnumWindowsProc(IntPtr hWnd, int lParam);
 

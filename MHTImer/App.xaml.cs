@@ -20,12 +20,6 @@ namespace MHTimer
         public static extern bool AttachConsole(int processId);
 
         private System.Threading.Mutex mutex = new System.Threading.Mutex(false, "MHTimer");
-        private MainWindow mainWindow;
-
-        public void SetMainWindow(MainWindow mainWindow)
-        {
-
-        }
 
         protected override void OnStartup(StartupEventArgs e)
         {

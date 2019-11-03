@@ -42,13 +42,13 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>full</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\clockIcon.ico</ApplicationIcon>
@@ -118,7 +118,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DirectoryProcessor.cs" />
-    <Compile Include="EnumWindowsClass.cs" />
     <Compile Include="OpenWindowGetter.cs" />
     <Compile Include="SaveAndLoader.cs" />
     <Compile Include="Settings.cs" />
