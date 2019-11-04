@@ -158,7 +158,7 @@ namespace MHTimer
 
         public void Init()
         {
-            var iconImagePath = Settings.IconFileDirPath + $"{ProcessName}.png";
+            var iconImagePath = Settings.IconFileDirFullDirPath + $"{ProcessName}.png";
             IconImageSource = IconGetter.LoadIconImage(iconImagePath);
         }
 
@@ -245,7 +245,7 @@ namespace MHTimer
         /// </summary>
         public void SaveFileDatas()
         {
-            string path = Settings.FileDataDirPath + ProcessName + "_files.csv";
+            string path = Settings.FileDataDirFullPath + ProcessName + "_files.csv";
             try
             {
                 using (var sw = new StreamWriter(@path, false, Encoding.UTF8))
@@ -268,7 +268,7 @@ namespace MHTimer
         /// </summary>
         public void LoadFileDatas()
         {
-            string path = Settings.FileDataDirPath + ProcessName + "_files.csv";
+            string path = Settings.FileDataDirFullPath + ProcessName + "_files.csv";
             try
             {
                 using (StreamReader reader = new StreamReader(@path, Encoding.UTF8))
@@ -390,7 +390,7 @@ namespace MHTimer
             {
                 Files.Clear();
             }
-            string path = Settings.FileDataDirPath + ProcessName + "_files.csv";
+            string path = Settings.FileDataDirFullPath + ProcessName + "_files.csv";
             File.Delete(@path);
         }
 

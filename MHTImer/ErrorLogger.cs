@@ -12,9 +12,9 @@ namespace MHTimer
 
         public static void Log(Exception ex)
         {
-            SafeCreateDirectory(Settings.LogDirPath);
+            SafeCreateDirectory(Settings.LogDirFullPath);
             using (var sw = new StreamWriter(
-                $@"{Settings.LogDirPath}log_{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt", false, Encoding.UTF8))
+                $@"{Settings.LogDirFullPath}log_{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt", false, Encoding.UTF8))
             {
                 sw.WriteLine(ex.ToString());
                 sw.WriteLine();
@@ -24,7 +24,7 @@ namespace MHTimer
 
         private static void RemoveOldErrorLog()
         {
-            var dirInfo = new DirectoryInfo(Settings.LogDirPath);
+            var dirInfo = new DirectoryInfo(Settings.LogDirFullPath);
             var files = dirInfo.GetFiles().ToList();
             files.OrderBy(f => f.LastWriteTime);
             if (files.Count > maxLogFileNum)

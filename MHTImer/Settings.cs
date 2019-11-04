@@ -23,17 +23,17 @@ namespace MHTimer
 
         //public static readonly string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
 
-        public static string DataDirPath { get => CurrentDir + @"data\"; }
+        public static string DataDirFullPath { get => CurrentDir + @"data\"; }
+        public static string IconFileDirFullDirPath { get => CurrentDir + @"data\icons\"; }
+        public static string FileDataDirFullPath { get => CurrentDir + @"data\fileData\"; }
+        public static string LogDirFullPath { get => CurrentDir + @"logs\";  }
 
-        public static string IconFileDirPath { get => CurrentDir + @"data\icons\"; }
+        public static string DataDirRelativePath { get => @"\data\"; }
+        public static string IconFileDirRelativePath { get => @"\data\icons\"; }
+        public static string FileDataDirRelativePath { get => @"\data\fileData\"; }
+        public static string LogDirRelativePath { get => @"\logs\"; }
 
-        public static string FileDataDirPath { get => CurrentDir + @"data\fileData\"; }
-
-        public static string LogDirPath { get => CurrentDir + @"logs\";  }
-
-        //public static readonly string AppDataFile = "data/appData.csv";
-
-        public static readonly string extentionSample =
+        public static readonly string ExtentionSample =
             ".gif/.jpg/.jpeg/.png/.bmp/.ico/.tif/.tiff/.tga/.psd/.psb/.sai";
 
         //============================================================
@@ -82,10 +82,7 @@ namespace MHTimer
             CurrentDir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
 
             //アクセス権を付与
-            AddAccessRule(DataDirPath);
-            AddAccessRule(IconFileDirPath);
-            AddAccessRule(FileDataDirPath);
-            AddAccessRule(LogDirPath);
+            AddAccessRules(CurrentDir);
 
             Load();
 
@@ -95,6 +92,14 @@ namespace MHTimer
                 LoadDefaultSettings();
                 Date = DateTime.Now.ToString("yyyy/MM/dd");
             }
+        }
+
+        public static void AddAccessRules(string parentDir)
+        {
+            AddAccessRule(parentDir + DataDirRelativePath);
+            AddAccessRule(parentDir + IconFileDirRelativePath);
+            AddAccessRule(parentDir + FileDataDirRelativePath);
+            AddAccessRule(parentDir + LogDirRelativePath);
         }
 
         static void AddAccessRule(string path)
