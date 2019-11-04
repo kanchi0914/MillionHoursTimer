@@ -77,6 +77,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -216,6 +217,9 @@
     <Compile Include="ListViewSetter.cs" />
     <Content Include="data\appData.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="deleteRegKey.reg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

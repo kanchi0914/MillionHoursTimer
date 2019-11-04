@@ -1,5 +1,4 @@
-﻿using System.Windows;
-
+﻿using System;
 namespace CustomAction
 {
     [System.ComponentModel.RunInstaller(true)]
@@ -13,8 +12,50 @@ namespace CustomAction
 
         public override void Uninstall(System.Collections.IDictionary savedState)
         {
-            MHTimer.AutoLaunchSetter.SetAutoLaunch(false);
             base.Uninstall(savedState);
+            Remover.RemoveKey();
+            DeleteDateDir();
         }
+
+        private void DeleteDateDir()
+        {
+
+            var systemPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            var parentDirPath = systemPath + @"\" + MHTimer.Settings.ProductName;
+            var dataDirPath = parentDirPath + @"\data";
+            var dataDirInfo = new System.IO.DirectoryInfo(dataDirPath);
+            var logDirPath = parentDirPath + @"\logs";
+            var logDirInfo = new System.IO.DirectoryInfo(logDirPath);
+            try
+            {
+                if (!string.IsNullOrEmpty(MHTimer.Settings.ProductName))
+                {
+                    dataDirInfo.Delete(true);
+                    logDirInfo.Delete(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("dataフォルダを削除中にエラーが発生しました:" + ex.ToString());
+            }
+        }
+
+        //public void RemoveKey(string key)
+        //{
+        //    try
+        //    {
+        //        Process p = new Process();
+        //        p.StartInfo.FileName = "deleteRegKey.bat";
+        //        p.StartInfo.Verb = "";
+        //        p.StartInfo.CreateNoWindow = true;
+        //        p.StartInfo.UseShellExecute = false;
+        //        p.StartInfo.WorkingDirectory = MHTimer.Settings.CurrentDir;
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
     }
 }

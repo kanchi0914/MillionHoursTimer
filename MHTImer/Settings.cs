@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Security.AccessControl;
 using System.Security.Principal;
 
@@ -17,6 +18,8 @@ namespace MHTimer
         //何秒ごとにカウントするか
         //デバッグ用
         public static readonly int CountSeconds = 1;
+
+        public static string ProductName { get => "MHTimer"; }
 
         //public static readonly string DefaultAPIKey = "1610b6739c0904ad6774df3ddcf460ea";
 
