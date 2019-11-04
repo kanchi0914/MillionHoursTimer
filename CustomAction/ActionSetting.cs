@@ -13,9 +13,8 @@ namespace CustomAction
 
         public override void Uninstall(System.Collections.IDictionary savedState)
         {
-            base.Uninstall(savedState);
             MHTimer.AutoLaunchSetter.SetAutoLaunch(false);
-            System.Windows.Forms.MessageBox.Show("アンインストールが完了しました");
+            base.Uninstall(savedState);
         }
     }
 }

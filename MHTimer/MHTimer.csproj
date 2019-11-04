@@ -53,9 +53,7 @@
   <PropertyGroup>
     <ApplicationIcon>Resources\clockIcon.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="CustomAction, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -78,6 +76,7 @@
       <HintPath>..\packages\NotifyIconWpf.PieroViano.1.0.0.9\lib\net46\NotifyIconWpf.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -102,7 +101,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ActiveWindowGetter.cs" />
     <Compile Include="AutoLaunchSetter.cs" />
     <Compile Include="BitmapExtensions.cs" />
     <Compile Include="BoolVisibilityConverter.cs" />
@@ -120,7 +118,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DirectoryProcessor.cs" />
-    <Compile Include="EnumWindowsClass.cs" />
     <Compile Include="OpenWindowGetter.cs" />
     <Compile Include="SaveAndLoader.cs" />
     <Compile Include="Settings.cs" />
@@ -199,6 +196,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="CustomAction.dll" />
     <Content Include="data\icons\CLIPStudioPaint.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -216,7 +214,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="ListViewSetter.cs" />
-    <None Include="app.manifest" />
     <Content Include="data\appData.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -227,7 +224,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
