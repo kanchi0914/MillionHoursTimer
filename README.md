@@ -129,4 +129,4 @@ Clip Studio Paintでは仕様上、メインウィンドウのタイトルバー
 - バイナリ版をご利用の場合、アプリを削除する際には「システム起動時に自動的に起動」を無効にしてから削除することをお勧めします。
 
 # 連絡先
-バグ報告やご意見を頂ける場合は、Issuesか開発者Twitter(@kanchi0914)までご連絡ください。
+バグ報告やご意見を頂ける場合は、[Issues](https://github.com/kanchi0914/MillionHoursTimer/issues)にご投稿いただくか開発者Twitter(@kanchi0914)までご連絡ください。
