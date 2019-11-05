@@ -94,6 +94,12 @@
         "Entry"
         {
         "MsmKey" = "8:_EFADE1F321C09F9153CA8E8F5253A205"
+        "OwnerKey" = "8:_9E8AD1F4D9EC41F796185DE49C389A97"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EFADE1F321C09F9153CA8E8F5253A205"
         "OwnerKey" = "8:_D17047646BFD4FE4B4AE5BB4DC825052"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -105,14 +111,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EFADE1F321C09F9153CA8E8F5253A205"
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_9E8AD1F4D9EC41F796185DE49C389A97"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9E8AD1F4D9EC41F796185DE49C389A97"
+        "OwnerKey" = "8:_D17047646BFD4FE4B4AE5BB4DC825052"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -142,18 +148,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_657BBD005E209B158D2A1C43C4700306"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D17047646BFD4FE4B4AE5BB4DC825052"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_EFADE1F321C09F9153CA8E8F5253A205"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -173,6 +167,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_13873863BAEF88B93F2124C44205DBA4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_657BBD005E209B158D2A1C43C4700306"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -676,7 +676,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:MHTimer"
         "ProductCode" = "8:{33A50C13-0C3F-4E9A-A748-BFBD7799986C}"
-        "PackageCode" = "8:{8CCD7580-8946-4BFC-B484-938E07ED7C3B}"
+        "PackageCode" = "8:{F42FE2E5-CCEB-49E9-8F5D-FBA67DDAACE6}"
         "UpgradeCode" = "8:{3B1DDA97-26BC-429C-B896-ECCA093B4547}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1225,7 +1225,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9E8AD1F4D9EC41F796185DE49C389A97"
             {
-            "SourcePath" = "8:..\\MHTimer\\obj\\Debug\\MHTimer.exe"
+            "SourcePath" = "8:..\\MHTimer\\obj\\Release\\MHTimer.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B947B59976F6475F86242253A7C2226A"
