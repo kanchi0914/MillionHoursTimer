@@ -117,7 +117,7 @@ Clip Studio Paintでは仕様上、メインウィンドウのタイトルバー
 
 ![image](./timeEntry.png?raw=true "toggl_display")
 
-その他Togglの使い方については[ドキュメント](https://support.toggl.com/en/)をご覧ください。
+その他Togglの使い方については[ドキュメント](https://support.toggl.com/en/)をご覧いただくか、[こちらの記事](https://gigazine.net/news/20180119-toggl/)などを参照ください。
 
 # 注意事項（必ずお読みください）
 - **当アプリで発生したいかなる不具合に関しても、開発者は一切の責任を負いません。あくまでも使用は自己責任でお願いいたします。**
