@@ -22,8 +22,8 @@
 
 # MillionHoursTimer
 MillionHoursTimerは、指定したアプリケーションの起動時間を自動で記録するためのWindows向け常駐型アプリです。開いているファイル名毎に作業時間を記録することや、Togglとの連携によるWeb上でのサマリーレポートの確認が可能です。日々の時間管理やモチベーションの維持等にお役立てください。
-![image](./demo.png?raw=true "clip_cmc")
-![image](./demo2.png?raw=true "clip_cmc")
+![image](./demo.png?raw=true "demo")
+![image](./demo2.png?raw=true "demo2")
 
 # 実行環境
 Windows 8/10  
@@ -84,7 +84,7 @@ Clip Studio Paintでは仕様上、メインウィンドウのタイトルバー
 
 <u>なお、「最小化していないアプリのみ計測する」または「アクティブウィンドウのみを計測する」設定を有効にしている場合で、フローティングしたウィンドウを最小化すると、ファイル名が記録されなくなります。</u>フローティングしたウィンドウを最小化しておきたい場合は、設定>ファイル設定>ファイル名表示ウィンドウの計測条件を無視　を有効にしてください。
 
-![image](./clipstudioSetting.png?raw=true "clip_cmc")
+![image](./clipstudioSetting.png?raw=true "clip_window")
 
 現時点では、記録できるのは作品ごとの作業時間に限られます。<u>複数ページファイルのうち
 特定のページのみ記録する方法に関しては、現在のところありません。</u>もし要望があれば今後対応する可能性はあります。
@@ -104,12 +104,12 @@ Clip Studio Paintでは仕様上、メインウィンドウのタイトルバー
 
 4.を実行後、「認証が完了しました」と表示され、登録したメールアドレスが表示されれば連携完了です。
 
-![image](./togglSetting.png?raw=true "clip_cmc")
+![image](./togglSetting.png?raw=true "toggl_setting")
 
 連携後、記録しているアプリが終了されたとき、Togglアカウントににアプリの実行時間が送信されます。
 実際にToggl上で時間が記録されていることをご確認ください。
 
-![image](./timeEntry.png?raw=true "clip_cmc")
+![image](./timeEntry.png?raw=true "toggl_display")
 
 各アプリにはそれぞれ、「プロジェクト」と「タグ」を設定することができます。設定>Toggl連携設定　の下部リストより設定してください。その他Togglの使い方については[公式ドキュメント](https://support.toggl.com/en/)をご覧ください。
 
