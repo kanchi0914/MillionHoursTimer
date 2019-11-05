@@ -21,12 +21,12 @@ namespace MHTimer
                 var imageSource = img.ToImageSource();
                 appData.IconImageSource = imageSource;
 
-                var savePath = Settings.IconFileDirPath + $"{appData.ProcessName}.png";
+                var savePath = Settings.IconFileDirFullDirPath + $"{appData.ProcessName}.png";
                 SaveIconImage(imageSource, savePath);
             }
             catch (FileNotFoundException ex)
             {
-                var defaultIconImagePath = Settings.IconFileDirPath + $"defaultIcon.png";
+                var defaultIconImagePath = Settings.IconFileDirFullDirPath + $"defaultIcon.png";
                 ErrorLogger.Log(ex);
                 LoadIconImage(defaultIconImagePath);
             }
@@ -71,7 +71,7 @@ namespace MHTimer
             //アイコン画像が存在しない場合、デフォルトのアイコン画像を使用
             catch (FileNotFoundException ex)
             {
-                var defaultIconImagePath = Settings.IconFileDirPath + $"defaultIcon.png";
+                var defaultIconImagePath = Settings.IconFileDirFullDirPath + $"defaultIcon.png";
                 ErrorLogger.Log(ex);
                 return LoadIconImage(defaultIconImagePath);
             }
@@ -84,7 +84,7 @@ namespace MHTimer
         
         public static void RemoveIconImage(string processName)
         {
-            var path = Settings.IconFileDirPath + $"{processName}.png";
+            var path = Settings.IconFileDirFullDirPath + $"{processName}.png";
             File.Delete(@path);
         }
     }
