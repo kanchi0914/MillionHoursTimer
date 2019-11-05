@@ -76,7 +76,7 @@ MHTimer.zipをダウンロード後解凍し、フォルダを適当な場所に
 * イラスト、画像編集系ソフト  
 Photoshop(CC 2018)、PaintTool SAI、Gimp
 * エディタ系ソフト  
-VS Code、Atom、Microsoft Word、IntelliJ、サクラエディタ、Terapad、TexStudio
+VS Code、Atom、IntelliJ、サクラエディタ、Terapad、TexStudio
 
 それ以外に、タイトルバーが
 ``ファイル名 - アプリケーション名 ``
