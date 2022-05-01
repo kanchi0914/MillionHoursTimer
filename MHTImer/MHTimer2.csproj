@@ -69,8 +69,9 @@
     <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.0.8.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.4.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="NotifyIconWpf, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NotifyIconWpf.PieroViano.1.0.0.9\lib\net46\NotifyIconWpf.dll</HintPath>
@@ -90,8 +91,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Toggl, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\TogglAPI.Net.0.2\lib\net45\Toggl.dll</HintPath>
+    <Reference Include="Toggl.Api, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Toggl.Api.8.0.7\lib\netstandard2.0\Toggl.Api.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -138,7 +140,7 @@
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="TimeCounter.cs" />
-    <Compile Include="TogglManager.cs" />
+    <Compile Include="TogglManager2.cs" />
     <Compile Include=".xaml.cs">
       <DependentUpon>AppNameSettingWindow.xaml</DependentUpon>
     </Compile>

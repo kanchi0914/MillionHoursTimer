@@ -1,9 +1,9 @@
-﻿using Toggl.Services;
-using Toggl;
-using Toggl.Extensions;
+﻿using Toggl.Api.Services;
+using Toggl.Api.DataObjects;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Toggl.Api.Extensions;
 
 namespace MHTimer
 {
@@ -16,9 +16,9 @@ namespace MHTimer
         string PreApiKey { get; set; } = "";
         public string User{ get; set; } = "";
 
-        TimeEntryService timeEntryService;
+        TimeEntryServiceAsync timeEntryService;
 
-        private int defaultWorkspaceID;
+        private long defaultWorkspaceID;
 
         public Dictionary<string, int> ProjectIDs { get; private set; }
         public List<string> Tags { get; set; }
@@ -55,24 +55,24 @@ namespace MHTimer
                 {
                     return;
                 }
-                
-                var userService = new UserService(ApiKey);
-                User = userService.GetCurrent().Email;
 
-                var projectService = new ProjectService(ApiKey);
-                List<Project> projects = projectService.List();
-                foreach (Project p in projects)
+                var userService = new UserServiceAsync(ApiKey);
+                User = userService.GetCurrentAsync().Result.Email;
+                var projectService = new ProjectServiceAsync(ApiKey);
+                var projects = projectService.ListAsync().Result;
+
+                foreach (var p in projects)
                 {
                     ProjectIDs.Add(p.Name, (int)p.Id);
                 }
 
-                timeEntryService = new TimeEntryService(ApiKey);
+                timeEntryService = new TimeEntryServiceAsync(ApiKey);
 
-                var workspaceService = new WorkspaceService(ApiKey);
-                List<Workspace> workspaces = workspaceService.List();
-                defaultWorkspaceID = workspaces.First().Id.Value;
-                var tags = workspaceService.Tags(defaultWorkspaceID);
-                foreach (Tag t in tags)
+                var workspaceService = new WorkspaceServiceAsync(ApiKey);
+                var workspaces = workspaceService.GetAllAsync();
+                defaultWorkspaceID = workspaces.Result.First().Id;
+                var tags = workspaceService.GetTagsAsync(defaultWorkspaceID).Result;
+                foreach (var t in tags)
                 {
                     Tags.Add(t.Name);
                 }
@@ -83,27 +83,6 @@ namespace MHTimer
                 throw e;
             }
 
-        }
-
-        /// <summary>
-        /// テスト用メソッド
-        /// </summary>
-        public void Test()
-        {
-
-            TimeEntry te2 = new TimeEntry()
-            {
-                IsBillable = true,
-                CreatedWith = "TogglAPI.Net",
-                Description = "Test",
-                ProjectId = 150055033,
-                Duration = 1200,
-                Start = DateTime.Now.ToIsoDateStr(),
-                Stop = DateTime.Now.AddMinutes(10).ToIsoDateStr(),
-                WorkspaceId = defaultWorkspaceID
-            };
-
-            timeEntryService.Add(te2);
         }
 
         /// <summary>
@@ -131,7 +110,7 @@ namespace MHTimer
         {
 
             int duration = (int)(appData.LastRunningTime - appData.LaunchedTime).TotalSeconds;
-            TimeEntry te = new TimeEntry()
+            var te = new TimeEntry()
             {
                 IsBillable = true,
                 CreatedWith = "TogglAPI.Net",
@@ -139,7 +118,6 @@ namespace MHTimer
                 Duration = duration,
                 Start = appData.LaunchedTime.ToIsoDateStr(),
                 Stop = appData.LastRunningTime.ToIsoDateStr(),
-
                 WorkspaceId = defaultWorkspaceID
             };
 
@@ -157,7 +135,7 @@ namespace MHTimer
             {
                 if (te != null)
                 {
-                    timeEntryService.Add(te);
+                    timeEntryService.CreateAsync(te);
                     Console.WriteLine($"sended:{te}");
                 }
             }
