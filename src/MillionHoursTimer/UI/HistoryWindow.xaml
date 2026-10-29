@@ -1,0 +1,63 @@
+<Window x:Class="MillionHoursTimer.UI.HistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:MillionHoursTimer.UI"
+        Title="履歴とグラフ" Width="760" Height="600" MinWidth="520" MinHeight="420"
+        Style="{StaticResource BaseWindow}" Icon="/Resources/app.ico" ShowInTaskbar="False">
+    <DockPanel Margin="14">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+            <TextBlock Text="期間" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <ComboBox x:Name="RangeBox" Width="160" SelectionChanged="OnRangeChanged">
+                <ComboBoxItem Content="過去 7 日間" Tag="7" />
+                <ComboBoxItem Content="過去 30 日間" Tag="30" IsSelected="True" />
+                <ComboBoxItem Content="過去 90 日間" Tag="90" />
+                <ComboBoxItem Content="過去 12 か月 (月別)" Tag="12m" />
+            </ComboBox>
+            <Button Content="最新の状態にする" DockPanel.Dock="Right" Click="OnRefresh" />
+            <TextBlock x:Name="Summary" VerticalAlignment="Center" Margin="16,0,0,0" Foreground="#444" />
+        </DockPanel>
+
+        <TextBlock DockPanel.Dock="Bottom" Style="{StaticResource Hint}" Margin="0,8,0,0"
+                   Text="旧バージョンから取り込んだ累計は、いつの作業か分からないためグラフには含まれません。一覧から外したアプリの記録も表示します。" />
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
+            <Border BorderBrush="#E0E0E0" BorderThickness="1" Background="White" Padding="6">
+                <ui:StackedBarChart x:Name="Chart" />
+            </Border>
+            <WrapPanel x:Name="Legend" Grid.Row="1" Margin="0,8,0,8" />
+            <ListView x:Name="Table" Grid.Row="2">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="アプリケーション名" Width="260" DisplayMemberBinding="{Binding Name}" />
+                        <GridViewColumn Header="期間の合計" Width="150">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding TotalText}" HorizontalAlignment="Right" FontFamily="BIZ UDGothic, MS Gothic" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="1日平均" Width="150">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding AverageText}" HorizontalAlignment="Right" FontFamily="BIZ UDGothic, MS Gothic" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="割合" Width="70">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ShareText}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+    </DockPanel>
+</Window>

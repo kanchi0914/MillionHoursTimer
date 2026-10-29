@@ -1,0 +1,146 @@
+<Window x:Class="MillionHoursTimer.UI.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="Root"
+        Title="設定" Width="620" Height="560" MinWidth="520" MinHeight="460"
+        Style="{StaticResource BaseWindow}" Icon="/Resources/app.ico"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Window.Resources>
+        <Style TargetType="TextBox" x:Key="Number">
+            <Setter Property="Width" Value="70" />
+            <Setter Property="Padding" Value="3,2" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+        </Style>
+        <Style TargetType="StackPanel" x:Key="Row">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Margin" Value="0,6,0,0" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="Label">
+            <Setter Property="Width" Value="140" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Window.Resources>
+    <DockPanel Margin="12">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="OK" IsDefault="True" Click="OnOk" Margin="0,0,8,0" />
+            <Button Content="キャンセル" IsCancel="True" />
+        </StackPanel>
+
+        <TabControl>
+            <TabItem Header="基本設定">
+                <StackPanel Margin="14">
+                    <CheckBox x:Name="AutoStartBox" Content="Windows の起動時に自動的に起動する" />
+                    <TextBlock Style="{StaticResource Hint}" Text="起動するとタスクトレイに常駐して、そのまま記録を始めます。" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="データの保存先" />
+                    <DockPanel>
+                        <Button Content="開く" DockPanel.Dock="Right" Margin="6,0,0,0" Click="OnOpenDataFolder" />
+                        <TextBox x:Name="DataDirBox" IsReadOnly="True" Padding="3,2" />
+                    </DockPanel>
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,4,0,0"
+                               Text="作業記録は records フォルダに月ごとの CSV で保存しています。テキストエディタや Excel で開いて確認・編集できます (編集した内容は自動で読み直します)。" />
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="記録設定">
+                <StackPanel Margin="14">
+                    <TextBlock Style="{StaticResource SectionTitle}" Margin="0,0,0,4" Text="計測方法" />
+                    <RadioButton x:Name="ModeAll" Content="起動しているアプリを全て計測する" GroupName="Mode" />
+                    <TextBlock Style="{StaticResource Hint}" Text="バックグラウンドで動いているものも含めて計測します。" />
+                    <RadioButton x:Name="ModeNotMinimized" Content="最小化していないアプリのみ計測する (おすすめ)" GroupName="Mode" />
+                    <TextBlock Style="{StaticResource Hint}" Text="ウィンドウを最小化しているアプリは計測しません。" />
+                    <RadioButton x:Name="ModeActive" Content="アクティブウィンドウのみ計測する" GroupName="Mode" />
+                    <TextBlock Style="{StaticResource Hint}" Text="いま操作しているウィンドウのアプリだけを計測します。" />
+
+                    <StackPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Label}" Text="計測間隔" />
+                        <TextBox x:Name="IntervalBox" Style="{StaticResource Number}" />
+                        <TextBlock Text="秒" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Hint}" Margin="140,2,0,0" Text="PC の負担が気になるときは長くしてください。" />
+                    <StackPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Label}" Text="無操作判定時間" />
+                        <TextBox x:Name="IdleBox" Style="{StaticResource Number}" />
+                        <TextBlock Text="秒" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Hint}" Margin="140,2,0,0" Text="この時間 PC の操作がなければ、最後に操作した時点で計測を止めます。0 で止めません。" />
+                    <StackPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Label}" Text="最小記録時間" />
+                        <TextBox x:Name="MinRecordBox" Style="{StaticResource Number}" />
+                        <TextBlock Text="秒" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Hint}" Margin="140,2,0,0" Text="これより短い作業は記録しません。" />
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="ファイル設定">
+                <StackPanel Margin="14">
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,0,0,10"
+                               Text="タイトルバーのファイル名を拡張子で見分けるには、アプリごとに拡張子を設定してください (メイン画面で右クリック →「ファイル拡張子を設定」)。" />
+                    <CheckBox x:Name="HyphenBox" Content="ハイフン区切りをファイル名の取得に利用する" />
+                    <TextBlock Style="{StaticResource Hint}" Text="タイトルバーが「ファイル名 - アプリ名」の形のアプリなら、拡張子が表示されなくてもファイル別に記録できます。" />
+                    <CheckBox x:Name="SplitBox" Content="ファイル名をスペースで区切る" />
+                    <TextBlock Style="{StaticResource Hint}" Text="取得したファイル名をさらにスペースで区切ります (CLIP STUDIO PAINT のページ管理ウィンドウなど)。" />
+                    <CheckBox x:Name="IgnoreStateBox" Content="ファイル名表示ウィンドウの計測条件を無視する" />
+                    <TextBlock Style="{StaticResource Hint}" Text="ファイル名を表示している別ウィンドウが最小化・非アクティブでも、アプリ本体が計測中ならファイル別に記録します。" />
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Toggl 連携">
+                <DockPanel Margin="14">
+                    <StackPanel DockPanel.Dock="Top">
+                        <TextBlock TextWrapping="Wrap">
+                            <Hyperlink Click="OnOpenTogglProfile">Toggl のプロフィール設定</Hyperlink>
+                            <Run Text="の下の方にある API Token を貼り付けて「認証」を押してください。" />
+                        </TextBlock>
+                        <DockPanel Margin="0,8,0,0">
+                            <TextBlock Text="API キー" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <Button x:Name="DisconnectButton" Content="解除" DockPanel.Dock="Right" Margin="6,0,0,0" Click="OnDisconnect" />
+                            <Button x:Name="ConnectButton" Content="認証" DockPanel.Dock="Right" Margin="6,0,0,0" Click="OnConnect" />
+                            <PasswordBox x:Name="ApiKeyBox" Padding="3,2" />
+                        </DockPanel>
+                        <TextBlock x:Name="TogglStatus" Margin="0,6,0,0" TextWrapping="Wrap" />
+                        <StackPanel Style="{StaticResource Row}">
+                            <TextBlock Style="{StaticResource Label}" Text="最低送信時間" />
+                            <TextBox x:Name="TogglMinBox" Style="{StaticResource Number}" />
+                            <TextBlock Text="秒 (これより短い作業は送りません)" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock Margin="0,12,0,4" TextWrapping="Wrap"
+                                   Text="「連携」にチェックを入れたアプリは、作業が終わったときに Toggl に記録します。送れなかったものは次に送れるときに再送します。" />
+                    </StackPanel>
+                    <DataGrid x:Name="TogglApps" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EEE">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="連携" Width="50">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <!-- DataGridCheckBoxColumn だと2回クリックしないと切り替わらないため -->
+                                        <CheckBox IsChecked="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="アプリ" Binding="{Binding Name}" IsReadOnly="True" Width="*" />
+                            <DataGridTemplateColumn Header="プロジェクト" Width="150">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox IsEditable="True" ItemsSource="{Binding ProjectNames, ElementName=Root}"
+                                                  Text="{Binding Project, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="タグ" Width="130">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox IsEditable="True" ItemsSource="{Binding TagNames, ElementName=Root}"
+                                                  Text="{Binding Tag, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

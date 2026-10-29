@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MillionHoursTimer.Core/MillionHoursTimer.Core.csproj" />
+    <Project Path="src/MillionHoursTimer/MillionHoursTimer.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MillionHoursTimer.Core.Tests/MillionHoursTimer.Core.Tests.csproj" />
+  </Folder>
+</Solution>

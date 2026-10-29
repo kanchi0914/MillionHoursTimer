@@ -1,0 +1,68 @@
+# テストとビルドを行い、v から始まるタグ (例: v2.0.0) を push したら GitHub Releases に公開する
+name: build
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Test
+        run: dotnet test MillionHoursTimer.slnx -c Release
+
+      - name: Decide version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.ref_type }}" -eq "tag") { $v = "${{ github.ref_name }}".TrimStart("v") }
+          else { $v = "2.0.0-ci.${{ github.run_number }}" }
+          "value=$v" >> $env:GITHUB_OUTPUT
+
+      - name: Publish
+        run: >
+          dotnet publish src/MillionHoursTimer -c Release -r win-x64 --self-contained
+          -o publish -p:Version=${{ steps.version.outputs.value }}
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      # 差分更新ファイルを作るため、前回のリリースを取ってくる
+      - name: Download previous release
+        if: github.ref_type == 'tag'
+        run: >
+          dotnet vpk download github --repoUrl ${{ github.server_url }}/${{ github.repository }}
+          --token ${{ secrets.GITHUB_TOKEN }} --outputDir releases
+
+      - name: Pack
+        run: >
+          dotnet vpk pack --packId MillionHoursTimer --packVersion ${{ steps.version.outputs.value }}
+          --packDir publish --mainExe MillionHoursTimer.exe --packTitle MillionHoursTimer --packAuthors kanchi0914
+          --icon src/MillionHoursTimer/Resources/app.ico --outputDir releases
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MillionHoursTimer-${{ steps.version.outputs.value }}
+          path: |
+            releases/*-Setup.exe
+            releases/*-Portable.zip
+
+      - name: Publish release
+        if: github.ref_type == 'tag'
+        run: >
+          dotnet vpk upload github --repoUrl ${{ github.server_url }}/${{ github.repository }}
+          --token ${{ secrets.GITHUB_TOKEN }} --outputDir releases --publish
+          --releaseName "MillionHoursTimer ${{ steps.version.outputs.value }}" --tag ${{ github.ref_name }}
