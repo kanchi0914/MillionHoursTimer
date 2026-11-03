@@ -1,0 +1,48 @@
+<Window x:Class="MillionHoursTimer.UI.MigrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="旧バージョンのデータを取り込む" Width="620" SizeToContent="Height" ResizeMode="NoResize"
+        Style="{StaticResource BaseWindow}" Icon="/Resources/app.ico"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <StackPanel Margin="18">
+        <TextBlock x:Name="Intro" TextWrapping="Wrap" Margin="0,0,0,12" />
+
+        <Border x:Name="RunningPanel" Background="#FFF4E0" BorderBrush="#F0C36D" BorderThickness="1" Padding="10" Margin="0,0,0,12" Visibility="Collapsed">
+            <DockPanel>
+                <Button Content="旧バージョンを終了" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="10,0,0,0" Click="OnStopOld" />
+                <TextBlock TextWrapping="Wrap"
+                           Text="旧バージョン (MHTimer) が起動しています。最新の記録まで取り込めるよう、先に旧バージョンを終了してください。" />
+            </DockPanel>
+        </Border>
+
+        <TextBlock Style="{StaticResource SectionTitle}" Margin="0,0,0,4" Text="旧バージョンの data フォルダ" />
+        <DockPanel>
+            <Button Content="フォルダを指定..." DockPanel.Dock="Right" Margin="8,0,0,0" VerticalAlignment="Top" Click="OnBrowse" />
+            <ListBox x:Name="Candidates" Height="84" SelectionChanged="OnCandidateChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" ToolTip="{Binding}" TextTrimming="CharacterEllipsis" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+        <TextBlock x:Name="NotFound" Style="{StaticResource Hint}" Margin="0,4,0,0" Visibility="Collapsed"
+                   Text="自動では見つかりませんでした。バイナリ版 (zip) を使っていた場合は、MHTimer.exe があるフォルダ (またはその中の data フォルダ) を指定してください。" />
+
+        <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="1" Padding="10" Margin="0,10,0,0">
+            <TextBlock x:Name="Preview" TextWrapping="Wrap" Text="フォルダを選ぶと、取り込む内容を表示します。" Foreground="#444" />
+        </Border>
+
+        <CheckBox x:Name="SettingsBox" Content="設定も引き継ぐ" Margin="0,12,0,0" IsChecked="True" />
+        <CheckBox x:Name="AutoStartBox" Content="旧バージョンの自動起動を解除して、このバージョンを自動起動にする" Margin="0,6,0,0" IsChecked="True" Visibility="Collapsed" />
+
+        <TextBlock Style="{StaticResource Hint}" Margin="0,12,0,0"
+                   Text="旧バージョンのデータは書き換えません (取り込んだ時点の複製も、新しいデータフォルダの legacy-backup に保存します)。旧バージョンには「いつ作業したか」の記録がないため、累計時間は日付なしで取り込みます。" />
+
+        <DockPanel Margin="0,16,0,0">
+            <Button x:Name="ImportButton" Content="取り込む" DockPanel.Dock="Right" IsDefault="True" IsEnabled="False" Click="OnImport" />
+            <Button x:Name="SkipButton" Content="旧バージョンは使っていない" HorizontalAlignment="Left" Click="OnSkip" />
+            <Button Content="あとで" HorizontalAlignment="Left" Margin="8,0,0,0" IsCancel="True" />
+        </DockPanel>
+    </StackPanel>
+</Window>
