@@ -35,7 +35,7 @@ public partial class MigrationWindow : Window
         {
             SettingsBox.IsEnabled = false;
             SettingsBox.IsChecked = false;
-            SettingsBox.Content = "設定と Toggl の API キーも引き継ぐ (旧バージョンの設定が見つかりませんでした)";
+            SettingsBox.Content = "設定も引き継ぐ (旧バージョンの設定が見つかりませんでした)";
         }
 
         UpdateRunningPanel();
@@ -99,7 +99,7 @@ public partial class MigrationWindow : Window
         }
     }
 
-    private async void OnImport(object sender, RoutedEventArgs e)
+    private void OnImport(object sender, RoutedEventArgs e)
     {
         if (_selected == null) return;
         if (LegacyLocator.RunningOldInstances().Count > 0
@@ -147,17 +147,10 @@ public partial class MigrationWindow : Window
             notes.Add("自動起動の設定に失敗しました: " + ex.Message);
         }
 
-        if (legacySettings is { ApiKey.Length: > 0 })
+        // 旧バージョンの API キーは Toggl Track のもので、Toggl 2.0 では使えない
+        if (legacySettings is { ApiKey.Length: > 0 } && !_toggl.HasApiKey)
         {
-            try
-            {
-                await _toggl.ConnectAsync(legacySettings.ApiKey);
-                notes.Add($"Toggl と連携しました ({_toggl.UserEmail})。");
-            }
-            catch (TogglApiException ex)
-            {
-                notes.Add("Toggl の API キーを引き継げませんでした。設定画面から入力し直してください: " + ex.Message);
-            }
+            notes.Add("Toggl は Toggl 2.0 に移行したため、旧バージョンの API キーは引き継げません。Toggl と連携する場合は、設定画面の「Toggl 連携」から設定し直してください。");
         }
 
         if (LegacyLocator.IsOldInstallerPresent())

@@ -101,15 +101,30 @@
                 <DockPanel Margin="14">
                     <StackPanel DockPanel.Dock="Top">
                         <TextBlock TextWrapping="Wrap">
-                            <Hyperlink Click="OnOpenTogglProfile">Toggl のプロフィール設定</Hyperlink>
-                            <Run Text="の下の方にある API Token を貼り付けて「認証」を押してください。" />
+                            <Run Text="1." />
+                            <Hyperlink Click="OnOpenTogglSettings">Toggl の設定画面</Hyperlink>
+                            <Run Text="で API キー (toggl_sk_ で始まるもの) を作成して貼り付けてください。" />
+                            <LineBreak />
+                            <Run Text="2. Toggl にログインしたときのアドレスバーの URL (https://focus.toggl.com/数字/workspaces/数字/...) を貼り付けて「認証」を押してください。" />
                         </TextBlock>
-                        <DockPanel Margin="0,8,0,0">
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
                             <TextBlock Text="API キー" VerticalAlignment="Center" Margin="0,0,8,0" />
-                            <Button x:Name="DisconnectButton" Content="解除" DockPanel.Dock="Right" Margin="6,0,0,0" Click="OnDisconnect" />
-                            <Button x:Name="ConnectButton" Content="認証" DockPanel.Dock="Right" Margin="6,0,0,0" Click="OnConnect" />
-                            <PasswordBox x:Name="ApiKeyBox" Padding="3,2" />
-                        </DockPanel>
+                            <PasswordBox x:Name="ApiKeyBox" Grid.Column="1" Padding="3,2" />
+                            <TextBlock Text="URL" Grid.Row="1" VerticalAlignment="Center" Margin="0,6,8,0" />
+                            <TextBox x:Name="WorkspaceUrlBox" Grid.Row="1" Grid.Column="1" Padding="3,2" Margin="0,6,0,0" />
+                            <Button x:Name="ConnectButton" Content="認証" Grid.RowSpan="2" Grid.Column="2" Margin="6,0,0,0" Click="OnConnect" />
+                            <Button x:Name="DisconnectButton" Content="解除" Grid.RowSpan="2" Grid.Column="3" Margin="6,0,0,0" Click="OnDisconnect" />
+                        </Grid>
                         <TextBlock x:Name="TogglStatus" Margin="0,6,0,0" TextWrapping="Wrap" />
                         <StackPanel Style="{StaticResource Row}">
                             <TextBlock Style="{StaticResource Label}" Text="最低送信時間" />

@@ -33,7 +33,7 @@
             <TextBlock x:Name="Preview" TextWrapping="Wrap" Text="フォルダを選ぶと、取り込む内容を表示します。" Foreground="#444" />
         </Border>
 
-        <CheckBox x:Name="SettingsBox" Content="設定と Toggl の API キーも引き継ぐ" Margin="0,12,0,0" IsChecked="True" />
+        <CheckBox x:Name="SettingsBox" Content="設定も引き継ぐ" Margin="0,12,0,0" IsChecked="True" />
         <CheckBox x:Name="AutoStartBox" Content="旧バージョンの自動起動を解除して、このバージョンを自動起動にする" Margin="0,6,0,0" IsChecked="True" Visibility="Collapsed" />
 
         <TextBlock Style="{StaticResource Hint}" Margin="0,12,0,0"

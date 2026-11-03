@@ -94,7 +94,7 @@ public partial class SettingsWindow : Window
         }
         else if (_toggl.IsConnected)
         {
-            TogglStatus.Text = $"連携中: {_toggl.UserEmail}" + (_toggl.PendingCount > 0 ? $"　(未送信 {_toggl.PendingCount}件)" : "");
+            TogglStatus.Text = $"連携中: ワークスペース {_toggl.Workspace!.WorkspaceId}" + (_toggl.PendingCount > 0 ? $"　(未送信 {_toggl.PendingCount}件)" : "");
         }
         else
         {
@@ -107,9 +107,21 @@ public partial class SettingsWindow : Window
     private async void OnConnect(object sender, RoutedEventArgs e)
     {
         var key = ApiKeyBox.Password.Trim();
+        var url = WorkspaceUrlBox.Text.Trim();
         if (key.Length == 0 && !_toggl.HasApiKey)
         {
             Dialogs.Info(this, "API キーを入力してください。");
+            return;
+        }
+        if (url.Length == 0 && !_toggl.HasApiKey)
+        {
+            Dialogs.Info(this, "Toggl にログインしたときの URL を入力してください。");
+            return;
+        }
+        var workspace = url.Length > 0 ? TogglWorkspace.FromUrl(url) : null;
+        if (url.Length > 0 && workspace == null)
+        {
+            Dialogs.Warn(this, "URL の形式が違います。Toggl にログインしたときの、https://focus.toggl.com/数字/workspaces/数字/... の形の URL を貼り付けてください。");
             return;
         }
 
@@ -117,8 +129,9 @@ public partial class SettingsWindow : Window
         TogglStatus.Text = "認証しています...";
         try
         {
-            await _toggl.ConnectAsync(key.Length > 0 ? key : null);
+            await _toggl.ConnectAsync(key.Length > 0 ? key : null, workspace);
             ApiKeyBox.Clear();
+            WorkspaceUrlBox.Clear();
             RefreshToggl();
             if (_toggl.IsConnected)
             {
@@ -129,7 +142,11 @@ public partial class SettingsWindow : Window
         catch (TogglApiException ex)
         {
             RefreshToggl();
-            Dialogs.Warn(this, (ex.IsAuthError ? "認証に失敗しました。API キーが正しいか確認してください。\n\n" : "") + ex.Message);
+            var hint = !ex.IsAuthError ? ""
+                : key.Length > 0 && !key.StartsWith("toggl_sk_", StringComparison.Ordinal)
+                    ? "認証に失敗しました。Toggl 2.0 の API キー (toggl_sk_ で始まるもの) を貼り付けてください。旧 Toggl Track の API Token は使えません。\n\n"
+                    : "認証に失敗しました。API キーと URL が正しいか確認してください。\n\n";
+            Dialogs.Warn(this, hint + ex.Message);
         }
         finally
         {
@@ -144,7 +161,7 @@ public partial class SettingsWindow : Window
         RefreshToggl();
     }
 
-    private void OnOpenTogglProfile(object sender, RoutedEventArgs e) => Shell.Open("https://track.toggl.com/profile");
+    private void OnOpenTogglSettings(object sender, RoutedEventArgs e) => Shell.Open("https://focus.toggl.com/settings");
 
     private void OnOpenDataFolder(object sender, RoutedEventArgs e) => Shell.Open(_tracker.Paths.Root);
 
