@@ -84,6 +84,16 @@
                     <TextBlock Style="{StaticResource Hint}" Text="取得したファイル名をさらにスペースで区切ります (CLIP STUDIO PAINT のページ管理ウィンドウなど)。" />
                     <CheckBox x:Name="IgnoreStateBox" Content="ファイル名表示ウィンドウの計測条件を無視する" />
                     <TextBlock Style="{StaticResource Hint}" Text="ファイル名を表示している別ウィンドウが最小化・非アクティブでも、アプリ本体が計測中ならファイル別に記録します。" />
+
+                    <StackPanel Style="{StaticResource Row}">
+                        <TextBlock Style="{StaticResource Label}" Text="ファイル別の最小記録時間" Width="170" />
+                        <TextBox x:Name="MinFileRecordBox" Style="{StaticResource Number}" />
+                        <TextBlock Text="秒" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Hint}" Margin="170,2,0,10"
+                               Text="これより短い作業はファイル別に記録しません (アプリ全体の記録はされます)。ブラウザで一瞬だけ開いたページなどが一覧に増えるのを防げます。" />
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,0,0,0"
+                               Text="古い記録の自動削除とロックは、アプリごとに「ファイル別の作業時間」の画面で設定できます。" />
                 </StackPanel>
             </TabItem>
 

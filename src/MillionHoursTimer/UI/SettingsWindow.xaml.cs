@@ -63,6 +63,7 @@ public partial class SettingsWindow : Window
         HyphenBox.IsChecked = s.UseHyphenFileName;
         SplitBox.IsChecked = s.SplitFileNameBySpace;
         IgnoreStateBox.IsChecked = s.IgnoreWindowStateForFiles;
+        MinFileRecordBox.Text = s.MinFileRecordSeconds.ToString();
         TogglMinBox.Text = s.TogglMinSeconds.ToString();
 
         _togglRows = tracker.GetSnapshot().Apps.Select(a => new TogglAppRow
@@ -153,6 +154,7 @@ public partial class SettingsWindow : Window
         if (!TryReadNumber(IntervalBox, "計測間隔", 1, 3600, out var interval)
             || !TryReadNumber(IdleBox, "無操作判定時間", 0, 86400, out var idle)
             || !TryReadNumber(MinRecordBox, "最小記録時間", 0, 86400, out var minRecord)
+            || !TryReadNumber(MinFileRecordBox, "ファイル別の最小記録時間", 0, 86400, out var minFileRecord)
             || !TryReadNumber(TogglMinBox, "最低送信時間", 0, 86400, out var togglMin))
         {
             return;
@@ -168,6 +170,7 @@ public partial class SettingsWindow : Window
         s.UseHyphenFileName = HyphenBox.IsChecked == true;
         s.SplitFileNameBySpace = SplitBox.IsChecked == true;
         s.IgnoreWindowStateForFiles = IgnoreStateBox.IsChecked == true;
+        s.MinFileRecordSeconds = minFileRecord;
         s.TogglMinSeconds = togglMin;
 
         try

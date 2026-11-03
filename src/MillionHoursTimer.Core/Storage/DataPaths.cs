@@ -16,6 +16,7 @@ public sealed class DataPaths
     public string Root { get; }
     public string SettingsFile => Path.Combine(Root, "settings.json");
     public string AppsFile => Path.Combine(Root, "apps.csv");
+    public string FileLocksFile => Path.Combine(Root, "file_locks.csv");
     public string RecordsDir => Path.Combine(Root, "records");
     public string AppRecordsDir => Path.Combine(RecordsDir, "apps");
     public string FileRecordsDir => Path.Combine(RecordsDir, "files");

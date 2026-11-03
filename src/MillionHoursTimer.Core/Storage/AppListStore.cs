@@ -8,7 +8,7 @@ namespace MillionHoursTimer.Core.Storage;
 public static class AppListStore
 {
     private static readonly string[] Columns =
-        ["process", "app_name", "exe_path", "extensions", "toggl", "toggl_project", "toggl_tag"];
+        ["process", "app_name", "exe_path", "extensions", "toggl", "toggl_project", "toggl_tag", "file_expire_days", "file_keep_minutes"];
 
     public static List<AppDefinition> Load(string path, List<string>? warnings = null)
     {
@@ -40,6 +40,8 @@ public static class AppListStore
                 TogglEnabled = ParseBool(table.Get(row, "toggl")),
                 TogglProject = table.Get(row, "toggl_project"),
                 TogglTag = table.Get(row, "toggl_tag"),
+                FileExpireDays = ParseCount(table.Get(row, "file_expire_days")),
+                FileKeepMinutes = ParseCount(table.Get(row, "file_keep_minutes")),
             });
         }
         return apps;
@@ -55,10 +57,14 @@ public static class AppListStore
             [
                 a.Process, a.Name, a.ExePath, AppDefinition.FormatExtensions(a.Extensions),
                 a.TogglEnabled ? "true" : "false", a.TogglProject, a.TogglTag,
+                a.FileExpireDays.ToString(), a.FileKeepMinutes.ToString(),
             ])).Append("\r\n");
         }
         TextFile.WriteAtomic(path, sb.ToString());
     }
+
+    /// <summary>空欄や数字でないものは 0 (無効) とみなす</summary>
+    private static int ParseCount(string text) => int.TryParse(text, out var n) && n > 0 ? n : 0;
 
     private static bool ParseBool(string text) =>
         text.Equals("true", StringComparison.OrdinalIgnoreCase) || text == "1"

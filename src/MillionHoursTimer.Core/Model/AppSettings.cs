@@ -26,6 +26,9 @@ public sealed class AppSettings
     /// <summary>これより短い作業は記録しない (秒)</summary>
     public int MinRecordSeconds { get; set; }
 
+    /// <summary>これより短い作業はファイル別に記録しない (秒)。アプリ単位の記録には影響しない。</summary>
+    public int MinFileRecordSeconds { get; set; }
+
     /// <summary>「ファイル名 - アプリ名」形式のタイトルからファイル名を取る</summary>
     public bool UseHyphenFileName { get; set; } = true;
 
@@ -46,6 +49,10 @@ public sealed class AppSettings
     /// <summary>「旧バージョンは使っていない」が選ばれたら、起動時に取り込みを案内しない</summary>
     public bool SkipLegacyPrompt { get; set; }
 
+    /// <summary>この秒数より短い作業は記録しない</summary>
+    public int MinSecondsFor(RecordKind kind) =>
+        kind == RecordKind.File ? Math.Max(MinRecordSeconds, MinFileRecordSeconds) : MinRecordSeconds;
+
     public AppSettings Clone() => (AppSettings)MemberwiseClone();
 
     public void Normalize()
@@ -53,6 +60,7 @@ public sealed class AppSettings
         CountIntervalSeconds = Math.Clamp(CountIntervalSeconds, 1, 3600);
         IdleTimeoutSeconds = Math.Max(0, IdleTimeoutSeconds);
         MinRecordSeconds = Math.Max(0, MinRecordSeconds);
+        MinFileRecordSeconds = Math.Max(0, MinFileRecordSeconds);
         TogglMinSeconds = Math.Max(0, TogglMinSeconds);
         if (!Enum.IsDefined(CountMode)) CountMode = CountMode.NotMinimized;
     }

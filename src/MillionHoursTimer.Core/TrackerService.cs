@@ -16,11 +16,13 @@ public sealed record AppStatus(
     bool TogglEnabled,
     string TogglProject,
     string TogglTag,
-    IReadOnlyList<string> Extensions);
+    IReadOnlyList<string> Extensions,
+    int FileExpireDays,
+    int FileKeepMinutes);
 
 public sealed record TrackerSnapshot(IReadOnlyList<AppStatus> Apps, bool IsIdle, int UnsavedCount);
 
-public sealed record FileStatus(string Name, long TotalSeconds, DateOnly? LastDay, bool IsRecording);
+public sealed record FileStatus(string Name, long TotalSeconds, DateOnly? LastDay, bool IsRecording, bool IsLocked);
 
 public sealed record HistoryEntry(string Process, string Name, IReadOnlyDictionary<DateOnly, long> SecondsByDay)
 {
@@ -49,7 +51,9 @@ public sealed class TrackerService : IDisposable
     private List<AppDefinition> _apps = [];
     private AppSettings _settings = new();
     private UsageStats _stats = new();
+    private Dictionary<string, HashSet<string>> _locks = new(StringComparer.OrdinalIgnoreCase);
     private DateTime _lastCheckpoint = DateTime.MinValue;
+    private DateOnly? _lastCleanupDay;
     private bool _unsavedWarned;
 
     private CancellationTokenSource? _loopCts;
@@ -70,6 +74,7 @@ public sealed class TrackerService : IDisposable
         {
             _settings = SettingsStore.Load(paths.SettingsFile, Warnings);
             _apps = AppListStore.Load(paths.AppsFile, Warnings);
+            _locks = FileLockStore.Load(paths.FileLocksFile, Warnings);
             RebuildStats();
             RecoverCheckpoint();
         }
@@ -148,6 +153,13 @@ public sealed class TrackerService : IDisposable
             var finished = _engine.Tick(snapshot, _apps, _settings);
             sendToggl = HandleFinished(finished);
             if (finished.Count == 0) TrySaveUnsaved();
+            // 起動直後と日付が変わったときに、古いファイル別の記録を消す
+            var today = DateOnly.FromDateTime(snapshot.Now);
+            if (_lastCleanupDay != today)
+            {
+                _lastCleanupDay = today;
+                DeleteExpiredFiles(today);
+            }
             if (finished.Count > 0 || (snapshot.Now - _lastCheckpoint).Duration() >= CheckpointInterval) WriteCheckpoint(snapshot.Now);
         }
         AfterChange(sendToggl);
@@ -220,7 +232,9 @@ public sealed class TrackerService : IDisposable
                     a.TogglEnabled,
                     a.TogglProject,
                     a.TogglTag,
-                    [.. a.Extensions]);
+                    [.. a.Extensions],
+                    a.FileExpireDays,
+                    a.FileKeepMinutes);
             }).ToList();
             return new TrackerSnapshot(apps, _engine.IsIdle, _unsaved.Count);
         }
@@ -332,8 +346,8 @@ public sealed class TrackerService : IDisposable
         if (cp == null) return;
 
         var finished = new List<FinishedSession>();
-        finished.AddRange(cp.Apps.Select(s => TrackingEngine.Finish(RecordKind.App, s, null, _settings.MinRecordSeconds)).OfType<FinishedSession>());
-        finished.AddRange(cp.Files.Select(s => TrackingEngine.Finish(RecordKind.File, s, null, _settings.MinRecordSeconds)).OfType<FinishedSession>());
+        finished.AddRange(cp.Apps.Select(s => TrackingEngine.Finish(RecordKind.App, s, null, _settings.MinSecondsFor(RecordKind.App))).OfType<FinishedSession>());
+        finished.AddRange(cp.Files.Select(s => TrackingEngine.Finish(RecordKind.File, s, null, _settings.MinSecondsFor(RecordKind.File))).OfType<FinishedSession>());
         foreach (var r in cp.UnsavedApps)
         {
             _stats.Add(RecordKind.App, r);
@@ -393,6 +407,7 @@ public sealed class TrackerService : IDisposable
     {
         var relevant = string.Equals(path, _paths.AppsFile, StringComparison.OrdinalIgnoreCase)
             || string.Equals(path, _paths.SettingsFile, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(path, _paths.FileLocksFile, StringComparison.OrdinalIgnoreCase)
             || (path.StartsWith(_paths.RecordsDir, StringComparison.OrdinalIgnoreCase)
                 && path.EndsWith(".csv", StringComparison.OrdinalIgnoreCase));
         // 連続した変更をまとめて1回だけ読み直す
@@ -409,11 +424,13 @@ public sealed class TrackerService : IDisposable
             var warnings = new List<string>();
             AppSettings settings;
             List<AppDefinition> apps;
+            Dictionary<string, HashSet<string>> locks;
             List<SessionRecord> appRecords, fileRecords;
             try
             {
                 settings = SettingsStore.Load(_paths.SettingsFile, warnings);
                 apps = AppListStore.Load(_paths.AppsFile, warnings);
+                locks = FileLockStore.Load(_paths.FileLocksFile, warnings);
                 appRecords = _records.LoadAll(RecordKind.App, warnings, strict: true);
                 fileRecords = _records.LoadAll(RecordKind.File, warnings, strict: true);
             }
@@ -431,8 +448,15 @@ public sealed class TrackerService : IDisposable
             {
                 finished.AddRange(_engine.EndApp(removed.Process, settings));
             }
+            // 自動削除の設定が手で書き換えられたら、日付が変わるのを待たずに反映する
+            if (apps.Any(a => FindApp(a.Process) is not { } old
+                    || old.FileExpireDays != a.FileExpireDays || old.FileKeepMinutes != a.FileKeepMinutes))
+            {
+                _lastCleanupDay = null;
+            }
             _settings = settings;
             _apps = apps;
+            _locks = locks;
             var stats = new UsageStats();
             stats.AddRange(RecordKind.App, appRecords);
             stats.AddRange(RecordKind.File, fileRecords);
@@ -511,6 +535,7 @@ public sealed class TrackerService : IDisposable
                 _records.Rewrite(RecordKind.App, r => SameProcess(r.Process, process) ? null : r);
                 _records.Rewrite(RecordKind.File, r => SameProcess(r.Process, process) ? null : r);
                 TryDelete(_paths.IconFile(process));
+                TryChangeLocks(locks => locks.Remove(process));
             }
             else
             {
@@ -527,9 +552,11 @@ public sealed class TrackerService : IDisposable
         lock (_gate)
         {
             var files = new Dictionary<string, FileStatus>(StringComparer.Ordinal);
+            var locked = _locks.GetValueOrDefault(process);
+            bool IsLocked(string file) => locked?.Contains(file) == true;
             if (_stats.Get(process) is { } usage)
             {
-                foreach (var f in usage.Files.Values) files[f.Name] = new FileStatus(f.Name, f.TotalSeconds, f.LastDay, false);
+                foreach (var f in usage.Files.Values) files[f.Name] = new FileStatus(f.Name, f.TotalSeconds, f.LastDay, false, IsLocked(f.Name));
             }
             foreach (var s in _engine.GetFileSessions(process))
             {
@@ -537,7 +564,7 @@ public sealed class TrackerService : IDisposable
                 var seconds = (long)Math.Round(s.Seconds);
                 files[s.File] = files.TryGetValue(s.File, out var f)
                     ? f with { TotalSeconds = f.TotalSeconds + seconds, LastDay = today, IsRecording = s.SeenInLastTick }
-                    : new FileStatus(s.File, seconds, today, s.SeenInLastTick);
+                    : new FileStatus(s.File, seconds, today, s.SeenInLastTick, IsLocked(s.File));
             }
             return files.Values.ToList();
         }
@@ -561,6 +588,16 @@ public sealed class TrackerService : IDisposable
             _records.Rewrite(RecordKind.File, Rename);
             RebuildStats();
             WriteCheckpoint();
+
+            // どれか1つでもロックしていたら、まとめた後の項目もロックする
+            if (_locks.GetValueOrDefault(process) is { } locked && locked.Overlaps(targets))
+            {
+                ChangeLocks(locks =>
+                {
+                    locks[process].ExceptWith(targets);
+                    locks[process].Add(newName);
+                });
+            }
         }
         AfterChange(false);
     }
@@ -570,14 +607,156 @@ public sealed class TrackerService : IDisposable
         var targets = files.ToHashSet(StringComparer.Ordinal);
         lock (_gate)
         {
-            _engine.DiscardFiles(process, targets);
-            bool Match(SessionRecord r) => SameProcess(r.Process, process) && targets.Contains(r.File);
-            _unsaved.RemoveAll(u => u.Kind == RecordKind.File && Match(u.Record));
-            _records.Rewrite(RecordKind.File, r => Match(r) ? null : r);
+            RemoveFileRecords(process, targets);
             RebuildStats();
             WriteCheckpoint();
+            if (_locks.GetValueOrDefault(process) is { } locked && locked.Overlaps(targets))
+            {
+                TryChangeLocks(locks => locks[process].ExceptWith(targets));
+            }
         }
         AfterChange(false);
+    }
+
+    private void RemoveFileRecords(string process, IReadOnlySet<string> targets)
+    {
+        _engine.DiscardFiles(process, targets);
+        bool Match(SessionRecord r) => SameProcess(r.Process, process) && targets.Contains(r.File);
+        _unsaved.RemoveAll(u => u.Kind == RecordKind.File && Match(u.Record));
+        _records.Rewrite(RecordKind.File, r => Match(r) ? null : r);
+    }
+
+    /// <summary>ロックした記録は自動削除と「全て削除」の対象にしない</summary>
+    public void SetFilesLocked(string process, IReadOnlyCollection<string> files, bool locked)
+    {
+        lock (_gate)
+        {
+            ChangeLocks(locks =>
+            {
+                if (!locks.TryGetValue(process, out var set))
+                {
+                    set = new HashSet<string>(StringComparer.Ordinal);
+                    locks[process] = set;
+                }
+                if (locked) set.UnionWith(files);
+                else set.ExceptWith(files);
+                if (set.Count == 0) locks.Remove(process);
+            });
+        }
+        AfterChange(false);
+    }
+
+    /// <summary>ロック一覧を変更して保存する。保存できなければ元に戻して例外を投げる。</summary>
+    private void ChangeLocks(Action<Dictionary<string, HashSet<string>>> change)
+    {
+        var next = _locks.ToDictionary(p => p.Key, p => new HashSet<string>(p.Value, StringComparer.Ordinal), StringComparer.OrdinalIgnoreCase);
+        change(next);
+        FileLockStore.Save(_paths.FileLocksFile, next);
+        _locks = next;
+    }
+
+    /// <summary>記録を消した後の後片付け用。ロックが残っても害はないので、保存できなくても止めない。</summary>
+    private void TryChangeLocks(Action<Dictionary<string, HashSet<string>>> change)
+    {
+        try
+        {
+            ChangeLocks(change);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            _log.Warn($"file_locks.csv を更新できませんでした: {ex.Message}");
+        }
+    }
+
+    /// <summary>ファイル別の記録の自動削除を設定し、条件に当てはまる記録をすぐに削除する</summary>
+    /// <returns>削除した件数</returns>
+    public int SetFileCleanup(string process, int expireDays, int keepMinutes)
+    {
+        int deleted;
+        lock (_gate)
+        {
+            var app = FindApp(process) ?? throw new InvalidOperationException($"{process} は登録されていません");
+            var backup = app.Clone();
+            app.FileExpireDays = Math.Max(0, expireDays);
+            app.FileKeepMinutes = Math.Max(0, keepMinutes);
+            try
+            {
+                SaveApps();
+            }
+            catch
+            {
+                _apps[_apps.IndexOf(app)] = backup;
+                throw;
+            }
+            var expired = ExpiredFiles(app, DateOnly.FromDateTime(DateTime.Now));
+            if (expired.Count > 0)
+            {
+                RemoveFileRecords(process, expired);
+                RebuildStats();
+                WriteCheckpoint();
+                _log.Info($"{app.DisplayName}: 古いファイル別の記録を {expired.Count}件 削除しました");
+            }
+            deleted = expired.Count;
+        }
+        AfterChange(false);
+        return deleted;
+    }
+
+    /// <summary>自動削除をこの設定にしたら、いま削除される件数</summary>
+    public int CountExpiredFiles(string process, int expireDays, int keepMinutes)
+    {
+        lock (_gate)
+        {
+            if (FindApp(process) is not { } app) return 0;
+            var trial = app.Clone();
+            trial.FileExpireDays = expireDays;
+            trial.FileKeepMinutes = keepMinutes;
+            return ExpiredFiles(trial, DateOnly.FromDateTime(DateTime.Now)).Count;
+        }
+    }
+
+    /// <summary>
+    /// 自動削除の対象になるファイル。ロックしたもの・計測中のもの・旧バージョンから取り込んだ日付のない記録は対象にしない。
+    /// </summary>
+    private HashSet<string> ExpiredFiles(AppDefinition app, DateOnly today)
+    {
+        var expired = new HashSet<string>(StringComparer.Ordinal);
+        if (app.FileExpireDays <= 0 || _stats.Get(app.Process) is not { } usage) return expired;
+
+        var locked = _locks.GetValueOrDefault(app.Process);
+        var active = _engine.GetFileSessions(app.Process).Select(s => s.File).ToHashSet(StringComparer.Ordinal);
+        foreach (var f in usage.Files.Values)
+        {
+            if (f.LastDay is not { } last || today.DayNumber - last.DayNumber < app.FileExpireDays) continue;
+            if (app.FileKeepMinutes > 0 && f.TotalSeconds >= app.FileKeepMinutes * 60L) continue;
+            if (locked?.Contains(f.Name) == true || active.Contains(f.Name)) continue;
+            expired.Add(f.Name);
+        }
+        return expired;
+    }
+
+    private void DeleteExpiredFiles(DateOnly today)
+    {
+        var deletedAny = false;
+        foreach (var app in _apps)
+        {
+            var expired = ExpiredFiles(app, today);
+            if (expired.Count == 0) continue;
+            try
+            {
+                RemoveFileRecords(app.Process, expired);
+                deletedAny = true;
+                _log.Info($"{app.DisplayName}: 古いファイル別の記録を {expired.Count}件 削除しました");
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                // 記録ファイルが Excel で開かれているなど。次に日付が変わったとき (か次の起動時) にやり直す
+                _log.Warn($"{app.DisplayName}: 古いファイル別の記録を削除できませんでした: {ex.Message}");
+            }
+        }
+        if (!deletedAny) return;
+        RebuildStats();
+        WriteCheckpoint();
     }
 
     public void UpdateSettings(AppSettings settings)

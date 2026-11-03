@@ -19,6 +19,12 @@ public sealed class AppDefinition
     public string TogglProject { get; set; } = "";
     public string TogglTag { get; set; } = "";
 
+    /// <summary>ファイル別の記録を、最後に作業した日からこの日数たったら自動で削除する。0 で削除しない。</summary>
+    public int FileExpireDays { get; set; }
+
+    /// <summary>累積がこの分数以上のファイルは自動で削除しない。0 なら累積時間に関係なく削除する。</summary>
+    public int FileKeepMinutes { get; set; }
+
     public string DisplayName => string.IsNullOrWhiteSpace(Name) ? Process : Name;
 
     public AppDefinition Clone() => new()
@@ -30,6 +36,8 @@ public sealed class AppDefinition
         TogglEnabled = TogglEnabled,
         TogglProject = TogglProject,
         TogglTag = TogglTag,
+        FileExpireDays = FileExpireDays,
+        FileKeepMinutes = FileKeepMinutes,
     };
 
     /// <summary>"/" 区切りの拡張子文字列を解釈する ("." を含まないものは無視)</summary>

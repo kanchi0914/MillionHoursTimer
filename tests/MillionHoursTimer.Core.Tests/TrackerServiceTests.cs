@@ -151,6 +151,104 @@ public class TrackerServiceTests : IDisposable
         Assert.Equal(5 + 62 + 4, Records.LoadAll(RecordKind.App).Sum(r => r.Seconds));
     }
 
+    private void SeedFile(string process, string file, int daysAgo, long seconds)
+    {
+        var start = DateTime.Today.AddDays(-daysAgo).AddHours(9);
+        Records.Append(RecordKind.File,
+        [
+            new SessionRecord { Start = start, End = start.AddSeconds(seconds), Seconds = seconds, Process = process, AppName = process, File = file, SessionId = file },
+        ]);
+    }
+
+    [Fact]
+    public void DeletesExpiredFilesExceptLockedLongAndUndated()
+    {
+        SeedFile("chrome", "old-short", 40, 60);
+        SeedFile("chrome", "old-long", 40, 600);
+        SeedFile("chrome", "old-locked", 40, 60);
+        SeedFile("chrome", "recent", 5, 60);
+        Records.Append(RecordKind.File, [new SessionRecord { Seconds = 60, Process = "chrome", File = "legacy", SessionId = "legacy" }]);
+        SeedFile("other", "old-short", 40, 60);
+
+        var service = Create();
+        service.AddApp("chrome", "", "");
+        service.AddApp("other", "", "");
+        service.SetFilesLocked("chrome", ["old-locked"], true);
+        service.UpdateApp("chrome", a =>
+        {
+            a.FileExpireDays = 30;
+            a.FileKeepMinutes = 10;
+        });
+
+        // 起動して最初の計測で消える
+        TickFor(service, 1);
+
+        Assert.Equal(["legacy", "old-locked", "old-long", "recent"], service.GetFiles("chrome").Select(f => f.Name).Order());
+        Assert.True(service.GetFiles("chrome").Single(f => f.Name == "old-locked").IsLocked);
+        // 自動削除を設定していないアプリは消えない
+        Assert.Single(service.GetFiles("other"));
+        Assert.DoesNotContain(Records.LoadAll(RecordKind.File), r => r.Process == "chrome" && r.File == "old-short");
+    }
+
+    [Fact]
+    public void SetFileCleanupDeletesRightAway()
+    {
+        SeedFile("chrome", "a", 10, 60);
+        SeedFile("chrome", "b", 3, 60);
+        var service = Create();
+        service.AddApp("chrome", "", "");
+        TickFor(service, 1);
+
+        Assert.Equal(1, service.CountExpiredFiles("chrome", 7, 0));
+        Assert.Equal(2, service.CountExpiredFiles("chrome", 1, 0));
+        Assert.Equal(1, service.SetFileCleanup("chrome", 7, 0));
+
+        Assert.Equal("b", Assert.Single(service.GetFiles("chrome")).Name);
+        Assert.Equal(7, Assert.Single(AppListStore.Load(_paths.AppsFile)).FileExpireDays);
+    }
+
+    [Fact]
+    public void LocksSurviveRestartAndFollowMergeAndDelete()
+    {
+        SeedFile("code", "A.cs", 1, 10);
+        SeedFile("code", "B.cs", 1, 10);
+        SeedFile("code", "C.cs", 1, 10);
+        var service = Create();
+        service.AddApp("code", "", "");
+        service.SetFilesLocked("code", ["A.cs"], true);
+
+        var restarted = Create();
+        Assert.Equal(["A.cs"], restarted.GetFiles("code").Where(f => f.IsLocked).Select(f => f.Name));
+
+        // まとめた後もロックは残る
+        restarted.MergeFiles("code", ["A.cs", "B.cs"], "AB.cs");
+        Assert.Equal(["AB.cs"], restarted.GetFiles("code").Where(f => f.IsLocked).Select(f => f.Name));
+
+        // 削除したらロックも外れる (同じ名前で記録し直してもロックされていない)
+        restarted.DeleteFiles("code", ["AB.cs"]);
+        Assert.Empty(FileLockStore.Load(_paths.FileLocksFile));
+
+        restarted.SetFilesLocked("code", ["C.cs"], true);
+        restarted.SetFilesLocked("code", ["C.cs"], false);
+        Assert.All(restarted.GetFiles("code"), f => Assert.False(f.IsLocked));
+    }
+
+    [Fact]
+    public void ShortSessionsAreNotRecordedPerFile()
+    {
+        var service = Create();
+        service.AddApp("chrome", "", "");
+        var settings = service.Settings;
+        settings.MinFileRecordSeconds = 30;
+        service.UpdateSettings(settings);
+
+        TickFor(service, 11, Snap.Window("chrome", "検索 - Google Chrome"));
+        service.Shutdown();
+
+        Assert.Equal(10, Assert.Single(Records.LoadAll(RecordKind.App)).Seconds);
+        Assert.Empty(Records.LoadAll(RecordKind.File));
+    }
+
     [Fact]
     public void RemoveAppOptionallyKeepsRecords()
     {

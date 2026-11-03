@@ -139,7 +139,7 @@ public class AppListStoreTests
         [
             new AppDefinition { Process = "CLIPStudioPaint", Name = "クリスタ, 漫画", ExePath = @"C:\Program Files\CELSYS\CLIPStudioPaint.exe",
                 Extensions = [".clip", ".png"], TogglEnabled = true, TogglProject = "絵", TogglTag = "illust" },
-            new AppDefinition { Process = "Code" },
+            new AppDefinition { Process = "Code", FileExpireDays = 30, FileKeepMinutes = 10 },
         ]);
 
         var apps = AppListStore.Load(path);
@@ -149,7 +149,23 @@ public class AppListStoreTests
         Assert.Equal([".clip", ".png"], apps[0].Extensions);
         Assert.True(apps[0].TogglEnabled);
         Assert.Equal("illust", apps[0].TogglTag);
+        Assert.Equal(0, apps[0].FileExpireDays);
         Assert.Equal("Code", apps[1].DisplayName);
+        Assert.Equal(30, apps[1].FileExpireDays);
+        Assert.Equal(10, apps[1].FileKeepMinutes);
+    }
+
+    [Fact]
+    public void OldFileWithoutCleanupColumnsMeansNoCleanup()
+    {
+        using var dir = new TempDir();
+        var path = dir.Combine("apps.csv");
+        File.WriteAllText(path, "process,app_name,exe_path,extensions,toggl,toggl_project,toggl_tag\r\nchrome,Chrome,,,false,,\r\n");
+
+        var app = Assert.Single(AppListStore.Load(path));
+
+        Assert.Equal(0, app.FileExpireDays);
+        Assert.Equal(0, app.FileKeepMinutes);
     }
 
     [Fact]
@@ -164,6 +180,24 @@ public class AppListStoreTests
 
         Assert.Equal("A", Assert.Single(apps).Name);
         Assert.Equal(2, warnings.Count);
+    }
+}
+
+public class FileLockStoreTests
+{
+    [Fact]
+    public void RoundTripsNamesWithCommasAndSlashes()
+    {
+        using var dir = new TempDir();
+        var path = dir.Combine("file_locks.csv");
+        FileLockStore.Save(path, new Dictionary<string, HashSet<string>>
+        {
+            ["chrome"] = ["Magnolear", "a, b / c"],
+        });
+
+        var locks = FileLockStore.Load(path);
+
+        Assert.Equal(["Magnolear", "a, b / c"], locks["CHROME"].Order(StringComparer.Ordinal));
     }
 }
 

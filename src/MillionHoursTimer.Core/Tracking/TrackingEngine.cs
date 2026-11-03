@@ -115,11 +115,11 @@ public sealed class TrackingEngine
         var finished = new List<FinishedSession>();
         foreach (var s in _apps.Values)
         {
-            if (Finish(RecordKind.App, s, cutoff, settings.MinRecordSeconds) is { } f) finished.Add(f);
+            if (Finish(RecordKind.App, s, cutoff, settings.MinSecondsFor(RecordKind.App)) is { } f) finished.Add(f);
         }
         foreach (var s in _files.Values)
         {
-            if (Finish(RecordKind.File, s, cutoff, settings.MinRecordSeconds) is { } f) finished.Add(f);
+            if (Finish(RecordKind.File, s, cutoff, settings.MinSecondsFor(RecordKind.File)) is { } f) finished.Add(f);
         }
         _apps.Clear();
         _files.Clear();
@@ -131,14 +131,14 @@ public sealed class TrackingEngine
     {
         var finished = new List<FinishedSession>();
         if (_apps.Remove(process, out var app)
-            && Finish(RecordKind.App, app, null, settings.MinRecordSeconds) is { } f)
+            && Finish(RecordKind.App, app, null, settings.MinSecondsFor(RecordKind.App)) is { } f)
         {
             finished.Add(f);
         }
         foreach (var (key, file) in _files.Where(p => string.Equals(p.Value.Process, process, StringComparison.OrdinalIgnoreCase)).ToList())
         {
             _files.Remove(key);
-            if (Finish(RecordKind.File, file, null, settings.MinRecordSeconds) is { } ff) finished.Add(ff);
+            if (Finish(RecordKind.File, file, null, settings.MinSecondsFor(RecordKind.File)) is { } ff) finished.Add(ff);
         }
         return finished;
     }
@@ -150,7 +150,7 @@ public sealed class TrackingEngine
         foreach (var file in files)
         {
             if (_files.Remove(FileKey(process, file), out var s)
-                && Finish(RecordKind.File, s, null, settings.MinRecordSeconds) is { } f)
+                && Finish(RecordKind.File, s, null, settings.MinSecondsFor(RecordKind.File)) is { } f)
             {
                 finished.Add(f);
             }
@@ -243,7 +243,7 @@ public sealed class TrackingEngine
             if (now - session.LastSeen <= grace) continue;
 
             map.Remove(key);
-            if (Finish(kind, session, null, settings.MinRecordSeconds) is { } f) finished.Add(f);
+            if (Finish(kind, session, null, settings.MinSecondsFor(kind)) is { } f) finished.Add(f);
         }
     }
 

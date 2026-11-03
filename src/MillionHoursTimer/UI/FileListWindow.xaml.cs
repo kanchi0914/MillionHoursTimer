@@ -11,6 +11,7 @@ public sealed class FileRowViewModel(string name) : ObservableObject
     private long _totalSeconds;
     private DateOnly? _lastDay;
     private bool _isRecording;
+    private bool _isLocked;
 
     public string Name { get; } = name;
 
@@ -38,6 +39,12 @@ public sealed class FileRowViewModel(string name) : ObservableObject
         private set => Set(ref _isRecording, value);
     }
 
+    public bool IsLocked
+    {
+        get => _isLocked;
+        private set => Set(ref _isLocked, value);
+    }
+
     public string TotalText => TimeText.FormatDuration(TotalSeconds);
     public string LastDayText => LastDay?.ToString("yyyy/MM/dd") ?? "-";
 
@@ -46,6 +53,7 @@ public sealed class FileRowViewModel(string name) : ObservableObject
         TotalSeconds = s.TotalSeconds;
         LastDay = s.LastDay;
         IsRecording = s.IsRecording;
+        IsLocked = s.IsLocked;
     }
 }
 
@@ -53,17 +61,20 @@ public partial class FileListWindow : Window
 {
     private readonly TrackerService _tracker;
     private readonly string _process;
+    private readonly string _appName;
     private readonly ObservableCollection<FileRowViewModel> _rows = [];
 
     internal FileListWindow(TrackerService tracker, string process, string appName)
     {
         _tracker = tracker;
         _process = process;
+        _appName = appName;
         InitializeComponent();
         Title = $"{appName} のファイル別作業時間";
         FileList.ItemsSource = _rows;
         _ = new ListSorter(FileList, new Dictionary<string, string>
         {
+            ["ロック"] = nameof(FileRowViewModel.IsLocked),
             ["ファイル名"] = nameof(FileRowViewModel.Name),
             ["累積作業時間"] = nameof(FileRowViewModel.TotalSeconds),
             ["最終作業日"] = nameof(FileRowViewModel.LastDay),
@@ -88,11 +99,35 @@ public partial class FileListWindow : Window
             row.Update(file);
         }
         EmptyHint.Visibility = _rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+        var app = _tracker.GetSnapshot().Apps.FirstOrDefault(a => string.Equals(a.Process, _process, StringComparison.OrdinalIgnoreCase));
+        CleanupStatus.Text = app is not { FileExpireDays: > 0 } ? "自動削除: オフ"
+            : $"自動削除: {app.FileExpireDays}日" + (app.FileKeepMinutes > 0 ? $" (累積{app.FileKeepMinutes}分以上は残す)" : "");
     }
 
     private List<FileRowViewModel> Selected => FileList.SelectedItems.Cast<FileRowViewModel>().ToList();
 
-    private void OnContextMenuOpening(object sender, ContextMenuEventArgs e) => MergeMenu.IsEnabled = FileList.SelectedItems.Count > 1;
+    private void OnContextMenuOpening(object sender, ContextMenuEventArgs e)
+    {
+        var selected = Selected;
+        MergeMenu.IsEnabled = selected.Count > 1;
+        LockMenu.IsEnabled = selected.Count > 0;
+        LockMenu.Header = selected.Count > 0 && selected.All(r => r.IsLocked) ? "ロックを解除" : "ロックする";
+    }
+
+    private void OnToggleLock(object sender, RoutedEventArgs e)
+    {
+        var selected = Selected;
+        if (selected.Count == 0) return;
+        var locked = !selected.All(r => r.IsLocked);
+        Run(() => _tracker.SetFilesLocked(_process, selected.Select(s => s.Name).ToList(), locked));
+    }
+
+    private void OnCleanupSettings(object sender, RoutedEventArgs e)
+    {
+        new FileCleanupDialog(_tracker, _process, _appName) { Owner = this }.ShowDialog();
+        Refresh();
+    }
 
     private void OnMerge(object sender, RoutedEventArgs e)
     {
@@ -115,15 +150,28 @@ public partial class FileListWindow : Window
     {
         var selected = Selected;
         if (selected.Count == 0) return;
-        if (!Dialogs.Confirm(this, $"選択した {selected.Count}件 の記録を削除します。よろしいですか？\n(アプリ全体の作業時間は変わりません)")) return;
+        var lockedCount = selected.Count(r => r.IsLocked);
+        var message = $"選択した {selected.Count}件 の記録を削除します。"
+            + (lockedCount > 0 ? $"ロック中の {lockedCount}件 も削除されます。" : "")
+            + "よろしいですか？\n(アプリ全体の作業時間は変わりません)";
+        if (!Dialogs.Confirm(this, message)) return;
         Run(() => _tracker.DeleteFiles(_process, selected.Select(s => s.Name).ToList()));
     }
 
     private void OnDeleteAll(object sender, RoutedEventArgs e)
     {
-        if (_rows.Count == 0) return;
-        if (!Dialogs.Confirm(this, "ファイル別の記録を全て削除します。よろしいですか？\n(アプリ全体の作業時間は変わりません)")) return;
-        Run(() => _tracker.DeleteFiles(_process, _rows.Select(r => r.Name).ToList()));
+        var targets = _rows.Where(r => !r.IsLocked).Select(r => r.Name).ToList();
+        if (targets.Count == 0)
+        {
+            if (_rows.Count > 0) Dialogs.Info(this, "全ての項目がロックされているため、削除するものはありません。");
+            return;
+        }
+        var lockedCount = _rows.Count - targets.Count;
+        var message = lockedCount > 0
+            ? $"ロック中の {lockedCount}件 を除く、{targets.Count}件 の記録を削除します。よろしいですか？\n(アプリ全体の作業時間は変わりません)"
+            : "ファイル別の記録を全て削除します。よろしいですか？\n(アプリ全体の作業時間は変わりません)";
+        if (!Dialogs.Confirm(this, message)) return;
+        Run(() => _tracker.DeleteFiles(_process, targets));
     }
 
     private void Run(Action action)
